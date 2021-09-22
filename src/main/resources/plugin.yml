@@ -1,0 +1,20 @@
+name: Nicobalt
+version: ${project.version}
+main: se.fusion1013.plugin.nicobalt.Nicobalt
+api-version: 1.13
+authors:
+  - Fusion1013
+description: The main Nicobalt Plugin
+commands:
+  emitter:
+    description: Emitter command
+    usage: /emitter
+    aliases:
+      - /emit
+      - /em
+  scenario:
+    description: Scenario command
+    usage: /scenario
+    aliases:
+      - /scen
+      - /sc
