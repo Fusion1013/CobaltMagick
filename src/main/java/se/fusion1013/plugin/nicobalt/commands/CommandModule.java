@@ -1,7 +1,6 @@
 package se.fusion1013.plugin.nicobalt.commands;
 
 import org.bukkit.command.CommandSender;
-import se.fusion1013.plugin.nicobalt.Nicobalt;
 
 import java.util.List;
 

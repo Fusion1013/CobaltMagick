@@ -2,7 +2,7 @@ package se.fusion1013.plugin.nicobalt.particle.styles;
 
 import org.bukkit.Location;
 import org.bukkit.Particle;
-import se.fusion1013.plugin.nicobalt.Nicobalt;
+import se.fusion1013.plugin.nicobalt.Cobalt;
 import se.fusion1013.plugin.nicobalt.manager.ParticleStyleManager;
 import se.fusion1013.plugin.nicobalt.particle.PParticle;
 
@@ -23,6 +23,6 @@ public interface ParticleStyle {
     List<PParticle> getParticles(Location location);
 
     static ParticleStyle fromName(String styleName){
-        return Nicobalt.getInstance().getManager(ParticleStyleManager.class).getStyleByName(styleName);
+        return Cobalt.getInstance().getManager(ParticleStyleManager.class).getStyleByName(styleName);
     }
 }

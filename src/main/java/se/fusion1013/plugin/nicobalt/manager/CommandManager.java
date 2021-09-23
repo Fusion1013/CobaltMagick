@@ -1,11 +1,10 @@
 package se.fusion1013.plugin.nicobalt.manager;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Particle;
 import org.bukkit.command.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import se.fusion1013.plugin.nicobalt.Nicobalt;
+import se.fusion1013.plugin.nicobalt.Cobalt;
 import se.fusion1013.plugin.nicobalt.commands.CommandModule;
 import se.fusion1013.plugin.nicobalt.commands.DefaultCommandModule;
 import se.fusion1013.plugin.nicobalt.commands.EmitterCommandModule;
@@ -21,11 +20,11 @@ public class CommandManager extends Manager implements CommandExecutor, TabCompl
      */
     private List<CommandModule> commands;
 
-    public CommandManager(Nicobalt nicobalt) {
-        super(nicobalt);
+    public CommandManager(Cobalt cobalt) {
+        super(cobalt);
 
-        PluginCommand emitter = this.nicobalt.getCommand("emitter");
-        PluginCommand scenario = this.nicobalt.getCommand("scenario");
+        PluginCommand emitter = this.cobalt.getCommand("emitter");
+        PluginCommand scenario = this.cobalt.getCommand("scenario");
 
         emitter.setTabCompleter(this);
         emitter.setExecutor(this);
@@ -65,7 +64,7 @@ public class CommandManager extends Manager implements CommandExecutor, TabCompl
             return true;
         }
 
-        Bukkit.getScheduler().runTaskAsynchronously(this.nicobalt, () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(this.cobalt, () -> {
             String[] cmdArgs = args.length > 0 ? Arrays.copyOfRange(args, 0, args.length) : new String[0];
 
             // Execute the command

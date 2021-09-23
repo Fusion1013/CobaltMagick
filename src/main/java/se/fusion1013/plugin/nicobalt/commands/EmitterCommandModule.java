@@ -5,7 +5,7 @@ import org.bukkit.Particle;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
-import se.fusion1013.plugin.nicobalt.Nicobalt;
+import se.fusion1013.plugin.nicobalt.Cobalt;
 import se.fusion1013.plugin.nicobalt.manager.LocaleManager;
 import se.fusion1013.plugin.nicobalt.manager.ParticleManager;
 import se.fusion1013.plugin.nicobalt.particle.ParticleEffect;
@@ -20,7 +20,7 @@ public class EmitterCommandModule implements CommandModule {
     @Override
     public void onCommandExecute(CommandSender sender, String[] args) {
 
-        LocaleManager localeManager = Nicobalt.getInstance().getManager(LocaleManager.class);
+        LocaleManager localeManager = Cobalt.getInstance().getManager(LocaleManager.class);
 
         if (args.length == 0){
             localeManager.sendMessage(sender, "command-usage-emitter-addparticle");
@@ -33,7 +33,7 @@ public class EmitterCommandModule implements CommandModule {
             localeManager.sendMessage(sender, "command-usage-emitter-removeparticle");
             return;
         }
-        ParticleManager particleManager = Nicobalt.getInstance().getManager(ParticleManager.class);
+        ParticleManager particleManager = Cobalt.getInstance().getManager(ParticleManager.class);
 
         if (sender instanceof Player){
             Player p = (Player)sender;
@@ -105,7 +105,7 @@ public class EmitterCommandModule implements CommandModule {
                         return;
                     } else {
                         String groupName = args[1];
-                        ParticleGroup group = Nicobalt.getInstance().getManager(ParticleManager.class).getParticleGroupByName(groupName);
+                        ParticleGroup group = Cobalt.getInstance().getManager(ParticleManager.class).getParticleGroupByName(groupName);
                     }
                     localeManager.sendMessage(sender, "command-not-implemented");
                     break;

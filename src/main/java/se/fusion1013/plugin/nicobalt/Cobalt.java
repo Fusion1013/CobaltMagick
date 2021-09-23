@@ -11,13 +11,13 @@ import se.fusion1013.plugin.nicobalt.manager.ParticleStyleManager;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public final class Nicobalt extends JavaPlugin {
+public final class Cobalt extends JavaPlugin {
 
-    private static Nicobalt INSTANCE;
+    private static Cobalt INSTANCE;
 
     private final Map<Class<?>, Manager> managers;
 
-    public Nicobalt(){
+    public Cobalt(){
         INSTANCE = this;
         this.managers = new LinkedHashMap<>();
     }
@@ -37,7 +37,7 @@ public final class Nicobalt extends JavaPlugin {
         System.out.println("Nicobalt Plugin Disabled");
     }
 
-    public static Nicobalt getInstance(){
+    public static Cobalt getInstance(){
         return INSTANCE;
     }
 

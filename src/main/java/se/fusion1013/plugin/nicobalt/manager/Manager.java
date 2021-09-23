@@ -1,13 +1,13 @@
 package se.fusion1013.plugin.nicobalt.manager;
 
-import se.fusion1013.plugin.nicobalt.Nicobalt;
+import se.fusion1013.plugin.nicobalt.Cobalt;
 
 public abstract class Manager {
 
-    protected Nicobalt nicobalt;
+    protected Cobalt cobalt;
 
-    public Manager(Nicobalt nicobalt){
-        this.nicobalt = nicobalt;
+    public Manager(Cobalt cobalt){
+        this.cobalt = cobalt;
     }
 
     public abstract void reload();

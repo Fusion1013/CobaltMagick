@@ -2,7 +2,7 @@ package se.fusion1013.plugin.nicobalt.commands;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.util.StringUtil;
-import se.fusion1013.plugin.nicobalt.Nicobalt;
+import se.fusion1013.plugin.nicobalt.Cobalt;
 import se.fusion1013.plugin.nicobalt.manager.CommandManager;
 
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ public class DefaultCommandModule implements CommandModule {
     @Override
     public List<String> onTabComplete(CommandSender sender, String[] args) {
         List<String> matches = new ArrayList<>();
-        List<String> commandNames = Nicobalt.getInstance().getManager(CommandManager.class).getCommandNames();
+        List<String> commandNames = Cobalt.getInstance().getManager(CommandManager.class).getCommandNames();
 
         if (args.length == 0){
             return commandNames;

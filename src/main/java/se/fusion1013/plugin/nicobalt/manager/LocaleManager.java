@@ -2,8 +2,7 @@ package se.fusion1013.plugin.nicobalt.manager;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import se.fusion1013.plugin.nicobalt.Nicobalt;
+import se.fusion1013.plugin.nicobalt.Cobalt;
 import se.fusion1013.plugin.nicobalt.locale.EnglishLocale;
 import se.fusion1013.plugin.nicobalt.util.HexUtils;
 import se.fusion1013.plugin.nicobalt.util.StringPlaceholders;
@@ -12,8 +11,8 @@ public class LocaleManager extends Manager {
 
     EnglishLocale englishLocale;
 
-    public LocaleManager(Nicobalt nicobalt) {
-        super(nicobalt);
+    public LocaleManager(Cobalt cobalt) {
+        super(cobalt);
         englishLocale = new EnglishLocale();
     }
 

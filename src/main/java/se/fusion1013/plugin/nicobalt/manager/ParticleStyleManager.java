@@ -1,11 +1,9 @@
 package se.fusion1013.plugin.nicobalt.manager;
 
 import org.bukkit.Bukkit;
-import se.fusion1013.plugin.nicobalt.Nicobalt;
+import se.fusion1013.plugin.nicobalt.Cobalt;
 import se.fusion1013.plugin.nicobalt.event.ParticleStyleRegistrationEvent;
-import se.fusion1013.plugin.nicobalt.particle.styles.DefaultParticleStyles;
 import se.fusion1013.plugin.nicobalt.particle.styles.ParticleStyle;
-import se.fusion1013.plugin.nicobalt.particle.styles.ParticleStyleCube;
 
 import java.util.*;
 
@@ -15,8 +13,8 @@ public class ParticleStyleManager extends Manager {
     private final Map<String, ParticleStyle> stylesByInternalName;
     private final List<ParticleStyle> eventStyles;
 
-    public ParticleStyleManager(Nicobalt nicobalt){
-        super(nicobalt);
+    public ParticleStyleManager(Cobalt cobalt){
+        super(cobalt);
 
         this.stylesByName = new LinkedHashMap<>();
         this.stylesByInternalName = new LinkedHashMap<>();
@@ -28,7 +26,7 @@ public class ParticleStyleManager extends Manager {
         this.stylesByName.clear();
         this.stylesByInternalName.clear();
 
-        Bukkit.getScheduler().runTask(this.nicobalt, () ->{
+        Bukkit.getScheduler().runTask(this.cobalt, () ->{
             ParticleStyleRegistrationEvent event = new ParticleStyleRegistrationEvent();
             Bukkit.getPluginManager().callEvent(event);
 

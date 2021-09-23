@@ -1,14 +1,14 @@
 package se.fusion1013.plugin.nicobalt.api;
 
-import se.fusion1013.plugin.nicobalt.Nicobalt;
+import se.fusion1013.plugin.nicobalt.Cobalt;
 
 public class NicobaltAPI {
     private static NicobaltAPI INSTANCE;
 
-    private final Nicobalt nicobalt;
+    private final Cobalt cobalt;
 
     private NicobaltAPI(){
-        this.nicobalt = Nicobalt.getInstance();
+        this.cobalt = Cobalt.getInstance();
     }
 
     public static NicobaltAPI getInstance(){
