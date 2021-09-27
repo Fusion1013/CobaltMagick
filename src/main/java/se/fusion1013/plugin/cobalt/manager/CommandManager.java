@@ -8,6 +8,7 @@ import se.fusion1013.plugin.cobalt.Cobalt;
 import se.fusion1013.plugin.cobalt.commands.CommandModule;
 import se.fusion1013.plugin.cobalt.commands.DefaultCommandModule;
 import se.fusion1013.plugin.cobalt.commands.EmitterCommandModule;
+import se.fusion1013.plugin.cobalt.commands.ScenarioCommandModule;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -90,6 +91,7 @@ public class CommandManager extends Manager implements CommandExecutor, TabCompl
             {
                 this.add(new DefaultCommandModule());
                 this.add(new EmitterCommandModule());
+                this.add(new ScenarioCommandModule());
             }
         };
     }
