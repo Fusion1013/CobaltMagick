@@ -87,8 +87,10 @@ public class EmitterCommandModule implements CommandModule {
                     List<ParticleGroup> particleGroups = particleManager.getParticleGroups();
                     localeManager.sendMessage(sender, "list-emitter-groups");
 
-                    for (ParticleGroup group : particleGroups){
-                        StringPlaceholders stringPlaceholders = StringPlaceholders.builder("name", group.getName())
+                    for (int i = 0; i < particleGroups.size(); i++){
+                        ParticleGroup group = particleGroups.get(i);
+                        StringPlaceholders stringPlaceholders = StringPlaceholders.builder("id", i)
+                                .addPlaceholder("name", group.getName())
                                 .addPlaceholder("x", group.getLocation().getX())
                                 .addPlaceholder("y", group.getLocation().getY())
                                 .addPlaceholder("z", group.getLocation().getZ())
