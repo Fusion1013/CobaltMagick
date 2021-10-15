@@ -25,6 +25,10 @@ public class ParticleStyleIcosphere extends DefaultParticleStyles implements Par
 
     private Particle particle;
 
+    public ParticleStyleIcosphere(){
+        this(Particle.BARRIER);
+    }
+
     public ParticleStyleIcosphere(Particle particle) {
         super("icosphere");
         this.particle = particle;

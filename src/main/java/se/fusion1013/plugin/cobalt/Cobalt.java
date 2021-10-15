@@ -3,10 +3,7 @@ package se.fusion1013.plugin.cobalt;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import se.fusion1013.plugin.cobalt.manager.CommandManager;
-import se.fusion1013.plugin.cobalt.manager.Manager;
-import se.fusion1013.plugin.cobalt.manager.ParticleManager;
-import se.fusion1013.plugin.cobalt.manager.ParticleStyleManager;
+import se.fusion1013.plugin.cobalt.manager.*;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -24,7 +21,7 @@ public final class Cobalt extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        System.out.println("Nicobalt Plugin Enabled");
+        System.out.println("Cobalt Plugin Enabled");
 
         this.reload();
 
@@ -34,7 +31,7 @@ public final class Cobalt extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        System.out.println("Nicobalt Plugin Disabled");
+        System.out.println("Cobalt Plugin Disabled");
     }
 
     public static Cobalt getInstance(){
@@ -72,5 +69,6 @@ public final class Cobalt extends JavaPlugin {
         this.getManager(CommandManager.class);
         this.getManager(ParticleManager.class);
         this.getManager(ParticleStyleManager.class);
+        this.getManager(LaserManager.class);
     }
 }

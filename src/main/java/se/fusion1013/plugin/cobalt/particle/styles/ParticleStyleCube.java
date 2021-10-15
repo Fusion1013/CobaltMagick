@@ -21,10 +21,18 @@ public class ParticleStyleCube extends DefaultParticleStyles implements Particle
     private int particlesPerEdge;
     private Particle particle;
 
+    public ParticleStyleCube(){
+        this(Particle.BARRIER);
+    }
+
     public ParticleStyleCube(Particle particle) {
         super("cube");
         this.particle = particle;
         setDefaultSettings();
+    }
+
+    public void setParticle(Particle particle){
+        this.particle = particle;
     }
 
     @Override

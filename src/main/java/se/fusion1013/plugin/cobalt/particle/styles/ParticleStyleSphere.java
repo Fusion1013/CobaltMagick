@@ -12,6 +12,10 @@ public class ParticleStyleSphere extends DefaultParticleStyles implements Partic
     private double radius;
     private Particle particle;
 
+    public ParticleStyleSphere(){
+        this(Particle.BARRIER);
+    }
+
     public ParticleStyleSphere(Particle particle){
         super("sphere");
         this.particle = particle;

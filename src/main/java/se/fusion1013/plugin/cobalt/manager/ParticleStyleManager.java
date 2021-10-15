@@ -2,78 +2,42 @@ package se.fusion1013.plugin.cobalt.manager;
 
 import org.bukkit.Bukkit;
 import se.fusion1013.plugin.cobalt.Cobalt;
-import se.fusion1013.plugin.cobalt.event.ParticleStyleRegistrationEvent;
-import se.fusion1013.plugin.cobalt.particle.styles.ParticleStyle;
+import se.fusion1013.plugin.cobalt.particle.styles.*;
 
 import java.util.*;
 
 public class ParticleStyleManager extends Manager {
 
-    private final Map<String, ParticleStyle> stylesByName;
-    private final Map<String, ParticleStyle> stylesByInternalName;
-    private final List<ParticleStyle> eventStyles;
+    public static final Map<String, ParticleStyle> INBUILT_PARTICLE_STYLES = new HashMap<>();
+
+    public static final ParticleStyle CUBE = register(new ParticleStyleCube());
+    public static final ParticleStyle ICOSPHERE = register(new ParticleStyleIcosphere());
+    public static final ParticleStyle LINE = register(new ParticleStyleLine());
+    public static final ParticleStyle SPHERE = register(new ParticleStyleSphere());
 
     public ParticleStyleManager(Cobalt cobalt){
         super(cobalt);
+    }
 
-        this.stylesByName = new LinkedHashMap<>();
-        this.stylesByInternalName = new LinkedHashMap<>();
-        this.eventStyles = new ArrayList<>();
+    private static <T extends DefaultParticleStyles> T register(final T particleStyle){
+        INBUILT_PARTICLE_STYLES.put(particleStyle.getName(), particleStyle);
+        return particleStyle;
     }
 
     @Override
     public void reload() {
-        this.stylesByName.clear();
-        this.stylesByInternalName.clear();
-
-        Bukkit.getScheduler().runTask(this.cobalt, () ->{
-            ParticleStyleRegistrationEvent event = new ParticleStyleRegistrationEvent();
-            Bukkit.getPluginManager().callEvent(event);
-
-            Collection<ParticleStyle> eventStyles = event.getRegisteredEventStyles().values();
-            List<ParticleStyle> styles = new ArrayList<>(event.getRegisteredStyles().values());
-            styles.addAll(eventStyles);
-            styles.sort(Comparator.comparing(ParticleStyle::getName));
-
-            for (ParticleStyle style : styles){
-                try {
-                    if (style == null) throw new IllegalArgumentException("Tried to register a null style");
-
-                    if (style.getInternalName() == null || style.getInternalName().trim().isEmpty())
-                        throw new IllegalArgumentException("Tried to register a style with a null or empty name: '" + style.getInternalName() + "'");
-                    if (this.stylesByName.containsValue(style))
-                        throw new IllegalArgumentException("Tried to register the same style twice: '" + style.getInternalName() + "'");
-                    if (this.stylesByInternalName.containsKey(style.getInternalName().toLowerCase()))
-                        throw new IllegalArgumentException("Tried to register two styles with the same internal name spelling: '" + style.getInternalName() + "'");
-
-                    this.stylesByName.put(style.getName().toLowerCase(), style);
-                    this.stylesByInternalName.put(style.getInternalName().toLowerCase(), style);
-
-                    if (eventStyles.contains(style)){
-                        this.eventStyles.contains(style);
-                    }
-                } catch (IllegalArgumentException ex){
-                    ex.printStackTrace();
-                }
-            }
-        });
     }
 
     @Override
     public void disable() {
+    }
 
+    public List<String> getStyleNames(){
+        return new ArrayList<String>(INBUILT_PARTICLE_STYLES.keySet());
     }
 
     public ParticleStyle getStyleByName(String name){
-        ParticleStyle style = this.stylesByName.get(name.toLowerCase());
-        if (style != null && !style.isEnabled()){
-            style = null;
-        }
-        return style;
-    }
-
-    public ParticleStyle getStyleByInternalName(String internalName){
-        ParticleStyle style = this.stylesByInternalName.get(internalName.toLowerCase());
+        ParticleStyle style = this.INBUILT_PARTICLE_STYLES.get(name.toLowerCase());
         if (style != null && !style.isEnabled()){
             style = null;
         }

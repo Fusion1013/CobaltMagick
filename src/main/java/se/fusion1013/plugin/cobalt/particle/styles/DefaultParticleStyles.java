@@ -33,4 +33,7 @@ public class DefaultParticleStyles implements ParticleStyle {
     public List<PParticle> getParticles(Location location) {
         return null;
     }
+
+    @Override
+    public List<PParticle> getParticles(Location startLocation, Location endLocation) { return null; }
 }
