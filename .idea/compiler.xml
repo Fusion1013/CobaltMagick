@@ -6,11 +6,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="NicobaltPlugin" />
+        <module name="Cobalt" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="NicobaltPlugin" target="1.8" />
+      <module name="Cobalt" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

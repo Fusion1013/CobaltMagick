@@ -1,10 +1,10 @@
-name: Nicobalt
+name: Cobalt
 version: ${project.version}
-main: se.fusion1013.plugin.nicobalt.Nicobalt
+main: se.fusion1013.plugin.cobalt.Cobalt
 api-version: 1.13
 authors:
   - Fusion1013
-description: The main Nicobalt Plugin
+description: The Cobalt Plugin
 commands:
   emitter:
     description: Emitter command
