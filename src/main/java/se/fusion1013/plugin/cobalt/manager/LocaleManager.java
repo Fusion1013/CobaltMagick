@@ -9,11 +9,19 @@ import se.fusion1013.plugin.cobalt.util.StringPlaceholders;
 
 public class LocaleManager extends Manager {
 
+    private static LocaleManager instance = null;
     EnglishLocale englishLocale;
 
     public LocaleManager(Cobalt cobalt) {
         super(cobalt);
         englishLocale = new EnglishLocale();
+    }
+
+    public static LocaleManager getInstance(){
+        if (instance == null){
+            instance = new LocaleManager(Cobalt.getInstance());
+        }
+        return instance;
     }
 
     @Override
