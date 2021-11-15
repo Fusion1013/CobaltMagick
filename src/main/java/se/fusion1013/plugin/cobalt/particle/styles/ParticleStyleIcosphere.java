@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class ParticleStyleIcosphere extends DefaultParticleStyles implements ParticleStyle {
+public class ParticleStyleIcosphere extends ParticleStyle implements IParticleStyle {
 
     private double ticksPerSpawn;
     private double radius;
@@ -23,7 +23,16 @@ public class ParticleStyleIcosphere extends DefaultParticleStyles implements Par
 
     private int step = 0;
 
-    private Particle particle;
+    public ParticleStyleIcosphere(ParticleStyleIcosphere target){
+        super(target);
+        this.ticksPerSpawn = target.ticksPerSpawn;
+        this.radius = target.radius;
+        this.particlesPerLine = target.particlesPerLine;
+        this.divisions = target.divisions;
+        this.angularVelocityX = target.angularVelocityX;
+        this.angularVelocityY = target.angularVelocityY;
+        this.angularVelocityZ = target.angularVelocityZ;
+    }
 
     public ParticleStyleIcosphere(){
         this(Particle.BARRIER);
@@ -99,6 +108,11 @@ public class ParticleStyleIcosphere extends DefaultParticleStyles implements Par
             points.add(point1.clone().add(angle.clone().multiply(i)));
 
         return points;
+    }
+
+    @Override
+    public ParticleStyle clone() {
+        return new ParticleStyleIcosphere(this);
     }
 
     /**

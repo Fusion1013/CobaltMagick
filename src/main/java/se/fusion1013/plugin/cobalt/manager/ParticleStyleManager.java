@@ -1,6 +1,5 @@
 package se.fusion1013.plugin.cobalt.manager;
 
-import org.bukkit.Bukkit;
 import se.fusion1013.plugin.cobalt.Cobalt;
 import se.fusion1013.plugin.cobalt.particle.styles.*;
 
@@ -19,7 +18,7 @@ public class ParticleStyleManager extends Manager {
         super(cobalt);
     }
 
-    private static <T extends DefaultParticleStyles> T register(final T particleStyle){
+    private static <T extends ParticleStyle> T register(final T particleStyle){
         INBUILT_PARTICLE_STYLES.put(particleStyle.getName(), particleStyle);
         return particleStyle;
     }
@@ -41,6 +40,6 @@ public class ParticleStyleManager extends Manager {
         if (style != null && !style.isEnabled()){
             style = null;
         }
-        return style;
+        return style.clone();
     }
 }

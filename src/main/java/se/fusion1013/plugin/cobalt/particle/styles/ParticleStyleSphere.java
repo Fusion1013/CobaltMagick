@@ -7,10 +7,14 @@ import se.fusion1013.plugin.cobalt.particle.PParticle;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ParticleStyleSphere extends DefaultParticleStyles implements ParticleStyle {
+public class ParticleStyleSphere extends ParticleStyle implements IParticleStyle {
     private int density;
     private double radius;
-    private Particle particle;
+
+    public ParticleStyleSphere(ParticleStyleSphere target){
+        this.density = target.density;
+        this.radius = target.radius;
+    }
 
     public ParticleStyleSphere(){
         this(Particle.BARRIER);
@@ -53,5 +57,10 @@ public class ParticleStyleSphere extends DefaultParticleStyles implements Partic
     @Override
     public Particle getParticle() {
         return this.particle;
+    }
+
+    @Override
+    public ParticleStyle clone() {
+        return new ParticleStyleSphere(this);
     }
 }

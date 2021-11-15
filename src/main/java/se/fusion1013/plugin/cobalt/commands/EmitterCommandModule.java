@@ -95,7 +95,7 @@ public class EmitterCommandModule implements CommandModule {
                                 .addPlaceholder("y", group.getLocation().getY())
                                 .addPlaceholder("z", group.getLocation().getZ())
                                 .build();
-                        for (ParticleStyle style : group.getParticleStyleList()){
+                        for (IParticleStyle style : group.getParticleStyleList()){
                             //stringPlaceholders.addPlaceholder("style-name", style.getName());
                         }
                         localeManager.sendMessage(sender, "list-emitter-group-output", stringPlaceholders);
@@ -222,8 +222,8 @@ public class EmitterCommandModule implements CommandModule {
         return new ArrayList<>();
     }
 
-    private Map<String, Class<? extends DefaultParticleStyles>> getStyles(){
-        Map<String, Class<? extends DefaultParticleStyles>> styles = new LinkedHashMap<>();
+    private Map<String, Class<? extends ParticleStyle>> getStyles(){
+        Map<String, Class<? extends ParticleStyle>> styles = new LinkedHashMap<>();
 
         styles.put("sphere", ParticleStyleSphere.class);
         styles.put("cube", ParticleStyleCube.class);

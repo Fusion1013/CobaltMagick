@@ -9,7 +9,7 @@ import se.fusion1013.plugin.cobalt.util.VectorUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ParticleStyleCube extends DefaultParticleStyles implements ParticleStyle {
+public class ParticleStyleCube extends ParticleStyle implements IParticleStyle {
 
     private int step = 0;
     private boolean skipNextStep = false; // Only spawn every 2 ticks
@@ -19,10 +19,18 @@ public class ParticleStyleCube extends DefaultParticleStyles implements Particle
     private double angularVelocityY;
     private double angularVelocityZ;
     private int particlesPerEdge;
-    private Particle particle;
 
     public ParticleStyleCube(){
-        this(Particle.BARRIER);
+        this(Particle.FLAME);
+    }
+
+    public ParticleStyleCube(ParticleStyleCube target){
+        super(target);
+        this.edgeLength = target.edgeLength;
+        this.angularVelocityX = target.angularVelocityX;
+        this.angularVelocityY = target.angularVelocityY;
+        this.angularVelocityZ = target.angularVelocityZ;
+        this.particlesPerEdge = target.particlesPerEdge;
     }
 
     public ParticleStyleCube(Particle particle) {
@@ -81,6 +89,11 @@ public class ParticleStyleCube extends DefaultParticleStyles implements Particle
         angularVelocityY = 0.00369599135;
         angularVelocityZ = 0.00405366794;
         particlesPerEdge = 100;
+    }
+
+    @Override
+    public ParticleStyle clone() {
+        return new ParticleStyleCube(this);
     }
 
     @Override

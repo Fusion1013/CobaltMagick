@@ -8,9 +8,13 @@ import se.fusion1013.plugin.cobalt.particle.PParticle;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ParticleStyleLine extends DefaultParticleStyles implements ParticleStyle {
+public class ParticleStyleLine extends ParticleStyle implements IParticleStyle {
 
     private int density; // in particles/block
+
+    public ParticleStyleLine(ParticleStyleLine target){
+        this.density = target.density;
+    }
 
     public ParticleStyleLine(){
         this(Particle.BARRIER);
@@ -38,5 +42,10 @@ public class ParticleStyleLine extends DefaultParticleStyles implements Particle
 
     protected void setDefaultSettings(){
         density = 10;
+    }
+
+    @Override
+    public ParticleStyle clone() {
+        return new ParticleStyleLine(this);
     }
 }

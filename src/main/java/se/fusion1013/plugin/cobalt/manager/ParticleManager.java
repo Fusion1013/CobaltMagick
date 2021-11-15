@@ -1,9 +1,12 @@
 package se.fusion1013.plugin.cobalt.manager;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitTask;
 import se.fusion1013.plugin.cobalt.Cobalt;
+import se.fusion1013.plugin.cobalt.particle.IParticleGroup;
 import se.fusion1013.plugin.cobalt.particle.ParticleGroup;
 
 import java.util.ArrayList;
@@ -11,7 +14,7 @@ import java.util.List;
 
 public class ParticleManager extends Manager implements Listener, Runnable {
 
-    private final List<ParticleGroup> particleGroups;
+    private final List<ParticleGroup> particleGroups; // Contains all particle groups
     private BukkitTask particleTask;
 
     public ParticleManager(Cobalt cobalt) {
@@ -23,13 +26,30 @@ public class ParticleManager extends Manager implements Listener, Runnable {
         Bukkit.getPluginManager().registerEvents(this, this.cobalt);
     }
 
+    // ---------- ParticleGroup Editing ----------
+
+    /***
+     * Creates a new ParticleGroup with a name and location. This group will have a default style and particle
+     * @param name the name of the ParticleGroup
+     * @param location the location of the ParticleGroup
+     * @return id of the ParticleGroup
+     */
+    public int createParticleGroup(String name, Location location){
+        particleGroups.add(new ParticleGroup(name, location));
+        return particleGroups.size()-1; // The id of the new ParticleGroup is its position in the list
+    }
+
+    @Deprecated
     public void addParticleGroup(ParticleGroup group){
         particleGroups.add(group);
     }
 
+    @Deprecated
     public List<ParticleGroup> getParticleGroups(){
         return particleGroups;
     }
+
+    // ---------- // ----------
 
     @Override
     public void run() {
