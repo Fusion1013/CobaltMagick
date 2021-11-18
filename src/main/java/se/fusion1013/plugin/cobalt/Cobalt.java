@@ -6,6 +6,8 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import se.fusion1013.plugin.cobalt.commands.HelloWorldCommand;
+import se.fusion1013.plugin.cobalt.database.Database;
+import se.fusion1013.plugin.cobalt.database.SQLite;
 import se.fusion1013.plugin.cobalt.manager.*;
 
 import java.util.HashSet;
@@ -17,6 +19,7 @@ public final class Cobalt extends JavaPlugin implements CobaltPlugin {
 
     private static Cobalt INSTANCE;
     private static Set<CobaltPlugin> cobaltPlugins = new HashSet<CobaltPlugin>();
+    private static Database db;
 
     private final Map<Class<?>, Manager> managers;
 
@@ -30,6 +33,17 @@ public final class Cobalt extends JavaPlugin implements CobaltPlugin {
         getLogger().info("Starting up Cobalt...");
         registerCobaltPlugin(this);
 
+        /*
+        // Create Data Folder
+        if (!this.getDataFolder().exists()){
+            try {
+                this.getDataFolder().mkdir();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+         */
+
         // Instantiates all managers
         this.reload();
     }
@@ -42,6 +56,8 @@ public final class Cobalt extends JavaPlugin implements CobaltPlugin {
     public static Cobalt getInstance(){
         return INSTANCE;
     }
+
+    public Database getRDatabese() { return this.db; }
 
     /**
      * Gets a manager instance
@@ -95,6 +111,12 @@ public final class Cobalt extends JavaPlugin implements CobaltPlugin {
             plugin.registerCommands();
 
             // Register settings
+
+            // Instantiate Database
+            // TODO: Make plugin specific
+            getLogger().info("Instantiating database for " + plugin.getName() + "...");
+            this.db = new SQLite(this);
+            this.db.load();
 
             // Register listeners
         }
