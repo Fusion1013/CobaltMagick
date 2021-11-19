@@ -40,5 +40,5 @@ public interface CobaltCommand {
 
     boolean execute(CommandSender sender, String[] args, CommandFlags flags);
 
-    List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args);
+    List<String> tabComplete(CommandSender sender, String alias, String[] args);
 }
