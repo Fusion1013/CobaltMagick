@@ -14,7 +14,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
-public class CommandManager extends Manager implements CommandExecutor, TabCompleter {
+public class CommandManager extends Manager {
 
     private static CommandManager instance = null;
     private HashMap<String, CobaltCommand> cobaltCommands = new HashMap<>();
@@ -57,10 +57,6 @@ public class CommandManager extends Manager implements CommandExecutor, TabCompl
             PluginCommand pluginCommand = getCommand(command.getCommandName(), plugin);
             pluginCommand.setAliases(command.getAliases());
             getCommandMap().register(plugin.getDescription().getName(), command);
-
-            // Set executor & tab completer to this
-            pluginCommand.setExecutor(this);
-            pluginCommand.setTabCompleter(this);
 
             plugin.getLogger().info("Registering Command: " + command.getCommandName());
 
@@ -154,16 +150,6 @@ public class CommandManager extends Manager implements CommandExecutor, TabCompl
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, Command command, String label, String[] args) {
-        return getCommandFromName(command.getName()).execute(sender, label, args);
-    }
-
-    @Override
-    public @Nullable List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        return null; // TODO: Find command and get tab completion
-    }
-
-    @Override
     public void reload() {
 
     }
@@ -172,86 +158,4 @@ public class CommandManager extends Manager implements CommandExecutor, TabCompl
     public void disable() {
 
     }
-
-    /*
-    public CommandManager(Cobalt cobalt) {
-        super(cobalt);
-
-        PluginCommand emitter = this.cobalt.getCommand("emitter");
-        PluginCommand scenario = this.cobalt.getCommand("scenario");
-
-        emitter.setTabCompleter(this);
-        emitter.setExecutor(this);
-
-        scenario.setTabCompleter(this);
-        scenario.setExecutor(this);
-    }
-
-    public CommandModule findMatchingCommand(String commandName){
-        for (CommandModule commandModule : this.commands){
-            if (commandModule.getName().equalsIgnoreCase(commandName)){
-                return commandModule;
-            }
-        }
-        return null;
-    }
-
-    public List<CommandModule> getCommands(){
-        return this.commands;
-    }
-
-    public List<String> getCommandNames(){
-        List<String> commandNames = new ArrayList<>();
-        for (CommandModule cmd : this.commands){
-            commandNames.add(cmd.getName());
-        }
-        return commandNames;
-    }
-
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        String commandName = command.getName();
-        CommandModule commandModule = this.findMatchingCommand(commandName);
-
-        if (commandModule == null){
-            sender.sendMessage("Unknown command");
-            return true;
-        }
-
-        Bukkit.getScheduler().runTaskAsynchronously(this.cobalt, () -> {
-            String[] cmdArgs = args.length > 0 ? Arrays.copyOfRange(args, 0, args.length) : new String[0];
-
-            // Execute the command
-            commandModule.onCommandExecute(sender, cmdArgs);
-        });
-        return true;
-    }
-
-    @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-        CommandModule commandModule = this.findMatchingCommand(command.getName());
-        if (commandModule != null){
-            String[] cmdArgs = Arrays.copyOfRange(args, 0, args.length);
-            return commandModule.onTabComplete(sender, cmdArgs);
-        }
-
-        return new ArrayList<>();
-    }
-
-    @Override
-    public void reload() {
-        this.commands = new ArrayList<CommandModule>(){
-            {
-                this.add(new DefaultCommandModule());
-                this.add(new EmitterCommandModule());
-                this.add(new ScenarioCommandModule());
-            }
-        };
-    }
-
-    @Override
-    public void disable() {
-
-    }
-    */
 }
