@@ -2,6 +2,7 @@ package se.fusion1013.plugin.cobalt.particle.styles;
 
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobalt.Cobalt;
 import se.fusion1013.plugin.cobalt.manager.ParticleStyleManager;
 import se.fusion1013.plugin.cobalt.particle.PParticle;
@@ -13,7 +14,6 @@ public interface IParticleStyle {
     void setParticle(Particle particle);
 
     String getInternalName();
-
     default String getName(){
         return this.getInternalName();
     }
@@ -21,12 +21,17 @@ public interface IParticleStyle {
     boolean isEnabled();
 
     Particle getParticle();
-
     List<PParticle> getParticles(Location location);
-
     List<PParticle> getParticles(Location startLocation, Location endLocation);
 
     static IParticleStyle fromName(String styleName){
         return Cobalt.getInstance().getManager(ParticleStyleManager.class).getStyleByName(styleName);
     }
+
+    void setOffset(Vector offset);
+    Vector getOffset();
+
+    void setDouble(String key, double p);
+    List<String> getDoubleKeys();
+    double getDouble(String key);
 }
