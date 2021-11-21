@@ -2,6 +2,7 @@ package se.fusion1013.plugin.cobalt.particle.styles;
 
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobalt.particle.PParticle;
 
 import java.util.List;
@@ -10,6 +11,7 @@ public abstract class ParticleStyle implements IParticleStyle {
 
     Particle particle;
     String internalStyleName;
+    Vector offset;
 
     public ParticleStyle() {}
 
@@ -51,6 +53,16 @@ public abstract class ParticleStyle implements IParticleStyle {
 
     @Override
     public List<PParticle> getParticles(Location startLocation, Location endLocation) { return null; }
+
+    @Override
+    public void setOffset(Vector offset) {
+        this.offset = offset;
+    }
+
+    @Override
+    public Vector getOffset() {
+        return offset;
+    }
 
     public abstract ParticleStyle clone();
 }
