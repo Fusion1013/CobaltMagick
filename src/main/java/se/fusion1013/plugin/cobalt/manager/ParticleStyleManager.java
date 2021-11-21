@@ -7,6 +7,8 @@ import java.util.*;
 
 public class ParticleStyleManager extends Manager {
 
+    // TODO: Add more styles
+
     public static final Map<String, ParticleStyle> INBUILT_PARTICLE_STYLES = new HashMap<>();
 
     public static final ParticleStyle CUBE = register(new ParticleStyleCube());
@@ -35,8 +37,8 @@ public class ParticleStyleManager extends Manager {
         return new ArrayList<String>(INBUILT_PARTICLE_STYLES.keySet());
     }
 
-    public ParticleStyle getStyleByName(String name){
-        ParticleStyle style = this.INBUILT_PARTICLE_STYLES.get(name.toLowerCase());
+    public static ParticleStyle getStyleByName(String name){
+        ParticleStyle style = INBUILT_PARTICLE_STYLES.get(name.toLowerCase());
         if (style != null && !style.isEnabled()){
             style = null;
         }
