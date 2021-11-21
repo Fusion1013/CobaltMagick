@@ -6,14 +6,16 @@ import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobalt.particle.PParticle;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ParticleStyleLine extends ParticleStyle implements IParticleStyle {
 
-    private int density; // in particles/block
+    private Map<String, Double> doubleValues = new HashMap<>();
 
     public ParticleStyleLine(ParticleStyleLine target){
-        this.density = target.density;
+        doubleValues.put("density", target.getDouble("density"));
     }
 
     public ParticleStyleLine(){
@@ -26,10 +28,11 @@ public class ParticleStyleLine extends ParticleStyle implements IParticleStyle {
     }
 
     @Override
-    public List<PParticle> getParticles(Location startLocation, Location endLocation) {
+    public List<PParticle> getParticles(Location startLocation, Location endLocation) { // TODO: Find some way to not do this with two location inputs
         List<PParticle> pParticles = new ArrayList<>();
+        double density = doubleValues.get("density");
         double distance = startLocation.distance(endLocation);
-        int steps = density * (int)distance;
+        int steps = (int)density * (int)distance;
         Vector direction = startLocation.subtract(endLocation).getDirection().normalize();
 
         for (int i = 0; i < steps; i++){
@@ -40,8 +43,23 @@ public class ParticleStyleLine extends ParticleStyle implements IParticleStyle {
         return pParticles;
     }
 
+    @Override
+    public void setDouble(String key, double p) {
+        doubleValues.put(key, p);
+    }
+
+    @Override
+    public List<String> getDoubleKeys() {
+        return new ArrayList<>(doubleValues.keySet());
+    }
+
+    @Override
+    public double getDouble(String key) {
+        return doubleValues.get(key);
+    }
+
     protected void setDefaultSettings(){
-        density = 10;
+        doubleValues.put("density", 10.0);
     }
 
     @Override

@@ -6,32 +6,24 @@ import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobalt.particle.PParticle;
 import se.fusion1013.plugin.cobalt.util.VectorUtils;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ParticleStyleIcosphere extends ParticleStyle implements IParticleStyle {
 
-    private double ticksPerSpawn;
-    private double radius;
-    private int particlesPerLine;
-    private int divisions;
-    private double angularVelocityX;
-    private double angularVelocityY;
-    private double angularVelocityZ;
+    private Map<String, Double> doubleValues = new HashMap<>();
 
     private int step = 0;
 
     public ParticleStyleIcosphere(ParticleStyleIcosphere target){
         super(target);
-        this.ticksPerSpawn = target.ticksPerSpawn;
-        this.radius = target.radius;
-        this.particlesPerLine = target.particlesPerLine;
-        this.divisions = target.divisions;
-        this.angularVelocityX = target.angularVelocityX;
-        this.angularVelocityY = target.angularVelocityY;
-        this.angularVelocityZ = target.angularVelocityZ;
+
+        doubleValues.put("ticks_per_spawn", target.getDouble("ticks_per_spawn"));
+        doubleValues.put("radius", target.getDouble("radius"));
+        doubleValues.put("particles_per_line", target.getDouble("particles_per_line"));
+        doubleValues.put("divisions", target.getDouble("divisions"));
+        doubleValues.put("angular_velocity_x", target.getDouble("angular_velocity_x"));
+        doubleValues.put("angular_velocity_y", target.getDouble("angular_velocity_y"));
+        doubleValues.put("angular_velocity_z", target.getDouble("angular_velocity_z"));
     }
 
     public ParticleStyleIcosphere(){
@@ -45,13 +37,13 @@ public class ParticleStyleIcosphere extends ParticleStyle implements IParticleSt
     }
 
     protected void setDefaultSettings() {
-        radius = 3;
-        particlesPerLine = 8;
-        divisions = 1;
-        angularVelocityX = 0.00314159265;
-        angularVelocityY = 0.00369599135;
-        angularVelocityZ = 0.00405366794;
-        ticksPerSpawn = 50;
+        doubleValues.put("ticks_per_spawn", 50.0);
+        doubleValues.put("radius", 3.0);
+        doubleValues.put("particles_per_line", 8.0);
+        doubleValues.put("divisions", 1.0);
+        doubleValues.put("angular_velocity_x", 0.00314159265);
+        doubleValues.put("angular_velocity_y", 0.00369599135);
+        doubleValues.put("angular_velocity_z", 0.00405366794);
     }
 
     @Override
@@ -66,19 +58,28 @@ public class ParticleStyleIcosphere extends ParticleStyle implements IParticleSt
 
     @Override
     public List<PParticle> getParticles(Location location) {
+
+        double ticksPerSpawn = doubleValues.get("ticks_per_spawn");
+        int divisions =  (int)Math.round(doubleValues.get("divisions")); // TODO: Make less yank
+        double radius = doubleValues.get("radius");
+        double particlesPerLine = doubleValues.get("particles_per_line");
+        double angularVelocityX = doubleValues.get("angular_velocity_x");
+        double angularVelocityY = doubleValues.get("angular_velocity_y");
+        double angularVelocityZ = doubleValues.get("angular_velocity_z");
+
         List<PParticle> particles = new ArrayList<>();
-        if (this.step % this.ticksPerSpawn != 0)
+        if (this.step % ticksPerSpawn != 0)
             return particles;
 
-        Icosahedron icosahedron = new Icosahedron(this.divisions, this.radius);
+        Icosahedron icosahedron = new Icosahedron(divisions, radius);
         Set<Vector> points = new HashSet<>();
         for (Icosahedron.Triangle triangle : icosahedron.getTriangles())
-            points.addAll(this.getPointsAlongTriangle(triangle, this.particlesPerLine));
+            points.addAll(this.getPointsAlongTriangle(triangle, particlesPerLine));
 
-        double multiplier = ((double) this.step / this.ticksPerSpawn);
-        double xRotation = multiplier * this.angularVelocityX;
-        double yRotation = multiplier * this.angularVelocityY;
-        double zRotation = multiplier * this.angularVelocityZ;
+        double multiplier = ((double) this.step / ticksPerSpawn);
+        double xRotation = multiplier * angularVelocityX;
+        double yRotation = multiplier * angularVelocityY;
+        double zRotation = multiplier * angularVelocityZ;
 
         for (Vector point : points) {
             VectorUtils.rotateVector(point, xRotation, yRotation, zRotation);
@@ -90,7 +91,7 @@ public class ParticleStyleIcosphere extends ParticleStyle implements IParticleSt
         return particles;
     }
 
-    private Set<Vector> getPointsAlongTriangle(Icosahedron.Triangle triangle, int pointsPerLine) {
+    private Set<Vector> getPointsAlongTriangle(Icosahedron.Triangle triangle, double pointsPerLine) {
         Set<Vector> points = new HashSet<>();
         points.addAll(this.getPointsAlongLine(triangle.point1, triangle.point2, pointsPerLine));
         points.addAll(this.getPointsAlongLine(triangle.point2, triangle.point3, pointsPerLine));
@@ -98,7 +99,7 @@ public class ParticleStyleIcosphere extends ParticleStyle implements IParticleSt
         return points;
     }
 
-    private Set<Vector> getPointsAlongLine(Vector point1, Vector point2, int pointsPerLine) {
+    private Set<Vector> getPointsAlongLine(Vector point1, Vector point2, double pointsPerLine) {
         double distance = point1.distance(point2);
         Vector angle = point2.clone().subtract(point1).normalize();
         double distanceBetween = distance / pointsPerLine;
@@ -113,6 +114,21 @@ public class ParticleStyleIcosphere extends ParticleStyle implements IParticleSt
     @Override
     public ParticleStyle clone() {
         return new ParticleStyleIcosphere(this);
+    }
+
+    @Override
+    public void setDouble(String key, double p) {
+        doubleValues.put(key, p);
+    }
+
+    @Override
+    public List<String> getDoubleKeys() {
+        return new ArrayList<>(doubleValues.keySet());
+    }
+
+    @Override
+    public double getDouble(String key) {
+        return doubleValues.get(key);
     }
 
     /**
