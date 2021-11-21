@@ -51,6 +51,10 @@ public class ParticleGroup implements IParticleGroup {
         return false;
     }
 
+    public boolean addParticle(ParticleStyle style){
+        return particleStyleList.add(style);
+    }
+
     public void display(){
         for (Player p : Bukkit.getOnlinePlayers()){
             for (IParticleStyle ps : particleStyleList){
