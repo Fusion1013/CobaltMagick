@@ -90,6 +90,8 @@ public final class Cobalt extends JavaPlugin implements CobaltPlugin {
         cm.registerSubCommand(this, WarpCreateCommand.class);
         cm.registerSubCommand(this, WarpInfoCommand.class);
         cm.registerSubCommand(this, WarpListCommand.class);
+        cm.registerSubCommand(this, WarpTpCommand.class);
+        cm.registerSubCommand(this, WarpDeleteCommand.class);
     }
 
     public void reload(){
