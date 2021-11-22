@@ -29,15 +29,17 @@ public class SQLite extends Database {
             ");";
 
     public String SQLiteCreateWarpsTable = "CREATE TABLE IF NOT EXISTS warps (" +
-            "`id` varchar(32) NOT NULL," +
+            "`id` int(11) NOT NULL," +
             "`name` varchar(32) NOT NULL," +
             "`owner_uuid` varchar(32) NOT NULL," +
             "`world` varchar(32) NOT NULL," +
-            "`pos_x` float(24) NOT NULL," +
-            "`pos_y` float(24) NOT NULL," +
-            "`pos_z` float(24) NOT NULL," +
+            "`pos_x` real NOT NULL," +
+            "`pos_y` real NOT NULL," +
+            "`pos_z` real NOT NULL," +
             "`privacy` varchar(32) NOT NULL," +
-            "CHECK (privacy in ('public','private'))";
+            "PRIMARY KEY (`name`)," +
+            "CHECK (privacy in ('public','private'))" +
+            ");";
     
 
     public Connection getSQLConnection(){

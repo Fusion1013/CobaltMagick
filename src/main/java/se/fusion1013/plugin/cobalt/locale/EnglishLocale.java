@@ -21,22 +21,28 @@ public class EnglishLocale implements Locale {
                 this.put("#0", "Plugin Message Prefix");
                 this.put("prefix", "&7[<g:#00aaaa:#0066aa>Cobalt&7] ");
 
-                this.put("#1", "Emitter Command Usage Messages");
-                this.put("command-usage-emitter-addparticle", "&e/emitter addparticle <group> <particle> <style> [offset]");
-                this.put("command-usage-emitter-create", "&e/emitter create <name> <<x> <y> <z>>");
-                this.put("command-usage-emitter-delete", "&e/emitter delete <name|id>");
-                this.put("command-usage-emitter-flag", "&e/emitter flag <name|id> <flag>");
-                this.put("command-usage-emitter-info", "&e/emitter info <name|id>");
-                this.put("command-usage-emitter-list", "&e/emitter list");
-                this.put("command-usage-emitter-move", "&e/emitter move <name|id> <position>");
-                this.put("command-usage-emitter-removeparticle", "&e/emitter removeparticle <id>");
+                this.put("#1", "General Command Stuff");
+                this.put("commands.error.incorrect_syntax", "&eIncorrect Syntax");
 
-                this.put("#2", "Emitter Command Success Messages");
-                this.put("command-success-emitter-create", "&eCreated new emitter. &eName: &b%name% &eLocation: &b%x%&ex &b%y%&ey &b%z%&ez");
+                this.put("#2", "Warp Command");
+                this.put("commands.warp.error.warp_not_found", "&eWarp &b%name% &enot found");
+                this.put("commands.warp.create.error.invalid_name", "&eInvalid Name: &b%name%");
+                this.put("commands.warp.create.error.name_already_exists", "&eName Already Exists: &b%name%");
+                this.put("commands.warp.create.info.created_warp", "&eCreated Warp &b%name%");
 
-                this.put("#3", "Scenario Command Usage Messages");
-                this.put("command-usage-scenario-create", "/scenario create <name> [data]");
-                this.put("command-usage-scenario-start", "/scenario start <event>");
+                this.put("commands.warp.info.header", "&eInformation for Warp &b%name%&e:");
+                this.put("commands.warp.info.detail.owner", "&eOwner: &b%owner%");
+                this.put("commands.warp.info.detail.world", "&eWorld: &b%world%");
+                this.put("commands.warp.info.detail.location", "&eLocation: &b%x%&e, &b%y%&e, &b%z%");
+                this.put("commands.warp.info.detail.distance", "&eDistance: &b%distance% &eblocks");
+                this.put("commands.warp.info.detail.privacy", "&ePrivacy: &b%privacy%");
+
+                this.put("commands.warp.list.header", "&eDisplaying All Available Warps:");
+                this.put("commands.warp.list.entry", "&b%name% &e- &b%x%&e, &b%y%&e, &b%z%&e in &b%world%");
+
+                this.put("commands.warp.teleport.success", "&eTeleported to &b%name%");
+
+                this.put("commands.warp.delete.deleted_warps", "&eDeleted &b%count% &ewarp(s) with the name &b%name%");
 
                 this.put("#10", "Misc");
                 this.put("command-not-implemented", "&eCommand not yet implemented");
@@ -47,14 +53,6 @@ public class EnglishLocale implements Locale {
                 this.put("list-item-name", "&eName: &b%name%");
                 this.put("list-item-location", "&eLocation: &b%x%&ex &b%y%&ey &b%z%&ez &eWorld: &b%world%");
                 this.put("list-item-id-name-location", "&e[&b%id%&e] &eName: &b%name% &eLocation: &b%x%&ex &b%y%&ey &b%z%&ez");
-
-                // DEPRECATED --
-                this.put("list-emitter-groups", "<g:#00aaaa:#0066aa>------ Available Emitters ------");
-                this.put("list-emitter-group-output", "&e[&b%id%&e] &eName: &b%name% &eLocation: &b%x%&ex &b%y%&ey &b%z%&ez");
-                this.put("list-scenarios", "<g:#00aaaa:#0066aa>------ Available Scenarios ------");
-                this.put("list-scenarios-output", "&e[&b%id%&e] &eName: &b%name% &eLocation: &b%x%&ex &b%y%&ey &b%z%&ez &eWorld: &b%world%");
-                // --DEPRECATED
-
 
                 this.put("gradient", "<g:#ff1100:#00ff1e>GRADIENT");
             }

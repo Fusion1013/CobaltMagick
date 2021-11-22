@@ -138,8 +138,17 @@ public abstract class MainCommand extends Command implements CobaltCommand {
         return validate(sender, args);
     }
 
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args){
-        // TODO
-        return new ArrayList<String>();
+    public List<String> tabComplete(CommandSender sender, String alias, String[] args){
+        List<String> tabComplete = new ArrayList<>();
+        if (!subCommands.isEmpty()){
+            for(SubCommand sc : subCommands.values()){
+
+                // TODO: Returns the wrong tab completion if misspelled
+                if (sc.getCommandName().equalsIgnoreCase(args[0])) return sc.tabComplete(sender, alias, (String[]) ArrayUtils.remove(args, 0));
+
+                tabComplete.add(sc.getCommandName());
+            }
+        }
+        return tabComplete;
     }
 }

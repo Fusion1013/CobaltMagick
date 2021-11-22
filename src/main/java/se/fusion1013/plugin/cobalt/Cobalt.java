@@ -7,6 +7,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import se.fusion1013.plugin.cobalt.commands.CGiveCommand;
 import se.fusion1013.plugin.cobalt.commands.HelloWorldCommand;
+import se.fusion1013.plugin.cobalt.commands.*;
 import se.fusion1013.plugin.cobalt.database.Database;
 import se.fusion1013.plugin.cobalt.database.SQLite;
 import se.fusion1013.plugin.cobalt.gui.AbstractGUIListener;
@@ -46,7 +47,7 @@ public final class Cobalt extends JavaPlugin implements CobaltPlugin {
         return INSTANCE;
     }
 
-    public Database getRDatabese() { return this.db; }
+    public Database getRDatabase() { return this.db; }
 
     /**
      * Gets a manager instance
@@ -75,7 +76,14 @@ public final class Cobalt extends JavaPlugin implements CobaltPlugin {
         CommandManager cm = getManager(CommandManager.class);
 
         cm.registerMainCommand(this, HelloWorldCommand.class);
+
         cm.registerMainCommand(this, CGiveCommand.class);
+        cm.registerMainCommand(this, WarpCommand.class);
+        cm.registerSubCommand(this, WarpCreateCommand.class);
+        cm.registerSubCommand(this, WarpInfoCommand.class);
+        cm.registerSubCommand(this, WarpListCommand.class);
+        cm.registerSubCommand(this, WarpTpCommand.class);
+        cm.registerSubCommand(this, WarpDeleteCommand.class);
     }
 
     public void reload(){
