@@ -30,10 +30,27 @@ public abstract class Database {
 
     public abstract void load();
 
+    // TODO: Switch to prepared statements
+
+    /**
+     * Deletes the warps with the given name
+     * @param name the name of the warp(s)
+     * @return the number of deleted warps
+     */
+    public int deleteWarp(String name){
+        try {
+            Connection conn = getSQLConnection();
+            PreparedStatement st = conn.prepareStatement("DELETE FROM warps WHERE name = ?");
+            st.setString(1, name);
+            return st.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     public List<Warp> getWarps(){
         String sql = "SELECT * FROM warps";
-
-        plugin.getLogger().info("Getting warps...");
 
         try {
             Connection conn = getSQLConnection();
@@ -53,8 +70,6 @@ public abstract class Database {
 
                 Warp warp = new Warp(name, uuid, new Location(world, x, y, z));
                 warp.setPrivacyLevel(privacy);
-
-                plugin.getLogger().info("Name: " + name + ", UUID: " + uuid + ", World: " + world + ", Location: " + x + ", " + y + ", " + z);
 
                 warps.add(warp);
             }
@@ -133,96 +148,6 @@ public abstract class Database {
 
         plugin.getLogger().info("Inserted new warp '" + name + "' into database. " + rowsInserted + " rows inserted");
     }
-
-    public Integer getTokens(String string){
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            conn = getSQLConnection();
-            ps = conn.prepareStatement("SELECT * FROM " + table + " WHERE player = '" + string + "';");
-
-            rs = ps.executeQuery();
-            while (rs.next()){
-                if (rs.getString("player").equalsIgnoreCase(string.toLowerCase())){
-                    return rs.getInt("kills");
-                }
-            }
-        } catch (SQLException ex){
-            plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
-        } finally {
-            try {
-                if (ps != null) ps.close();
-                if (conn != null) conn.close();
-            } catch (SQLException ex){
-                plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
-            }
-        }
-        return 0;
-    }
-
-    public Integer getTotal(String string){
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            conn = getSQLConnection();
-            ps = conn.prepareStatement("SELECT * FROM " + table + " WHERE player = '" + string + "';");
-
-            rs = ps.executeQuery();
-            while (rs.next()){
-                if (rs.getString("player").equalsIgnoreCase(string.toLowerCase())){
-                    return rs.getInt("total");
-                }
-            }
-        } catch (SQLException ex){
-            plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
-        } finally {
-            try {
-                if (ps != null) ps.close();
-                if (conn != null) conn.close();
-            } catch (SQLException ex){
-                plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
-            }
-        }
-        return 0;
-    }
-
-    public void setTokens(Player player, Integer tokens, Integer total) {
-        Connection conn = null;
-        PreparedStatement ps = null;
-        try {
-            conn = getSQLConnection();
-            ps = conn.prepareStatement("REPLACE INTO " + table + " (player,kills,total) VALUES(?,?,?)"); // IMPORTANT. In SQLite class, We made 3 colums. player, Kills, Total.
-            ps.setString(1, player.getName().toLowerCase());                                             // YOU MUST put these into this line!! And depending on how many
-            // colums you put (say you made 5) All 5 need to be in the brackets
-            // Seperated with comma's (,) AND there needs to be the same amount of
-            // question marks in the VALUES brackets. Right now i only have 3 colums
-            // So VALUES (?,?,?) If you had 5 colums VALUES(?,?,?,?,?)
-
-            ps.setInt(2, tokens); // This sets the value in the database. The colums go in order. Player is ID 1, kills is ID 2, Total would be 3 and so on. you can use
-            // setInt, setString and so on. tokens and total are just variables sent in, You can manually send values in as well. p.setInt(2, 10) <-
-            // This would set the players kills instantly to 10. Sorry about the variable names, It sets their kills to 10 i just have the variable called
-            // Tokens from another plugin :/
-            ps.setInt(3, total);
-            ps.executeUpdate();
-            return;
-        } catch (SQLException ex) {
-            plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
-        } finally {
-            try {
-                if (ps != null)
-                    ps.close();
-                if (conn != null)
-                    conn.close();
-            } catch (SQLException ex) {
-                plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
-            }
-        }
-        return;
-    }
-
 
     public void close(PreparedStatement ps,ResultSet rs){
         try {
