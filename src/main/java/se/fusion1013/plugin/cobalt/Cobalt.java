@@ -5,10 +5,13 @@ import org.bukkit.command.CommandMap;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import se.fusion1013.plugin.cobalt.commands.CGiveCommand;
 import se.fusion1013.plugin.cobalt.commands.HelloWorldCommand;
 import se.fusion1013.plugin.cobalt.database.Database;
 import se.fusion1013.plugin.cobalt.database.SQLite;
+import se.fusion1013.plugin.cobalt.gui.AbstractGUIListener;
 import se.fusion1013.plugin.cobalt.manager.*;
+import se.fusion1013.plugin.cobalt.wand.OpenWandEvent;
 
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -31,21 +34,7 @@ public final class Cobalt extends JavaPlugin implements CobaltPlugin {
     @Override
     public void onEnable() {
         getLogger().info("Starting up Cobalt...");
-        registerCobaltPlugin(this);
-
-        /*
-        // Create Data Folder
-        if (!this.getDataFolder().exists()){
-            try {
-                this.getDataFolder().mkdir();
-            } catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-         */
-
-        // Instantiates all managers
-        this.reload();
+        registerCobaltPlugin();
     }
 
     @Override
@@ -86,6 +75,7 @@ public final class Cobalt extends JavaPlugin implements CobaltPlugin {
         CommandManager cm = getManager(CommandManager.class);
 
         cm.registerMainCommand(this, HelloWorldCommand.class);
+        cm.registerMainCommand(this, CGiveCommand.class);
     }
 
     public void reload(){
@@ -102,26 +92,27 @@ public final class Cobalt extends JavaPlugin implements CobaltPlugin {
     /**
      * Loads and registers the given <code>CobaltPlugin</code>.
      *
-     * @param plugin The <code>CobaltPlugin</code> to register.
      * @return True if the plugin was successfully registered.
      */
-    public boolean registerCobaltPlugin(CobaltPlugin plugin){
-        if (cobaltPlugins.add(plugin)){
-            getLogger().info("Registering commands for " + plugin.getName() + "...");
-            plugin.registerCommands();
+    public boolean registerCobaltPlugin(){
+        getLogger().info("Registering commands for " + getName() + "...");
+        registerCommands();
 
-            // Register settings
+        // Register settings
 
-            // Instantiate Database
-            // TODO: Make plugin specific
-            getLogger().info("Instantiating database for " + plugin.getName() + "...");
-            this.db = new SQLite(this);
-            this.db.load();
+        // Instantiate Database
+        getLogger().info("Instantiating database for " + getName() + "...");
+        this.db = new SQLite(this);
+        this.db.load();
 
-            // Register listeners
-        }
+        // Register listeners
+        getServer().getPluginManager().registerEvents(new AbstractGUIListener(), this);
+        getServer().getPluginManager().registerEvents(new OpenWandEvent(), this);
 
-        getLogger().info("Successfully registered " + plugin.getName() + ".");
+        // Instantiates all managers
+        this.reload();
+
+        getLogger().info("Successfully registered " + getName() + ".");
         return true;
     }
 }
