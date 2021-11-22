@@ -1,9 +1,5 @@
 package se.fusion1013.plugin.cobalt;
 
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandMap;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import se.fusion1013.plugin.cobalt.commands.CGiveCommand;
 import se.fusion1013.plugin.cobalt.commands.HelloWorldCommand;
@@ -14,15 +10,12 @@ import se.fusion1013.plugin.cobalt.gui.AbstractGUIListener;
 import se.fusion1013.plugin.cobalt.manager.*;
 import se.fusion1013.plugin.cobalt.wand.OpenWandEvent;
 
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 public final class Cobalt extends JavaPlugin implements CobaltPlugin {
 
     private static Cobalt INSTANCE;
-    private static Set<CobaltPlugin> cobaltPlugins = new HashSet<CobaltPlugin>();
     private static Database db;
 
     private final Map<Class<?>, Manager> managers;
@@ -47,6 +40,11 @@ public final class Cobalt extends JavaPlugin implements CobaltPlugin {
         return INSTANCE;
     }
 
+    /**
+     * Gets the database
+     *
+     * @return the databse
+     */
     public Database getRDatabase() { return this.db; }
 
     /**
@@ -72,6 +70,9 @@ public final class Cobalt extends JavaPlugin implements CobaltPlugin {
         }
     }
 
+    /**
+     * Registers all Cobalt commands
+     */
     public void registerCommands(){
         CommandManager cm = getManager(CommandManager.class);
 
@@ -86,7 +87,10 @@ public final class Cobalt extends JavaPlugin implements CobaltPlugin {
         cm.registerSubCommand(this, WarpDeleteCommand.class);
     }
 
-    public void reload(){
+    /**
+     * Reloads all Cobalt managers
+     */
+    public void reloadManagers(){
         this.managers.values().forEach(Manager::disable);
 
         this.managers.values().forEach(Manager::reload);
@@ -117,8 +121,8 @@ public final class Cobalt extends JavaPlugin implements CobaltPlugin {
         getServer().getPluginManager().registerEvents(new AbstractGUIListener(), this);
         getServer().getPluginManager().registerEvents(new OpenWandEvent(), this);
 
-        // Instantiates all managers
-        this.reload();
+        // Reloads all managers
+        this.reloadManagers();
 
         getLogger().info("Successfully registered " + getName() + ".");
         return true;
