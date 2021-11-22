@@ -21,15 +21,9 @@ public class SQLite extends Database {
         dbname = plugin.getConfig().getString("SQLite.Filename", "cobalt");
     }
 
-    public String SQLiteCreateTokensTable = "CREATE TABLE IF NOT EXISTS table_name (" +
-            "`player` varchar(32) NOT NULL," +
-            "`kills` int(11) NOT NULL," +
-            "`total` int(11) NOT NULL," +
-            "PRIMARY KEY (`player`)" +
-            ");";
-
+    // TODO: ID is currently not implemented
     public String SQLiteCreateWarpsTable = "CREATE TABLE IF NOT EXISTS warps (" +
-            "`id` int(11) NOT NULL," +
+            "`id` INTEGER NOT NULL," +
             "`name` varchar(32) NOT NULL," +
             "`owner_uuid` varchar(32) NOT NULL," +
             "`world` varchar(32) NOT NULL," +
@@ -39,6 +33,28 @@ public class SQLite extends Database {
             "`privacy` varchar(32) NOT NULL," +
             "PRIMARY KEY (`name`)," +
             "CHECK (privacy in ('public','private'))" +
+            ");";
+
+    public String SQLiteCreateWandsTable = "CREATE TABLE IF NOT EXISTS wands (" +
+            "`id` INTEGER NOT NULL," +
+            "`shuffle` boolean NOT NULL," +
+            "`spells_per_cast` int(11) NOT NULL," +
+            "`cast_delay` real NOT NULL," +
+            "`recharge_time` real NOT NULL," +
+            "`mana_max` int(11) NOT NULL," +
+            "`mana_charge_speed` int(11) NOT NULL," +
+            "`capacity` int(11) NOT NULL," +
+            "`spread` real NOT NULL," +
+            "`wand_tier` int(11) NOT NULL," +
+            "PRIMARY KEY (`id`)" +
+            ");"; // Always cast spells and spells will be stored in a separate table
+
+    public String SQLiteCreateWandSpellsTable = "CREATE TABLE IF NOT EXISTS wand_spells (" +
+            "`wand_id` int(11) NOT NULL," +
+            "`spell_id` INTEGER NOT NULL," +
+            "`is_always_cast` boolean NOT NULL," +
+            "PRIMARY KEY (spell_id)," +
+            "FOREIGN KEY (wand_id) REFERENCES wands(id)" +
             ");";
     
 
@@ -70,8 +86,9 @@ public class SQLite extends Database {
     }
 
     public void load(){
-        executeString(SQLiteCreateTokensTable); // TEST TABLE // TODO: REMOVE WHEN COMPLETED
         executeString(SQLiteCreateWarpsTable);
+        executeString(SQLiteCreateWandsTable);
+        executeString(SQLiteCreateWandSpellsTable);
     }
 
     /**
