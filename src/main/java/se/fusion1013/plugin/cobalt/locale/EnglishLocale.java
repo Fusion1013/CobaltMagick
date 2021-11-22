@@ -25,7 +25,7 @@ public class EnglishLocale implements Locale {
                 this.put("commands.error.incorrect_syntax", "&eIncorrect Syntax");
 
                 this.put("#2", "Warp Command");
-                this.put("commands.warp.error.warp_not_found", "&eWarp &b%name% &bnot found");
+                this.put("commands.warp.error.warp_not_found", "&eWarp &b%name% &enot found");
                 this.put("commands.warp.create.error.invalid_name", "&eInvalid Name: &b%name%");
                 this.put("commands.warp.create.error.name_already_exists", "&eName Already Exists: &b%name%");
                 this.put("commands.warp.create.info.created_warp", "&eCreated Warp &b%name%");
@@ -39,6 +39,10 @@ public class EnglishLocale implements Locale {
 
                 this.put("commands.warp.list.header", "&eDisplaying All Available Warps:");
                 this.put("commands.warp.list.entry", "&b%name% &e- &b%x%&e, &b%y%&e, &b%z%&e in &b%world%");
+
+                this.put("commands.warp.teleport.success", "&eTeleported to &b%name%");
+
+                this.put("commands.warp.delete.deleted_warps", "&eDeleted &b%count% &ewarp(s) with the name &b%name%");
 
                 this.put("#10", "Misc");
                 this.put("command-not-implemented", "&eCommand not yet implemented");
