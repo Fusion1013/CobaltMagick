@@ -1,9 +1,11 @@
 package se.fusion1013.plugin.cobalt.spells;
 
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import se.fusion1013.plugin.cobalt.wand.Wand;
 
 public interface ISpell {
-    void castSpell(Wand wand);
+    void castSpell(Wand wand, Player player);
     void tick();
 
     // Spell attributes
@@ -21,6 +23,10 @@ public interface ISpell {
     double getLifetimeModifier(); // A modifier to the lifetime of the affected projectile
     double getCriticalChance(); // The chance that a spell will critically strike, dealing 5 times the usual damage, and dealing even further damage if critical chance is above 100%
 
+    String getSpellName();
     boolean getHasCast(); // True if the spell has been cast. Resets when the wand recharges
     int getAddCasts(); // Increases the number of spells the wand can cast
+    int getId();
+    String getFormattedName();
+    int getCustomModelData();
 }
