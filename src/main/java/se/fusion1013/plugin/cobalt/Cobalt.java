@@ -8,9 +8,11 @@ import se.fusion1013.plugin.cobalt.database.Database;
 import se.fusion1013.plugin.cobalt.database.SQLite;
 import se.fusion1013.plugin.cobalt.gui.AbstractGUIListener;
 import se.fusion1013.plugin.cobalt.manager.*;
-import se.fusion1013.plugin.cobalt.wand.OpenWandEvent;
+import se.fusion1013.plugin.cobalt.wand.Wand;
+import se.fusion1013.plugin.cobalt.wand.WandEvents;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public final class Cobalt extends JavaPlugin implements CobaltPlugin {
@@ -27,7 +29,6 @@ public final class Cobalt extends JavaPlugin implements CobaltPlugin {
 
     @Override
     public void onEnable() {
-        getLogger().info("Starting up Cobalt...");
         registerCobaltPlugin();
     }
 
@@ -79,6 +80,9 @@ public final class Cobalt extends JavaPlugin implements CobaltPlugin {
         cm.registerMainCommand(this, HelloWorldCommand.class);
 
         cm.registerMainCommand(this, CGiveCommand.class);
+        cm.registerSubCommand(this, CGiveSpellCommand.class);
+        cm.registerSubCommand(this, CGiveWandCommand.class);
+
         cm.registerMainCommand(this, WarpCommand.class);
         cm.registerSubCommand(this, WarpCreateCommand.class);
         cm.registerSubCommand(this, WarpInfoCommand.class);
@@ -107,22 +111,28 @@ public final class Cobalt extends JavaPlugin implements CobaltPlugin {
      * @return True if the plugin was successfully registered.
      */
     public boolean registerCobaltPlugin(){
-        getLogger().info("Registering commands for " + getName() + "...");
+        getLogger().info("Registering commands...");
         registerCommands();
 
         // Register settings
 
         // Instantiate Database
-        getLogger().info("Instantiating database for " + getName() + "...");
+        getLogger().info("Instantiating Database...");
         this.db = new SQLite(this);
         this.db.load();
 
         // Register listeners
+        getLogger().info("Registering Listeners...");
         getServer().getPluginManager().registerEvents(new AbstractGUIListener(), this);
-        getServer().getPluginManager().registerEvents(new OpenWandEvent(), this);
+        getServer().getPluginManager().registerEvents(new WandEvents(), this);
 
         // Reloads all managers
+        getLogger().info("Reloading Managers...");
         this.reloadManagers();
+
+        // Load wand cache
+        getLogger().info("Loading Wand Cache from Database...");
+        Wand.loadCacheFromDatabase();
 
         getLogger().info("Successfully registered " + getName() + ".");
         return true;
