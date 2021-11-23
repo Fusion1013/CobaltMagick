@@ -2,6 +2,7 @@ package se.fusion1013.plugin.cobalt.util;
 
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -28,7 +29,7 @@ public final class HexUtils {
      * @param sender The CommandSender to send to
      * @param message The message to send
      */
-    public static void sendMessage(CommandSender sender, String message){
+    public static void sendMessage(Player sender, String message){
         sender.sendMessage(colorify(message));
     }
 
