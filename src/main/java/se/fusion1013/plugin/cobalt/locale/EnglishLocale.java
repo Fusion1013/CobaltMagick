@@ -44,6 +44,11 @@ public class EnglishLocale implements Locale {
 
                 this.put("commands.warp.delete.deleted_warps", "&eDeleted &b%count% &ewarp(s) with the name &b%name%");
 
+                this.put("#3", "Wand");
+                this.put("wand.spell.cast.no_mana", "&eWand is out of mana");
+                this.put("wand.spell.cast.cast_delay", "&eCast delay");
+                this.put("wand.spell.cast.recharge_time", "&eWand is still recharging");
+
                 this.put("#10", "Misc");
                 this.put("command-not-implemented", "&eCommand not yet implemented");
                 this.put("command-unknown", "&eUnknown command");
