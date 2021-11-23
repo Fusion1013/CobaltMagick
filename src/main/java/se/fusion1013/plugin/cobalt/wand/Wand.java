@@ -1,13 +1,52 @@
 package se.fusion1013.plugin.cobalt.wand;
 
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Sound;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import se.fusion1013.plugin.cobalt.Cobalt;
+import se.fusion1013.plugin.cobalt.manager.LocaleManager;
 import se.fusion1013.plugin.cobalt.spells.ISpell;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Wand {
+
+    // Cache
+    static List<Wand> wandCache = new ArrayList<>();
+
+    /**
+     * Adds a wand to the cache. This should always be done on plugin load for all wands in the database
+     *
+     * @param wand the wand to add to the cache
+     */
+    public static void addWandToCache(Wand wand) { wandCache.add(wand); }
+
+    /**
+     * Gets a specific wand from the cache
+     *
+     * @param id the id of the wand to get
+     * @return a wand or null
+     */
+    public static Wand getWandFromCache(int id) {
+        for (Wand wand : wandCache) {
+            if (wand.getId() == id) return wand;
+        }
+        return null;
+    }
+
+    /**
+     * Gets all wands in the database and adds them to the cache for easy retrieval
+     */
+    public static void loadCacheFromDatabase() {
+        List<Wand> wandsToCache = Cobalt.getInstance().getRDatabase().getWands();
+        wandCache = new ArrayList<>(wandsToCache);
+    }
 
     // Shown Properties
     boolean shuffle;
@@ -30,6 +69,17 @@ public class Wand {
     int wandTier;
     int wandId; // This should be unique to all wands
 
+    // Wand Key
+
+    static NamespacedKey wandKey = new NamespacedKey(Cobalt.getInstance(), "wand_id");
+
+    /**
+     * Returns the wand key
+     *
+     * @return wand key
+     */
+    public static NamespacedKey getWandKey() { return wandKey; }
+
     // Stored Spells
     List<ISpell> spells = new ArrayList<>();
 
@@ -48,26 +98,55 @@ public class Wand {
         this.currentMana = manaMax;
     }
 
-    // TODO: IMPLEMENT A WAND CACHE. CALLING THE DATABASE EVERY TIME A WAND IS USED IS EXTREMELY EXPENSIVE
+    public void castSpells(Player p){
+        CastResult result = castSpells(p, false);
 
+        LocaleManager localeManager = LocaleManager.getInstance();
+        switch (result){
+            case CAST_DELAY:
+                localeManager.sendMessage(p, "wand.spell.cast.cast_delay");
+                p.playSound(p.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 1, 1);
+                break;
+            case RECHARGE_TIME:
+                localeManager.sendMessage(p, "wand.spell.cast.recharge_time");
+                p.playSound(p.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 1, 1);
+                break;
+            case NO_MANA:
+                localeManager.sendMessage(p, "wand.spell.cast.no_mana");
+                p.playSound(p.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 1, 1);
+                break;
+            case SUCCESS:
+                break;
+        }
+    }
+
+    // TODO: Replace chat messages with something else
     /**
      * Cast the next spells in the wand
      * @return The result of the casting
      */
-    public CastResult cast(){
+    private CastResult castSpells(Player p, boolean update){
+        Cobalt.getInstance().getLogger().info("Casting spells in wand...");
+        Cobalt.getInstance().getLogger().info("There are currently " + spells.size() + " spells in this wand");
+        int spellsCast = 0;
 
         // Check if the wand is on cooldown
-        if (castCooldown > 0) return CastResult.CAST_DELAY;
-        else if (rechargeCooldown > 0) return CastResult.RECHARGE_TIME;
+        if (castCooldown > 0) {
+            return CastResult.CAST_DELAY;
+        }
+        else if (rechargeCooldown > 0) {
+            return CastResult.RECHARGE_TIME;
+        }
 
         // Cast all the always cast spells. These spells get cast for free
         for (ISpell s : alwaysCast){
-            s.castSpell(this);
+            s.castSpell(this, p);
         }
 
         int numSpellsToCast = spellsPerCast;
         int manaUsed = 0;
         for (int i = 0; i < numSpellsToCast; i++){
+            if (spells.size() <= i) break;
             ISpell spellToCast = spells.get(i);
 
             // If the spell has already been cast, don't cast it again and move on to the next spell
@@ -76,13 +155,20 @@ public class Wand {
             } else {
                 // Check Mana
                 manaUsed += spellToCast.getManaDrain();
-                if (manaUsed > currentMana) return CastResult.NO_MANA;
+                if (manaUsed > currentMana) {
+                    currentMana = 0;
+                    return CastResult.NO_MANA;
+                }
 
                 // Cast Spell
                 numSpellsToCast += spellToCast.getAddCasts();
-                spellToCast.castSpell(this);
+                spellsCast++;
+                spellToCast.castSpell(this, p);
             }
         }
+
+        currentMana -= manaUsed;
+        Cobalt.getInstance().getLogger().info(spellsCast + " spells cast");
 
         return CastResult.SUCCESS;
     }
@@ -98,15 +184,41 @@ public class Wand {
         return true;
     }
 
-    public void setSpells(List<ISpell> spells){
-        this.spells = spells;
-    }
-
     public enum CastResult{
         SUCCESS,
         RECHARGE_TIME,
         CAST_DELAY,
         NO_MANA
+    }
+
+    // ----- Getters / Setters -----
+
+    /**
+     * Retrieves a wand from the cache from the given ItemStack
+     * @param stack item to parse the wand from
+     * @return a wand from the cache. Null if no wand was found
+     */
+    public static Wand getWand(ItemStack stack) {
+        ItemMeta meta = stack.getItemMeta();
+        Integer wandId = meta.getPersistentDataContainer().get(wandKey, PersistentDataType.INTEGER);
+        if (wandId != null) {
+            return getWandFromCache(wandId);
+        }
+        return null;
+    }
+
+    public ItemStack getWandItem(){
+        ItemStack is = new ItemStack(Material.STICK, 1);
+        ItemMeta meta = is.getItemMeta();
+
+        NamespacedKey namespacedKey = new NamespacedKey(Cobalt.getInstance(), "wand_id");
+        meta.getPersistentDataContainer().set(namespacedKey, PersistentDataType.INTEGER, id);
+
+        meta.setDisplayName(ChatColor.WHITE + "" + ChatColor.BOLD + "Wand");
+        meta.setLore(getLore());
+
+        is.setItemMeta(meta);
+        return is;
     }
 
     public List<String> getLore(){
@@ -127,6 +239,14 @@ public class Wand {
 
         return lore;
     }
+
+    public void setSpells(List<ISpell> spells){
+        this.spells = spells;
+    }
+    public List<ISpell> getSpells() { return this.spells; }
+
+    public void setId(int id) { this.id = id; }
+    public int getId() { return id; }
 
     public boolean isShuffle() {
         return shuffle;
@@ -160,6 +280,7 @@ public class Wand {
         return spread;
     }
 
+    public void setAlwaysCast(List<ISpell> spells) { this.alwaysCast = spells; }
     public List<ISpell> getAlwaysCast() {
         return alwaysCast;
     }
