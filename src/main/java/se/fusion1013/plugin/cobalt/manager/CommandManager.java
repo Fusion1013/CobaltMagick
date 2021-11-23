@@ -4,8 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.SimplePluginManager;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import se.fusion1013.plugin.cobalt.Cobalt;
 import se.fusion1013.plugin.cobalt.commands.*;
 
@@ -57,8 +55,6 @@ public class CommandManager extends Manager {
             PluginCommand pluginCommand = getCommand(command.getCommandName(), plugin);
             pluginCommand.setAliases(command.getAliases());
             getCommandMap().register(plugin.getDescription().getName(), command);
-
-            plugin.getLogger().info("Registering Command: " + command.getCommandName());
 
         } catch (Exception ex){
             ex.printStackTrace();
@@ -130,8 +126,6 @@ public class CommandManager extends Manager {
             getCommandFromName(parentCommandName).registerSubCommand(command);
             String commandKey = parentCommandName + " " + command.getCommandName();
             cobaltCommands.put(commandKey, command);
-
-            plugin.getLogger().info("Registering Sub Command: " + command.getCommandName());
 
         } catch (Exception e){
             plugin.getLogger().severe("Possibly attempted to register a SubCommand before its parent!");
