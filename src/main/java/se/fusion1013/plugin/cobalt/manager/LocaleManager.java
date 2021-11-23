@@ -2,6 +2,7 @@ package se.fusion1013.plugin.cobalt.manager;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import se.fusion1013.plugin.cobalt.Cobalt;
 import se.fusion1013.plugin.cobalt.locale.EnglishLocale;
 import se.fusion1013.plugin.cobalt.util.HexUtils;
@@ -55,11 +56,20 @@ public class LocaleManager extends Manager {
         sender.sendMessage(getLocaleMessage("prefix") + getLocaleMessage(messageKey));
     }
 
-    private String parsePlacehodlers(CommandSender sender, String message){
-        return message;
+    public void sendMessage(Player player, String messageKey, StringPlaceholders stringPlaceholders){
+        String prefix = this.getLocaleMessage("prefix");
+        this.sendParsedMessage(player, prefix + this.getLocaleMessage(messageKey, stringPlaceholders));
+    }
+
+    public void sendMessage(Player player, String messageKey){
+        player.sendMessage(getLocaleMessage("prefix") + getLocaleMessage(messageKey));
+    }
+
+    private void sendParsedMessage(Player player, String message) {
+        HexUtils.sendMessage(player, message);
     }
 
     private void sendParsedMessage(CommandSender sender, String message){
-        HexUtils.sendMessage(sender, this.parsePlacehodlers(sender, message));
+        sendParsedMessage((Player)sender, message);
     }
 }
