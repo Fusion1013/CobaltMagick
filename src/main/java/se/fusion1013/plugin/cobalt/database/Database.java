@@ -3,7 +3,6 @@ package se.fusion1013.plugin.cobalt.database;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.entity.Player;
 import se.fusion1013.plugin.cobalt.Cobalt;
 import se.fusion1013.plugin.cobalt.spells.ISpell;
 import se.fusion1013.plugin.cobalt.spells.Spell;
@@ -31,10 +30,30 @@ public abstract class Database {
 
     public abstract void load();
 
-    // TODO: Switch to prepared statements
-    // TODO: Don't forget to close statements
-
     // ----- WANDS -----
+
+    /**
+     * Gets all wands that are currently in the database
+     *
+     * @return a list of wands
+     */
+    public List<Wand> getWands() {
+        List<Wand> wands = new ArrayList<>();
+        try {
+            Connection conn = getSQLConnection();
+            PreparedStatement stWand = conn.prepareStatement("SELECT * FROM wands");
+            ResultSet rsWand = stWand.executeQuery();
+
+            while (rsWand.next()) {
+                wands.add(getWandFromResult(rsWand));
+            }
+            plugin.getLogger().info("Loaded " + wands.size() + " wands from database");
+            stWand.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return wands;
+    }
 
     /**
      * Returns the wand with the given id
@@ -48,19 +67,38 @@ public abstract class Database {
             stWand.setInt(1, id);
             ResultSet rsWand = stWand.executeQuery();
 
-            boolean shuffle = rsWand.getBoolean("shuffle");
-            int spellsPerCast = rsWand.getInt("spells_per_cast");
-            double castDelay = rsWand.getDouble("cast_delay");
-            double rechargeTime = rsWand.getDouble("recharge_time");
-            int manaMax = rsWand.getInt("mana_max");
-            int manaChargeSpeed = rsWand.getInt("mana_charge_speed");
-            int capacity = rsWand.getInt("capacity");
-            double spread = rsWand.getDouble("spread");
-            int wandTier = rsWand.getInt("wand_tier");
-
+            Wand wand = getWandFromResult(rsWand);
             stWand.close();
 
-            PreparedStatement stSpells = conn.prepareStatement("SELECT * FROM wand_spells WHERE wand_id = ?");
+            return wand;
+
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    /**
+     * Gets a wand from a <code>ResultSet</code> and populates it with spells
+     *
+     * @param wandSet the <code>ResultSet</code> to extract information from
+     * @return a new wand
+     */
+    private Wand getWandFromResult(ResultSet wandSet) {
+        try {
+            int id = wandSet.getInt("id");
+            boolean shuffle = wandSet.getBoolean("shuffle");
+            int spellsPerCast = wandSet.getInt("spells_per_cast");
+            double castDelay = wandSet.getDouble("cast_delay");
+            double rechargeTime = wandSet.getDouble("recharge_time");
+            int manaMax = wandSet.getInt("mana_max");
+            int manaChargeSpeed = wandSet.getInt("mana_charge_speed");
+            int capacity = wandSet.getInt("capacity");
+            double spread = wandSet.getDouble("spread");
+            int wandTier = wandSet.getInt("wand_tier");
+
+            PreparedStatement stSpells = getSQLConnection().prepareStatement("SELECT * FROM wand_spells WHERE wand_id = ? ORDER BY slot ASC");
             stSpells.setInt(1, id);
             ResultSet rsSpells = stSpells.executeQuery();
 
@@ -69,19 +107,18 @@ public abstract class Database {
             while (rsSpells.next()){
                 int spellId = rsSpells.getInt("spell_id");
                 boolean isAlwaysCast = rsSpells.getBoolean("is_always_cast");
-                ISpell spell = Spell.getSpellFromID(spellId);
+                ISpell spell = Spell.getSpell(spellId);
                 if (isAlwaysCast) alwaysCast.add(spell);
                 else spellList.add(spell);
-
-                stSpells.close();
             }
+            stSpells.close();
 
             Wand wand = new Wand(shuffle, spellsPerCast, castDelay, rechargeTime, manaMax, manaChargeSpeed, capacity, spread, alwaysCast, wandTier);
             wand.setSpells(spellList);
+            wand.setId(id);
 
             return wand;
-
-        } catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
@@ -107,6 +144,9 @@ public abstract class Database {
         double spread = wand.getSpread();
         int wandTier = wand.getWandTier();
 
+        List<ISpell> alwaysCastSpells = wand.getAlwaysCast();
+        List<ISpell> spells = wand.getSpells();
+
         try {
             Connection conn = getSQLConnection();
             PreparedStatement st = conn.prepareStatement("INSERT INTO wands(shuffle, spells_per_cast, cast_delay, recharge_time, mana_max, mana_charge_speed, capacity, spread, wand_tier) VALUES(?,?,?,?,?,?,?,?,?)");
@@ -127,6 +167,10 @@ public abstract class Database {
             ResultSet rs2 = st2.executeQuery();
             int wandId = rs2.getInt("total");
             st2.close();
+
+            wand.setId(wandId);
+            updateWandSpells(wand);
+
             return wandId;
 
         } catch (SQLException e) {
@@ -134,6 +178,51 @@ public abstract class Database {
         }
 
         return -1;
+    }
+
+    /**
+     * Updates the stored wand spells within the database
+     *
+     * @param wand the wand with the spells to insert into the database
+     */
+    public void updateWandSpells(Wand wand){
+
+        try {
+            Connection conn = getSQLConnection();
+            PreparedStatement removeOldSpellsSt = conn.prepareStatement("DELETE FROM wand_spells WHERE wand_id = ?");
+            removeOldSpellsSt.setInt(1, wand.getId());
+            removeOldSpellsSt.executeUpdate();
+            removeOldSpellsSt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        List<ISpell> alwaysCastSpells = wand.getAlwaysCast();
+        List<ISpell> spells = wand.getSpells();
+
+        updateWandSpells(alwaysCastSpells, wand.getId(), true);
+        updateWandSpells(spells, wand.getId(), false);
+    }
+
+    private void updateWandSpells(List<ISpell> spells, int wandId, boolean alwaysCast){
+        try {
+            Connection conn = getSQLConnection();
+
+            for (int i = 0; i < spells.size(); i++){
+                ISpell currentSpell = spells.get(i);
+                PreparedStatement st = conn.prepareStatement("INSERT INTO wand_spells(wand_id, spell_id, is_always_cast, slot) VALUES(?,?,?,?)");
+
+                st.setInt(1, wandId);
+                st.setInt(2, currentSpell.getId());
+                st.setBoolean(3, alwaysCast);
+                st.setInt(4, i);
+
+                st.executeUpdate();
+                st.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     // ----- WARPS -----
@@ -148,7 +237,9 @@ public abstract class Database {
             Connection conn = getSQLConnection();
             PreparedStatement st = conn.prepareStatement("DELETE FROM warps WHERE name = ?");
             st.setString(1, name);
-            return st.executeUpdate();
+            int deletedWarps = st.executeUpdate();
+            st.close();
+            return deletedWarps;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -160,12 +251,10 @@ public abstract class Database {
      * @return a list of all warps
      */
     public List<Warp> getWarps(){
-        String sql = "SELECT * FROM warps";
-
         try {
             Connection conn = getSQLConnection();
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM warps");
+            ResultSet rs = stmt.executeQuery();
             List<Warp> warps = new ArrayList<>();
 
             while (rs.next()){
@@ -184,6 +273,8 @@ public abstract class Database {
                 warps.add(warp);
             }
 
+            stmt.close();
+
             return warps;
 
         } catch (SQLException e){
@@ -199,13 +290,11 @@ public abstract class Database {
      * @return a list of warps
      */
     public List<Warp> getWarpsByName(String name){
-        String sql = "SELECT * FROM warps WHERE name = '" + name + "'";
-
         try {
-
             Connection conn = getSQLConnection();
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM warps WHERE name = ?");
+            stmt.setString(1, name);
+            ResultSet rs = stmt.executeQuery();
 
             List<Warp> warps = new ArrayList<>();
 
@@ -223,6 +312,7 @@ public abstract class Database {
 
                 warps.add(warp);
             }
+            stmt.close();
 
             return warps;
         } catch (SQLException e){
@@ -242,13 +332,10 @@ public abstract class Database {
         Location location = warp.getLocation();
         String privacyLevel = warp.getPrivacyLevel().name().toLowerCase();
 
-        String sql = "INSERT INTO warps(id, name, owner_uuid, world, pos_x, pos_y, pos_z, privacy) VALUES(?,?,?,?,?,?,?,?)";
-
         int rowsInserted = 0;
-        PreparedStatement ps = null;
 
         try {
-            ps = getSQLConnection().prepareStatement(sql);
+            PreparedStatement ps = getSQLConnection().prepareStatement("INSERT INTO warps(id, name, owner_uuid, world, pos_x, pos_y, pos_z, privacy) VALUES(?,?,?,?,?,?,?,?)");
 
             ps.setInt(1, id);
             ps.setString(2, name);
@@ -260,6 +347,7 @@ public abstract class Database {
             ps.setString(8, privacyLevel);
 
             rowsInserted = ps.executeUpdate();
+            ps.close();
 
         } catch (SQLException e){
             plugin.getLogger().log(Level.FINE, "SQLException when inserting into database: ", e);
