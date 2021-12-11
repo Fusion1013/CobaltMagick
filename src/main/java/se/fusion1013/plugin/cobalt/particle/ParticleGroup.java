@@ -16,48 +16,14 @@ import java.util.List;
 public class ParticleGroup implements IParticleGroup {
 
     private List<ParticleStyle> particleStyleList; // List of particles in the group
-    private Location location; // The location of the emitter
-    private String name; // The name of the emitter
 
-    //---------- CONSTRUCTORS ----------
-
-    public ParticleGroup(String name, Location location){
-        particleStyleList = new ArrayList<>();
-        this.name = name;
-        this.location = location;
-    }
-
-    // ---------- PARTICLE LOGIC ----------
-
-    public boolean addParticle(String styleName){
-        return addParticle(styleName, Particle.FLAME, new Vector());
-    }
-
-    public boolean addParticle(String styleName, Particle particle){
-        return addParticle(styleName, particle, new Vector());
-    }
-
-    // TODO: Implement offset
-    public boolean addParticle(String styleName, Particle particle, Vector offset){
-        ParticleStyleManager particleStyleManager = Cobalt.getInstance().getManager(ParticleStyleManager.class);
-
-        ParticleStyle style = particleStyleManager.getStyleByName(styleName);
-
-        if (style != null) {
-            style.setParticle(particle);
-            particleStyleList.add(style);
-            return true;
-        }
-        return false;
-    }
-
-    public void display(){
+    public void display(Location location){
         for (Player p : Bukkit.getOnlinePlayers()){
             for (IParticleStyle ps : particleStyleList){
                 List<PParticle> particles = ps.getParticles(location);
 
                 for (PParticle particle : particles){
-                    p.spawnParticle(ps.getParticle(), particle.getLocation(), 1, particle.getxOff(), particle.getyOff(), particle.getzOff(), particle.getSpeed());
+                    p.spawnParticle(ps.getParticle(), particle.getLocation(), particle.getCount(), particle.getxOff(), particle.getyOff(), particle.getzOff(), particle.getSpeed());
                 }
             }
         }
@@ -65,28 +31,29 @@ public class ParticleGroup implements IParticleGroup {
 
     // ---------- GETTERS / SETTERS ----------
 
-    public String getName(){
-        if (name != null) return name + " (" + particleStyleList.size() + ")";
-        else return "ParticleGroup(" + particleStyleList.size() + ")";
-    }
+    public void setParticleStyles(List<ParticleStyle> styles) { this.particleStyleList = styles; }
 
-    public void setName(String name){
-        this.name = name;
-    }
+    /**
+     * Builds a new particle group
+     */
+    public static class ParticleGroupBuilder {
 
-    public Location getLocation(){
-        return this.location;
-    }
+        ParticleGroup obj;
+        List<ParticleStyle> styles = new ArrayList<>();
 
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
-    public List<String> getStyleDescriptions(){
-        List<String> descriptions = new ArrayList<>();
-        for (ParticleStyle style : particleStyleList){
-            descriptions.add(style.getInternalName());
+        public ParticleGroupBuilder(){
+            obj = new ParticleGroup();
         }
-        return descriptions;
+
+        public ParticleGroup build(){
+            obj.setParticleStyles(styles);
+
+            return obj;
+        }
+
+        public ParticleGroupBuilder addStyle(ParticleStyle style){
+            styles.add(style);
+            return this;
+        }
     }
 }
