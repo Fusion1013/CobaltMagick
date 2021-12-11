@@ -2,7 +2,6 @@ package se.fusion1013.plugin.cobalt;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import se.fusion1013.plugin.cobalt.commands.CGiveCommand;
-import se.fusion1013.plugin.cobalt.commands.HelloWorldCommand;
 import se.fusion1013.plugin.cobalt.commands.*;
 import se.fusion1013.plugin.cobalt.database.Database;
 import se.fusion1013.plugin.cobalt.database.SQLite;
@@ -12,7 +11,6 @@ import se.fusion1013.plugin.cobalt.wand.Wand;
 import se.fusion1013.plugin.cobalt.wand.WandEvents;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 public final class Cobalt extends JavaPlugin implements CobaltPlugin {
@@ -34,7 +32,8 @@ public final class Cobalt extends JavaPlugin implements CobaltPlugin {
 
     @Override
     public void onDisable() {
-        System.out.println("Cobalt Plugin Disabled");
+        getLogger().info("Saving wands...");
+        Wand.saveAllWandData();
     }
 
     public static Cobalt getInstance(){
@@ -75,20 +74,9 @@ public final class Cobalt extends JavaPlugin implements CobaltPlugin {
      * Registers all Cobalt commands
      */
     public void registerCommands(){
-        CommandManager cm = getManager(CommandManager.class);
-
-        cm.registerMainCommand(this, HelloWorldCommand.class);
-
-        cm.registerMainCommand(this, CGiveCommand.class);
-        cm.registerSubCommand(this, CGiveSpellCommand.class);
-        cm.registerSubCommand(this, CGiveWandCommand.class);
-
-        cm.registerMainCommand(this, WarpCommand.class);
-        cm.registerSubCommand(this, WarpCreateCommand.class);
-        cm.registerSubCommand(this, WarpInfoCommand.class);
-        cm.registerSubCommand(this, WarpListCommand.class);
-        cm.registerSubCommand(this, WarpTpCommand.class);
-        cm.registerSubCommand(this, WarpDeleteCommand.class);
+        WarpCommand.register();
+        GamemodeCommand.register();
+        CGiveCommand.register();
     }
 
     /**
@@ -103,6 +91,7 @@ public final class Cobalt extends JavaPlugin implements CobaltPlugin {
         this.getManager(ParticleManager.class);
         this.getManager(ParticleStyleManager.class);
         this.getManager(LaserManager.class);
+        this.getManager(SpellManager.class);
     }
 
     /**
@@ -111,15 +100,16 @@ public final class Cobalt extends JavaPlugin implements CobaltPlugin {
      * @return True if the plugin was successfully registered.
      */
     public boolean registerCobaltPlugin(){
-        getLogger().info("Registering commands...");
-        registerCommands();
+        // Instantiate Database
+        getLogger().info("Instantiating Database...");
+        db = new SQLite(this);
+        db.load();
 
         // Register settings
 
-        // Instantiate Database
-        getLogger().info("Instantiating Database...");
-        this.db = new SQLite(this);
-        this.db.load();
+        // Register Commands
+        getLogger().info("Registering commands...");
+        registerCommands();
 
         // Register listeners
         getLogger().info("Registering Listeners...");
