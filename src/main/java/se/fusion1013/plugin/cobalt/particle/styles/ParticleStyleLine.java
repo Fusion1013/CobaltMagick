@@ -13,11 +13,12 @@ public class ParticleStyleLine extends ParticleStyle implements IParticleStyle {
     private int density; // in particles/block
 
     public ParticleStyleLine(ParticleStyleLine target){
+        super(target);
         this.density = target.density;
     }
 
     public ParticleStyleLine(){
-        this(Particle.BARRIER);
+        this(Particle.FLAME);
     }
 
     public ParticleStyleLine(Particle particle) {
