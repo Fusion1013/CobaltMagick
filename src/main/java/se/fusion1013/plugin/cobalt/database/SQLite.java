@@ -57,7 +57,6 @@ public class SQLite extends Database {
             "PRIMARY KEY (wand_id, spell_id, slot)," +
             "FOREIGN KEY (wand_id) REFERENCES wands(id)" +
             ");";
-    
 
     public Connection getSQLConnection(){
         File dataFolder = new File(plugin.getDataFolder(), dbname + ".db");
