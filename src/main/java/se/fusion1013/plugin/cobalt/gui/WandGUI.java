@@ -29,8 +29,10 @@ public class WandGUI extends AbstractGUI {
 
         for (int i = 0; i < spells.size(); i++) {
             ISpell spell = spells.get(i);
-            ItemStack item = Spell.getSpellItem(spell.getSpellName());
-            setItem(i, item);
+            if (spell != null){
+                ItemStack item = spell.getSpellItem();
+                setItem(i, item);
+            }
         }
     }
 
