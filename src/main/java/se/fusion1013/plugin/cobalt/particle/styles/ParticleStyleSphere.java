@@ -12,12 +12,9 @@ public class ParticleStyleSphere extends ParticleStyle implements IParticleStyle
     private double radius;
 
     public ParticleStyleSphere(ParticleStyleSphere target){
+        super(target);
         this.density = target.density;
         this.radius = target.radius;
-    }
-
-    public ParticleStyleSphere(){
-        this(Particle.BARRIER);
     }
 
     public ParticleStyleSphere(Particle particle){
@@ -43,11 +40,15 @@ public class ParticleStyleSphere extends ParticleStyle implements IParticleStyle
             double dx = this.radius * Math.sin(phi) * Math.cos(theta);
             double dy = this.radius * Math.sin(phi) * Math.sin(theta);
             double dz = this.radius * Math.cos(phi);
-            particles.add(new PParticle(location.clone().add(dx, dy, dz)));
+            particles.add(new PParticle(location.clone().add(dx, dy, dz), offset.getX(), offset.getY(), offset.getZ(), speed, count));
         }
 
         return particles;
     }
+
+    public void setRadius(double radius) { this.radius = radius; }
+
+    public void setDensity(int density) { this.density = density; }
 
     @Override
     public String getName() {
@@ -62,5 +63,32 @@ public class ParticleStyleSphere extends ParticleStyle implements IParticleStyle
     @Override
     public ParticleStyle clone() {
         return new ParticleStyleSphere(this);
+    }
+
+    public static class ParticleStyleSphereBuilder extends ParticleStyleBuilder<ParticleStyleSphere, ParticleStyleSphere.ParticleStyleSphereBuilder> {
+
+        double radius = 1;
+        int density = 1; // TODO: Change default value
+
+        @Override
+        public ParticleStyleSphere build(){
+            obj.setRadius(radius);
+            obj.setDensity(density);
+            return super.build();
+        }
+
+        protected ParticleStyleSphere createObj() { return new ParticleStyleSphere(particle); }
+
+        protected ParticleStyleSphere.ParticleStyleSphereBuilder getThis() { return this; }
+
+        public ParticleStyleSphereBuilder setRadius(double radius){
+            this.radius = radius;
+            return getThis();
+        }
+
+        public ParticleStyleSphereBuilder setDensity(int density){
+            this.density = density;
+            return getThis();
+        }
     }
 }
