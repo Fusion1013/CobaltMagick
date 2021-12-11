@@ -10,6 +10,19 @@ import java.util.List;
 
 public class LaserManager extends Manager implements Runnable {
 
+    private static LaserManager INSTANCE = null;
+    /**
+     * Returns the object representing this <code>CommandManager</code>.
+     *
+     * @return The object of this class
+     */
+    public static LaserManager getInstance(){
+        if (INSTANCE == null){
+            INSTANCE = new LaserManager(Cobalt.getInstance());
+        }
+        return INSTANCE;
+    }
+
     private final List<SimpleLaser> lasers;
     private BukkitTask laserTask;
 

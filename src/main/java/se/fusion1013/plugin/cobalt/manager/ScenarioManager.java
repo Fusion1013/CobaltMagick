@@ -12,6 +12,19 @@ import java.util.List;
 
 public class ScenarioManager extends Manager {
 
+    private static ScenarioManager INSTANCE = null;
+    /**
+     * Returns the object representing this <code>CommandManager</code>.
+     *
+     * @return The object of this class
+     */
+    public static ScenarioManager getInstance(){
+        if (INSTANCE == null){
+            INSTANCE = new ScenarioManager(Cobalt.getInstance());
+        }
+        return INSTANCE;
+    }
+
     private List<Scenario> scenarios;
 
     public ScenarioManager(Cobalt cobalt) {

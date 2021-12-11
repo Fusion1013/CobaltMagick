@@ -14,6 +14,19 @@ import java.util.List;
 
 public class ParticleManager extends Manager implements Listener, Runnable {
 
+    private static ParticleManager INSTANCE = null;
+    /**
+     * Returns the object representing this <code>CommandManager</code>.
+     *
+     * @return The object of this class
+     */
+    public static ParticleManager getInstance(){
+        if (INSTANCE == null){
+            INSTANCE = new ParticleManager(Cobalt.getInstance());
+        }
+        return INSTANCE;
+    }
+
     private final List<ParticleGroup> particleGroups; // Contains all particle groups
     private BukkitTask particleTask;
 
@@ -35,7 +48,7 @@ public class ParticleManager extends Manager implements Listener, Runnable {
      * @return id of the ParticleGroup
      */
     public int createParticleGroup(String name, Location location){
-        particleGroups.add(new ParticleGroup(name, location));
+        particleGroups.add(new ParticleGroup());
         return particleGroups.size()-1; // The id of the new ParticleGroup is its position in the list
     }
 
@@ -54,7 +67,7 @@ public class ParticleManager extends Manager implements Listener, Runnable {
     @Override
     public void run() {
         for (ParticleGroup pg : particleGroups){
-            pg.display();
+            // pg.display();
         }
     }
 
@@ -78,9 +91,12 @@ public class ParticleManager extends Manager implements Listener, Runnable {
 
     public ParticleGroup getParticleGroupByName(String name){
         for (ParticleGroup group : particleGroups){
+            /*
             if (group.getName().equalsIgnoreCase(name)){
                 return group;
             }
+
+             */
         }
         return null;
     }

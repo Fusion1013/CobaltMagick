@@ -1,5 +1,6 @@
 package se.fusion1013.plugin.cobalt.manager;
 
+import org.bukkit.Particle;
 import se.fusion1013.plugin.cobalt.Cobalt;
 import se.fusion1013.plugin.cobalt.particle.styles.*;
 
@@ -7,12 +8,25 @@ import java.util.*;
 
 public class ParticleStyleManager extends Manager {
 
+    private static ParticleStyleManager INSTANCE = null;
+    /**
+     * Returns the object representing this <code>CommandManager</code>.
+     *
+     * @return The object of this class
+     */
+    public static ParticleStyleManager getInstance(){
+        if (INSTANCE == null){
+            INSTANCE = new ParticleStyleManager(Cobalt.getInstance());
+        }
+        return INSTANCE;
+    }
+
     public static final Map<String, ParticleStyle> INBUILT_PARTICLE_STYLES = new HashMap<>();
 
     public static final ParticleStyle CUBE = register(new ParticleStyleCube());
     public static final ParticleStyle ICOSPHERE = register(new ParticleStyleIcosphere());
     public static final ParticleStyle LINE = register(new ParticleStyleLine());
-    public static final ParticleStyle SPHERE = register(new ParticleStyleSphere());
+    public static final ParticleStyle SPHERE = register(new ParticleStyleSphere(Particle.FLAME));
 
     public ParticleStyleManager(Cobalt cobalt){
         super(cobalt);
