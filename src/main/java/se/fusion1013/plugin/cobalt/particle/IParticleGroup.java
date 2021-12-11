@@ -5,16 +5,5 @@ import org.bukkit.Particle;
 import org.bukkit.util.Vector;
 
 public interface IParticleGroup {
-
-    void display();
-
-    boolean addParticle(String style);
-    boolean addParticle(String style, Particle particle);
-    boolean addParticle(String style, Particle particle, Vector offset);
-
-    Location getLocation();
-    void setLocation(Location location);
-
-    String getName();
-    void setName(String name);
+    void display(Location location);
 }
