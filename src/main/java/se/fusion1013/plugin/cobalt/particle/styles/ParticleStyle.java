@@ -2,21 +2,26 @@ package se.fusion1013.plugin.cobalt.particle.styles;
 
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobalt.particle.PParticle;
 
 import java.util.List;
 
-public abstract class ParticleStyle implements IParticleStyle {
+public abstract class ParticleStyle implements IParticleStyle, Cloneable {
 
-    Particle particle;
+    Particle particle = Particle.END_ROD;
+    Vector offset;
+    int count;
+    double speed;
     String internalStyleName;
-
-    public ParticleStyle() {}
 
     public ParticleStyle(ParticleStyle target){
         if (target != null){
-            this.particle = target.particle;
-            this.internalStyleName = target.internalStyleName;
+            this.particle = target.getParticle();
+            this.internalStyleName = target.getInternalName();
+            this.offset = target.getOffset();
+            this.count = target.getCount();
+            this.speed = target.getSpeed();
         }
     }
 
@@ -28,6 +33,12 @@ public abstract class ParticleStyle implements IParticleStyle {
     public void setParticle(Particle particle) {
         this.particle = particle;
     }
+
+    public void setOffset(Vector offset) { this.offset = offset.clone(); }
+
+    public void setCount(int count) { this.count = count; }
+
+    public void setSpeed(double speed) { this.speed = speed; }
 
     @Override
     public String getInternalName() {
@@ -41,7 +52,7 @@ public abstract class ParticleStyle implements IParticleStyle {
 
     @Override
     public Particle getParticle() {
-        return null;
+        return particle;
     }
 
     @Override
@@ -52,5 +63,64 @@ public abstract class ParticleStyle implements IParticleStyle {
     @Override
     public List<PParticle> getParticles(Location startLocation, Location endLocation) { return null; }
 
+    public Vector getOffset() {
+        return offset.clone();
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public double getSpeed() {
+        return speed;
+    }
+
     public abstract ParticleStyle clone();
+
+    protected static abstract class ParticleStyleBuilder<T extends ParticleStyle, B extends ParticleStyleBuilder> {
+
+        T obj;
+
+        Particle particle = Particle.FLAME;
+        Vector offset = new Vector(0, 0, 0);
+        int count = 1;
+        double speed = 0;
+
+        // TODO: Set other variables for individual particles (/particle <particle> <x,y,z> <xOff,yOff,zOff> <speed> <count> <extra>)
+        public ParticleStyleBuilder(){
+            obj = createObj();
+        }
+
+        public T build(){
+            obj.setParticle(particle);
+            obj.setOffset(offset);
+            obj.setCount(count);
+            obj.setSpeed(speed);
+
+            return obj;
+        }
+
+        protected abstract T createObj();
+        protected abstract B getThis();
+
+        public B setParticle(Particle particle){
+            this.particle = particle;
+            return getThis();
+        }
+
+        public B setOffset(Vector offset){
+            this.offset = offset;
+            return getThis();
+        }
+
+        public B setCount(int count){
+            this.count = count;
+            return getThis();
+        }
+
+        public B setSpeed(double speed){
+            this.speed = speed;
+            return getThis();
+        }
+    }
 }
