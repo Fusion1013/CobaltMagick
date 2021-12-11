@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import se.fusion1013.plugin.cobalt.Cobalt;
+import se.fusion1013.plugin.cobalt.manager.SpellManager;
 import se.fusion1013.plugin.cobalt.spells.ISpell;
 import se.fusion1013.plugin.cobalt.spells.Spell;
 import se.fusion1013.plugin.cobalt.util.Warp;
@@ -107,7 +108,7 @@ public abstract class Database {
             while (rsSpells.next()){
                 int spellId = rsSpells.getInt("spell_id");
                 boolean isAlwaysCast = rsSpells.getBoolean("is_always_cast");
-                ISpell spell = Spell.getSpell(spellId);
+                ISpell spell = SpellManager.getSpell(spellId);
                 if (isAlwaysCast) alwaysCast.add(spell);
                 else spellList.add(spell);
             }
@@ -133,7 +134,6 @@ public abstract class Database {
      * @return The id of the wand. Returns -1 if the wand was not able to be inserted into the database.
      */
     public int insertWand(Wand wand){
-
         boolean shuffle = wand.isShuffle();
         int spellsPerCast = wand.getSpellsPerCast();
         double castDelay = wand.getCastDelay();
@@ -169,7 +169,9 @@ public abstract class Database {
             st2.close();
 
             wand.setId(wandId);
-            updateWandSpells(wand);
+            List<Wand> wands = new ArrayList<>();
+            wands.add(wand);
+            updateWandSpells(wands); // TODO: Add method that takes only one wand instead of creating new list
 
             return wandId;
 
@@ -181,48 +183,67 @@ public abstract class Database {
     }
 
     /**
-     * Updates the stored wand spells within the database
+     * Updates the stored wand spells within the database for all given wands
      *
-     * @param wand the wand with the spells to insert into the database
+     * @param wands the wands with the spells to insert into the database
      */
-    public void updateWandSpells(Wand wand){
+    public void updateWandSpells(List<Wand> wands){
+
+        String deleteWandSpells = "DELETE FROM wand_spells WHERE wand_id = ?";
+        String insertWandSpell = "INSERT INTO wand_spells(wand_id, spell_id, is_always_cast, slot) VALUES(?,?,?,?)";
+
+        Connection conn = null;
+        PreparedStatement pstmt1 = null, pstmt2 = null;
 
         try {
-            Connection conn = getSQLConnection();
-            PreparedStatement removeOldSpellsSt = conn.prepareStatement("DELETE FROM wand_spells WHERE wand_id = ?");
-            removeOldSpellsSt.setInt(1, wand.getId());
-            removeOldSpellsSt.executeUpdate();
-            removeOldSpellsSt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            conn = getSQLConnection();
+            if (conn == null) return;
 
-        List<ISpell> alwaysCastSpells = wand.getAlwaysCast();
-        List<ISpell> spells = wand.getSpells();
+            conn.setAutoCommit(false);
 
-        updateWandSpells(alwaysCastSpells, wand.getId(), true);
-        updateWandSpells(spells, wand.getId(), false);
-    }
+            for (Wand wand : wands){
+                // Delete old data
+                pstmt1 = conn.prepareStatement(deleteWandSpells);
+                pstmt1.setInt(1, wand.getId());
+                int rowsAffected = pstmt1.executeUpdate();
 
-    private void updateWandSpells(List<ISpell> spells, int wandId, boolean alwaysCast){
-        try {
-            Connection conn = getSQLConnection();
+                // Insert new data
+                for (int i = 0; i < wand.getAlwaysCast().size(); i++){
+                    ISpell currentSpell = wand.getSpells().get(i);
+                    pstmt2 = conn.prepareStatement(insertWandSpell);
+                    pstmt2.setInt(1, wand.getId());
+                    pstmt2.setInt(2, currentSpell.getId());
+                    pstmt2.setBoolean(3, true);
+                    pstmt2.setInt(4, i);
+                    rowsAffected += pstmt2.executeUpdate();
+                }
+                for (int i = 0; i < wand.getSpells().size(); i++){
+                    ISpell currentSpell = wand.getSpells().get(i);
+                    pstmt2 = conn.prepareStatement(insertWandSpell);
+                    pstmt2.setInt(1, wand.getId());
+                    pstmt2.setInt(2, currentSpell.getId());
+                    pstmt2.setBoolean(3, false);
+                    pstmt2.setInt(4, i);
+                    rowsAffected += pstmt2.executeUpdate();
+                }
 
-            for (int i = 0; i < spells.size(); i++){
-                ISpell currentSpell = spells.get(i);
-                PreparedStatement st = conn.prepareStatement("INSERT INTO wand_spells(wand_id, spell_id, is_always_cast, slot) VALUES(?,?,?,?)");
-
-                st.setInt(1, wandId);
-                st.setInt(2, currentSpell.getId());
-                st.setBoolean(3, alwaysCast);
-                st.setInt(4, i);
-
-                st.executeUpdate();
-                st.close();
+                // Cobalt.getInstance().getLogger().info("Inserted Wand. Id: " + wand.getId() + ". Rows affected: " + rowsAffected);
             }
-        } catch (SQLException e) {
+
+            conn.commit();
+
+        } catch (SQLException e){
             e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt1 != null) pstmt1.close();
+                if (pstmt2 != null) pstmt2.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e){
+                e.printStackTrace();
+            }
         }
+
     }
 
     // ----- WARPS -----
