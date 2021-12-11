@@ -9,8 +9,9 @@ public class PParticle {
     private boolean directional;
     private Object overrideData;
     private float size;
+    private int count;
 
-    public PParticle(Location location, double xOff, double yOff, double zOff, double speed, boolean directional, Object overrideData){
+    public PParticle(Location location, double xOff, double yOff, double zOff, double speed, int count, boolean directional, Object overrideData){
         this.location = location;
         this.xOff = xOff;
         this.yOff = yOff;
@@ -18,18 +19,19 @@ public class PParticle {
         this.speed = speed;
         this.directional = directional;
         this.overrideData = overrideData;
+        this.count = count;
     }
 
-    public PParticle(Location location, double xOff, double yOff, double zOff, double speed, boolean directional){
-        this(location, xOff, yOff, zOff, speed, directional, null);
+    public PParticle(Location location, double xOff, double yOff, double zOff, double speed, int count, boolean directional){
+        this(location, xOff, yOff, zOff, speed, count, directional, null);
     }
 
-    public PParticle(Location location, double xOff, double yOff, double zOff, double speed){
-        this(location, xOff, yOff, zOff, speed, false, null);
+    public PParticle(Location location, double xOff, double yOff, double zOff, double speed, int count){
+        this(location, xOff, yOff, zOff, speed, count,false, null);
     }
 
     public PParticle(Location location){
-        this(location, 0.0F, 0.0F, 0.0F, 0.0F, false, null);
+        this(location, 0.0F, 0.0F, 0.0F, 0.0F, 1, false, null);
     }
 
     public Location getLocation(){
@@ -59,6 +61,8 @@ public class PParticle {
     public double getzOff(){
         return this.zOff;
     }
+
+    public int getCount() { return this.count; }
 
     public Object getOverrideData(){
         return this.overrideData;
