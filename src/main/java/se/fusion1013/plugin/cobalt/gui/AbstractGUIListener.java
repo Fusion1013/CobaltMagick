@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import se.fusion1013.plugin.cobalt.Cobalt;
+import se.fusion1013.plugin.cobalt.manager.SpellManager;
 import se.fusion1013.plugin.cobalt.spells.ISpell;
 import se.fusion1013.plugin.cobalt.spells.Spell;
 import se.fusion1013.plugin.cobalt.wand.Wand;
@@ -35,11 +36,17 @@ public class AbstractGUIListener implements Listener {
 
         // TODO: You should not be able to stack spells inside a wand inventory
         ItemStack clickedStack = e.getCurrentItem();
+        ItemStack heldStack = e.getWhoClicked().getItemOnCursor();
         boolean validClick;
+
         if (clickedStack != null) {
             ItemMeta meta = clickedStack.getItemMeta();
-            NamespacedKey namespacedKey = new NamespacedKey(Cobalt.getInstance(), "spell");
-            validClick = meta.getPersistentDataContainer().has(namespacedKey, PersistentDataType.INTEGER);
+            if (meta != null){
+                NamespacedKey namespacedKey = new NamespacedKey(Cobalt.getInstance(), "spell");
+                validClick = meta.getPersistentDataContainer().has(namespacedKey, PersistentDataType.INTEGER);
+            } else {
+                validClick = false;
+            }
         } else {
             validClick = true;
         }
@@ -85,13 +92,13 @@ public class AbstractGUIListener implements Listener {
         for (int i = 0; i < inventory.getSize(); i++) {
             ItemStack stack = inventory.getItem(i);
             if (stack != null) {
-                ISpell spell = Spell.getSpell(stack);
+                ISpell spell = SpellManager.getSpell(stack);
                 if (spell != null) spells.add(spell);
             }
         }
 
         wand.setSpells(spells);
 
-        Cobalt.getInstance().getRDatabase().updateWandSpells(wand);
+        // Cobalt.getInstance().getRDatabase().updateWandSpells(wand);
     }
 }
