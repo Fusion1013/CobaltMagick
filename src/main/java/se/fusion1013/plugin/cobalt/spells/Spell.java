@@ -3,177 +3,280 @@ package se.fusion1013.plugin.cobalt.spells;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import se.fusion1013.plugin.cobalt.Cobalt;
+import se.fusion1013.plugin.cobalt.wand.Wand;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public abstract class Spell implements ISpell {
+public abstract class Spell implements ISpell, Cloneable {
 
-    public static final Map<Integer, Spell> INBUILT_SPELLS = new HashMap<>();
-
-    // TODO: Change material to a custom texture
-    public static final Spell sparkBolt = register(new SparkBoltSpell(0, "spark_bolt"));
-    public static final Spell healSpell = register(new HealSpell(1, "heal"));
-
-    // TODO: Implement uses (spells disappear when their uses run out)
     // Hidden Attributes
     int id;
+    String internalSpellName;
     String spellName;
-    boolean hasCast;
-    int customModelData;
-
-    double lifetime;
-    double speedModifier;
-    double lifetimeModifier;
-    double criticalChance;
-
+    String description;
+    static final int maxDescriptionLineLength = 30;
+    int customModelData = 1;
+    final SpellType type;
     static NamespacedKey spellKey = new NamespacedKey(Cobalt.getInstance(), "spell");
+
+    boolean hasCast = false;
+
+    List<IModifier> modifiers = new ArrayList<>();
 
     // Shown Attributes
     int uses;
     int manaDrain;
-    double damage;
-    double radius;
-    double spread;
-    double speed;
     double castDelay;
     double rechargeTime;
-    double spreadModifier;
-    int addCasts;
 
-    public Spell(int id, String spellName) {
+    List<DelayedSpell> delayedSpells = new ArrayList<>();
+
+    public Spell(int id, String internalSpellName, String spellName, SpellType type) {
         this.id = id;
+        this.internalSpellName = internalSpellName;
         this.spellName = spellName;
         this.customModelData = id+1;
+        this.type = type;
     }
 
-    public static ItemStack getSpellItem(String spellName) {
-        ISpell spell = getSpell(spellName);
+    /**
+     * Creates a copy of a spell
+     * @param spell spell to copy
+     */
+    public Spell(Spell spell){
+        this.id = spell.getId();
+        this.internalSpellName = spell.getInternalSpellName();
+        this.spellName = spell.getSpellName();
+        this.customModelData = spell.getCustomModelData();
+        this.type = spell.getSpellType();
 
-        ItemStack stack = new ItemStack(Material.NETHER_STAR, 1); // TODO: Get material from config (??)
+        this.uses = spell.getUses();
+        this.manaDrain = spell.getManaDrain();
+        this.castDelay = spell.getCastDelay();
+        this.rechargeTime = spell.getRechargeTime();
+        this.description = spell.getDescription();
+        this.hasCast = spell.getHasCast();
+        this.delayedSpells = spell.getDelayedSpells();
+    }
+
+    /**
+     * Performs operations that need to be done before a spell can be cast
+     */
+    @Override
+    public void performPreCast(List<ISpell> wandSpells, int casts, int spellPos){
+    }
+
+    @Override
+    public void castSpell(Wand wand, Player player) {
+
+    }
+
+    // ----- GETTERS / SETTERS -----
+
+    /**
+     * Adds modifiers to a spell
+     *
+     * @param modifiers modifiers to add to the spell
+     */
+    public void addModifiers(List<IModifier> modifiers) {
+        this.modifiers = modifiers;
+    }
+
+    /**
+     * Gets a new <code>ItemStack</code> representing a castable spell
+     * Automatically generates the lore for the spell
+     *
+     * @return a new <code>ItemStack</code> representing the spell
+     */
+    public ItemStack getSpellItem(){
+        return getSpellItem(getLore());
+    }
+
+    /**
+     * Gets a new <code>ItemStack</code> representing a castable spell, with the given lore
+     *
+     * @param lore lore to add to the item
+     * @return a new <code>ItemStack</code> representing the spell
+     */
+    public ItemStack getSpellItem(List<String> lore) {
+
+        lore.add("");
+        lore.add(ChatColor.BLUE + type.name());
+
+        ItemStack stack = new ItemStack(Material.CLOCK, 1);
         ItemMeta meta = stack.getItemMeta();
 
-        meta.getPersistentDataContainer().set(spellKey, PersistentDataType.INTEGER, spell.getId());
+        if (meta != null) {
+            meta.getPersistentDataContainer().set(spellKey, PersistentDataType.INTEGER, id);
 
-        // TODO: Change color depending on rarity (type?) of spell
-        meta.setDisplayName(ChatColor.BOLD + "" + ChatColor.BLUE + spell.getFormattedName());
-        meta.setLore(getLore(spell));
+            meta.setDisplayName(type.spellColor + spellName);
+            meta.setLore(lore);
 
-        meta.setCustomModelData(spell.getCustomModelData());
+            meta.setCustomModelData(customModelData);
 
-        stack.setItemMeta(meta);
+            stack.setItemMeta(meta);
+        }
+
         return stack;
     }
 
-    public static List<String> getLore(ISpell spell) {
-        List<String> lore = new ArrayList<>();
+    /**
+     * Returns the description of this spell formatted as a list of strings with a maximum length
+     *
+     * @return description formatted as a list of strings
+     */
+    public List<String> getFormattedDescription(){
+        List<String> description = new ArrayList<>();
 
-        if (spell.getManaDrain() != 0) lore.add(ChatColor.WHITE + "Mana Drain: " + ChatColor.BLUE +  spell.getManaDrain());
-        if (spell.getDamage() != 0) lore.add(ChatColor.WHITE + "Damage: " + ChatColor.BLUE +  spell.getDamage());
-        if (spell.getRadius() != 0) lore.add(ChatColor.WHITE + "Radius: " + ChatColor.BLUE +  spell.getRadius());
-        if (spell.getSpread() != 0) lore.add(ChatColor.WHITE + "Spread: " + ChatColor.BLUE +  spell.getSpread() + ChatColor.WHITE + " DEG");
-        if (spell.getSpeed() != 0) lore.add(ChatColor.WHITE + "Speed: " + ChatColor.BLUE +  spell.getSpeed());
+        StringBuilder currentLine = new StringBuilder();
+        currentLine.append(ChatColor.ITALIC);
+        currentLine.append(ChatColor.DARK_PURPLE);
 
-        if (spell.getCastDelay() > 0) lore.add(ChatColor.WHITE + "Cast Delay: +" + ChatColor.BLUE +  spell.getCastDelay() + ChatColor.WHITE + "s");
-        else if (spell.getCastDelay() < 0) lore.add(ChatColor.WHITE + "Cast Delay: -" + ChatColor.BLUE +  spell.getCastDelay() + ChatColor.WHITE + "s");
+        if (this.description == null) return description;
 
-        if (spell.getRechargeTime() != 0 && spell.getRechargeTime() > 0) lore.add(ChatColor.WHITE + "Recharge Time: +" + ChatColor.BLUE +  spell.getRechargeTime() + ChatColor.WHITE + "s");
-        else if (spell.getRechargeTime() < 0) lore.add(ChatColor.WHITE + "Recharge Time: -" + ChatColor.BLUE +  spell.getRechargeTime() + ChatColor.WHITE + "s");
+        for (int i = 0; i < this.description.length(); i++){
+            if (this.description.charAt(i) == ' ' && currentLine.length() >= maxDescriptionLineLength){
+                description.add(currentLine.toString());
+                currentLine = new StringBuilder();
 
-        if (spell.getSpreadModifier() != 0) lore.add(ChatColor.WHITE + "Spread: " + ChatColor.BLUE +  spell.getSpreadModifier() + ChatColor.WHITE + " DEG");
-        if (spell.getAddCasts() != 0) lore.add(ChatColor.WHITE + "Add Casts: " + ChatColor.BLUE +  spell.getAddCasts());
+                currentLine.append(ChatColor.ITALIC);
+                currentLine.append(ChatColor.DARK_PURPLE);
+            } else {
+                currentLine.append(this.description.charAt(i));
+            }
+        }
+        description.add(currentLine.toString());
+        description.add("");
+
+        return description;
+    }
+
+    /**
+     * Gets the basic lore for a spell
+     *
+     * @return list of Strings representing the lore of the spell
+     */
+    public List<String> getLore() {
+
+        List<String> lore = new ArrayList<>(getFormattedDescription());
+
+        if (manaDrain != 0) lore.add(colorizeValue("Mana Drain: ", manaDrain, ""));
+        if (castDelay != 0) lore.add(colorizeValue("Cast Delay: ", castDelay, "s"));
+        if (rechargeTime != 0) lore.add(colorizeValue("Recharge Time: ", rechargeTime, "s"));
 
         return lore;
     }
 
-    public static ISpell getSpell(String name){
-        List<ISpell> sps = new ArrayList<>(INBUILT_SPELLS.values());
+    /**
+     * Colorizes a value with a prefix and a suffix
+     * @param prefix prefix to put before the value
+     * @param value value to color
+     * @param suffix suffix to put after the value
+     * @return string with the colorized value
+     */
+    public static String colorizeValue(String prefix, Object value, String suffix) {
+        return ChatColor.WHITE + prefix + ChatColor.BLUE + value + ChatColor.WHITE + suffix;
+    }
 
-        for (ISpell s : sps) {
-            if (s.getSpellName().equalsIgnoreCase(name)) return s;
+    /**
+     * Builds a new spell. Subclasses should extend this class when creating their own builders
+     */
+    protected static abstract class SpellBuilder<T extends Spell, B extends SpellBuilder> {
+
+        T obj;
+
+        int id;
+        String internalSpellName;
+        String spellName;
+        String description;
+        int manaDrain;
+
+        double castDelay;
+        double rechargeTime;
+
+        /**
+         * Creates a new spell builder with an internalized spell name. Automatically generates the display name
+         * of the spell. The internal name should follow the format: "spark_bolt".
+         *
+         * @param id id of the spell
+         * @param internalSpellName internal name of the spell
+         */
+        public SpellBuilder(int id, String internalSpellName){
+            obj = createObj();
+
+            this.id = id;
+            this.internalSpellName = internalSpellName;
+            generateSpellName();
         }
-        return null;
-    }
 
-    public static ISpell getSpell(int id){
-        return INBUILT_SPELLS.get(id);
-    }
+        public T build() {
+            obj.id = id;
+            obj.internalSpellName = internalSpellName;
+            obj.spellName = spellName;
+            return obj;
+        }
 
-    private static <T extends Spell> T register(final T spell) {
-        INBUILT_SPELLS.put(spell.getId(), spell);
-        return spell;
-    }
+        protected abstract T createObj();
+        protected abstract B getThis();
 
-    public static ISpell getSpell(ItemStack stack) {
-        ItemMeta meta = stack.getItemMeta();
+        // TODO: Replace with regex
+        private void generateSpellName(){
+            String[] strings = internalSpellName.split("_");
+            spellName = "";
+            for (String s : strings){
+                spellName += Character.toUpperCase(s.charAt(0)) + s.substring(1) + " ";
+            }
+            spellName = spellName.substring(0, spellName.length()-1);
+        }
 
-        if (meta.getPersistentDataContainer().has(spellKey, PersistentDataType.INTEGER)){
-            int spellId = meta.getPersistentDataContainer().get(spellKey, PersistentDataType.INTEGER);
-            return getSpell(spellId);
-        } else {
-            return null;
+        public B setCustomModel(int modelId){
+            obj.customModelData = modelId;
+            return getThis();
+        }
+
+        public B addDescription(String description){
+            obj.description = description;
+            return getThis();
+        }
+
+        public B addManaDrain(int manaDrain){
+            obj.manaDrain = manaDrain;
+            return getThis();
+        }
+
+        public B addCastDelay(double castDelay){
+            obj.castDelay = castDelay;
+            return getThis();
+        }
+
+        public B addRechargeTime(double rechargeTime){
+            obj.rechargeTime = rechargeTime;
+            return getThis();
         }
     }
 
+    /**
+     * Clones a spell
+     *
+     * @return a clone of a spell
+     */
     @Override
-    public String getSpellName() {
-        return spellName;
-    }
+    public abstract Spell clone();
 
     @Override
-    public int getUses() {
-        return uses;
-    }
-
-    @Override
-    public double getLifetime() {
-        return lifetime;
-    }
-
-    @Override
-    public double getSpeedModifier() {
-        return speedModifier;
-    }
-
-    @Override
-    public double getLifetimeModifier() {
-        return lifetimeModifier;
-    }
-
-    @Override
-    public double getCriticalChance() {
-        return criticalChance;
+    public String getDescription(){
+        return description;
     }
 
     @Override
     public int getManaDrain() {
         return manaDrain;
-    }
-
-    @Override
-    public double getDamage() {
-        return damage;
-    }
-
-    @Override
-    public double getRadius() {
-        return radius;
-    }
-
-    @Override
-    public double getSpread() {
-        return spread;
-    }
-
-    @Override
-    public double getSpeed() {
-        return speed;
     }
 
     @Override
@@ -187,16 +290,19 @@ public abstract class Spell implements ISpell {
     }
 
     @Override
-    public double getSpreadModifier() {
-        return spreadModifier;
-    }
-
-    @Override
     public boolean getHasCast() { return hasCast; }
 
     @Override
-    public int getAddCasts() {
-        return addCasts;
+    public void setHasCast(boolean hasCast) { this.hasCast = hasCast; }
+
+    @Override
+    public String getInternalSpellName() {
+        return internalSpellName;
+    }
+
+    @Override
+    public String getSpellName() {
+        return spellName;
     }
 
     @Override
@@ -205,5 +311,98 @@ public abstract class Spell implements ISpell {
     }
 
     @Override
-    public int getCustomModelData() { return customModelData; }
+    public int getCustomModelData() {
+        return customModelData;
+    }
+
+    @Override
+    public SpellType getSpellType() {
+        return type;
+    }
+
+    @Override
+    public int getUses() {
+        return uses;
+    }
+
+    @Override
+    public List<DelayedSpell> getDelayedSpells() { return new ArrayList<>(delayedSpells); }
+
+    @Override
+    public int getTrueManaDrain(){
+        int manaUsed = 0;
+        for (Spell.DelayedSpell ds : delayedSpells){
+            manaUsed += ds.getManaDrain();
+        }
+        return manaUsed + getManaDrain();
+    }
+
+    @Override
+    public double getTrueCastDelay(){
+        int castDelay = 0;
+        for (Spell.DelayedSpell ds : delayedSpells){
+            castDelay += ds.getCastDelay();
+        }
+        return castDelay + getCastDelay();
+    }
+
+    public enum SpellType{
+        PROJECTILE(ChatColor.RED),
+        STATIC_PROJECTILE(ChatColor.YELLOW),
+        PASSIVE(ChatColor.GRAY),
+        UTILITY(ChatColor.DARK_PURPLE),
+        PROJECTILE_MODIFIER(ChatColor.BLUE),
+        MATERIAL(ChatColor.GREEN),
+        MULTICAST(ChatColor.AQUA),
+        OTHER(ChatColor.GOLD);
+
+        ChatColor spellColor;
+
+        SpellType(ChatColor spellColor){
+            this.spellColor = spellColor;
+        }
+    }
+
+    public enum TriggerType{
+        NONE,
+        INSTANT,
+        COLLISION,
+        TIMER, // Executes after half of the lifetime // TODO: Change this (??)
+        EXPIRATION
+    }
+
+    public static class DelayedSpell{
+        boolean hasCast = false;
+        List<ISpell> spellsToCast;
+        TriggerType whenToCast;
+
+        public DelayedSpell(List<ISpell> spellsToCast, TriggerType whenToCast){
+            this.spellsToCast = spellsToCast;
+            this.whenToCast = whenToCast;
+        }
+
+        public void setHasCast(boolean hasCast) { this.hasCast = hasCast; }
+
+        public boolean getHasCast() { return hasCast; }
+
+        public double getCastDelay(){
+            double castDelay = 0;
+            for (ISpell spell : spellsToCast){
+                castDelay += spell.getTrueCastDelay();
+            }
+            return castDelay;
+        }
+
+        public int getManaDrain(){
+            int manaDrain = 0;
+            for (ISpell spell : spellsToCast){
+                manaDrain += spell.getTrueManaDrain();
+            }
+            return manaDrain;
+        }
+
+        public List<ISpell> getSpellsToCast() { return spellsToCast; }
+
+        public TriggerType getWhenToCast() { return whenToCast; }
+    }
 }
