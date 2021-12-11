@@ -22,42 +22,51 @@ public class EnglishLocale implements Locale {
                 this.put("prefix", "&7[<g:#00aaaa:#0066aa>Cobalt&7] ");
 
                 this.put("#1", "General Command Stuff");
-                this.put("commands.error.incorrect_syntax", "&eIncorrect Syntax");
+                this.put("commands.error.incorrect_syntax", "&7Incorrect Syntax");
 
                 this.put("#2", "Warp Command");
-                this.put("commands.warp.error.warp_not_found", "&eWarp &b%name% &enot found");
-                this.put("commands.warp.create.error.invalid_name", "&eInvalid Name: &b%name%");
-                this.put("commands.warp.create.error.name_already_exists", "&eName Already Exists: &b%name%");
-                this.put("commands.warp.create.info.created_warp", "&eCreated Warp &b%name%");
+                this.put("commands.warp.error.warp_not_found", "&7Warp &3%name% &7not found");
+                this.put("commands.warp.create.error.invalid_name", "&7Invalid Name: &3%name%");
+                this.put("commands.warp.create.error.name_already_exists", "&7Name Already Exists: &3%name%");
+                this.put("commands.warp.create.info.created_warp", "&7Created Warp &3%name%");
 
-                this.put("commands.warp.info.header", "&eInformation for Warp &b%name%&e:");
-                this.put("commands.warp.info.detail.owner", "&eOwner: &b%owner%");
-                this.put("commands.warp.info.detail.world", "&eWorld: &b%world%");
-                this.put("commands.warp.info.detail.location", "&eLocation: &b%x%&e, &b%y%&e, &b%z%");
-                this.put("commands.warp.info.detail.distance", "&eDistance: &b%distance% &eblocks");
-                this.put("commands.warp.info.detail.privacy", "&ePrivacy: &b%privacy%");
+                this.put("commands.warp.info.header", "&7Information for Warp &3%name%&7:");
+                this.put("commands.warp.info.detail.owner", "&7Owner: &3%owner%");
+                this.put("commands.warp.info.detail.world", "&7World: &3%world%");
+                this.put("commands.warp.info.detail.location", "&7Location: &3%x%&7, &3%y%&7, &3%z%");
+                this.put("commands.warp.info.detail.distance", "&7Distance: &3%distance% &7blocks");
+                this.put("commands.warp.info.detail.privacy", "&7Privacy: &3%privacy%");
 
-                this.put("commands.warp.list.header", "&eDisplaying All Available Warps:");
-                this.put("commands.warp.list.entry", "&b%name% &e- &b%x%&e, &b%y%&e, &b%z%&e in &b%world%");
+                this.put("commands.warp.list.header", "&7Displaying All Available Warps:");
+                this.put("commands.warp.list.entry", "&3%name% &7- &3%x%&7, &3%y%&7, &3%z%&7 in &3%world%");
 
-                this.put("commands.warp.teleport.success", "&eTeleported to &b%name%");
+                this.put("commands.warp.teleport.success", "&7Teleported to &3%name%");
 
-                this.put("commands.warp.delete.deleted_warps", "&eDeleted &b%count% &ewarp(s) with the name &b%name%");
+                this.put("commands.warp.delete.deleted_warps", "&7Deleted &3%count% &7warp(s) with the name &3%name%");
 
                 this.put("#3", "Wand");
-                this.put("wand.spell.cast.no_mana", "&eWand is out of mana");
-                this.put("wand.spell.cast.cast_delay", "&eCast delay");
-                this.put("wand.spell.cast.recharge_time", "&eWand is still recharging");
+                this.put("wand.spell.cast.no_mana", "&7Wand is out of mana");
+                this.put("wand.spell.cast.cast_delay", "&7Cast delay");
+                this.put("wand.spell.cast.recharge_time", "&7Wand is still recharging");
+
+                this.put("#4", "CGive");
+                this.put("commands.cgive.spell.error.spell_not_found", "&7Spell &3%spell_name% &7not found");
+                this.put("commands.cgive.spell.success", "&7Gave Spell &3%spell_name% &7to &3%player_name%");
+                this.put("commands.cgive.wand.success", "&7Gave new Wand to &3%player_name%");
+
+                this.put("#5", "gamemode");
+                this.put("commands.gamemode.change", "&7Set &3%player_name%&7's gamemode to &3%gamemode%");
+                this.put("commands.gamemode.error.gamemode_not_found", "&7Gamemode &3%gamemode% &7not found");
 
                 this.put("#10", "Misc");
-                this.put("command-not-implemented", "&eCommand not yet implemented");
-                this.put("command-unknown", "&eUnknown command");
+                this.put("command-not-implemented", "&7Command not yet implemented");
+                this.put("command-unknown", "&7Unknown command");
 
                 this.put("#11", "List Messages");
                 this.put("list-header", "<g:#00aaaa:#0066aa>------ %header% ------");
-                this.put("list-item-name", "&eName: &b%name%");
-                this.put("list-item-location", "&eLocation: &b%x%&ex &b%y%&ey &b%z%&ez &eWorld: &b%world%");
-                this.put("list-item-id-name-location", "&e[&b%id%&e] &eName: &b%name% &eLocation: &b%x%&ex &b%y%&ey &b%z%&ez");
+                this.put("list-item-name", "&7Name: &3%name%");
+                this.put("list-item-location", "&7Location: &3%x%&7x &3%y%&7y &3%z%&7z &7World: &3%world%");
+                this.put("list-item-id-name-location", "&7[&3%id%&7] &7Name: &3%name% &7Location: &3%x%&7x &3%y%&7y &3%z%&7z");
 
                 this.put("gradient", "<g:#ff1100:#00ff1e>GRADIENT");
             }
