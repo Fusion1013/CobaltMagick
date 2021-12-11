@@ -35,7 +35,7 @@ public class ParticleStyleIcosphere extends ParticleStyle implements IParticleSt
     }
 
     public ParticleStyleIcosphere(){
-        this(Particle.BARRIER);
+        this(Particle.FLAME);
     }
 
     public ParticleStyleIcosphere(Particle particle) {
@@ -82,7 +82,7 @@ public class ParticleStyleIcosphere extends ParticleStyle implements IParticleSt
 
         for (Vector point : points) {
             VectorUtils.rotateVector(point, xRotation, yRotation, zRotation);
-            particles.add(new PParticle(location.clone().add(point), 0, 0, 0, 0, false, null));
+            particles.add(new PParticle(location.clone().add(point), 0, 0, 0, 0, 1, false, null));
         }
 
         step++;
