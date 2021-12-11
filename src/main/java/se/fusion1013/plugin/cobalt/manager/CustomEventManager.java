@@ -9,6 +9,19 @@ import java.util.List;
 
 public class CustomEventManager extends Manager {
 
+    private static CustomEventManager INSTANCE = null;
+    /**
+     * Returns the object representing this <code>CommandManager</code>.
+     *
+     * @return The object of this class
+     */
+    public static CustomEventManager getInstance(){
+        if (INSTANCE == null){
+            INSTANCE = new CustomEventManager(Cobalt.getInstance());
+        }
+        return INSTANCE;
+    }
+
     private List<CustomEvent> customEventList;
 
     public CustomEventManager(Cobalt cobalt) {
