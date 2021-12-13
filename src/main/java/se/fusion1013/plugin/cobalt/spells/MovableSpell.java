@@ -16,7 +16,7 @@ public abstract class MovableSpell extends Spell implements Cloneable {
 
     // Basic Movement Variables
     boolean moves;
-    Vector velocityVector;
+    Vector velocityVector = new Vector(0, 0, 0);
     Location currentLocation;
 
     // Collision
