@@ -94,9 +94,7 @@ public class BlockUtil {
                 p.playSound(location, block.getBlockData().getSoundGroup().getBreakSound(), 1, 1);
             }
         }
-
         if (dropItems) block.breakNaturally();
-        else block.setType(Material.AIR);
 
         block.setType(setBlock);
     }
