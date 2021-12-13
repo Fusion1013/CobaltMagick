@@ -9,18 +9,25 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobalt.Cobalt;
 import se.fusion1013.plugin.cobalt.particle.PParticle;
+import se.fusion1013.plugin.cobalt.particle.ParticleGroup;
 import se.fusion1013.plugin.cobalt.particle.styles.ParticleStyleSphere;
+import se.fusion1013.plugin.cobalt.spells.spellmodules.SpellModule;
 import se.fusion1013.plugin.cobalt.wand.Wand;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class StaticProjectileSpell extends MovableSpell implements Cloneable, Runnable {
 
     StaticProjectileShape staticProjectileShape;
     double radius;
     double lifetime;
-    PotionEffect givesEffect;
+    ParticleGroup particleGroup;
+
+    List<SpellModule> executeOnCast = new ArrayList<>();
+    List<SpellModule> executeOnTick = new ArrayList<>();
+    List<SpellModule> executeOnDeath = new ArrayList<>();
 
     private BukkitTask staticProjectileTask;
 
@@ -45,7 +52,11 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
         this.staticProjectileShape = spell.getStaticProjectileShape();
         this.radius = spell.getRadius();
         this.lifetime = spell.getLifetime();
-        this.givesEffect = spell.getGivesEffect();
+        this.particleGroup = spell.getParticleGroup();
+
+        this.executeOnCast = spell.getExecuteOnCast();
+        this.executeOnTick = spell.getExecuteOnTick();
+        this.executeOnDeath = spell.getExecuteOnDeath();
     }
 
     @Override
@@ -58,6 +69,11 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
     public void castSpell(Wand wand, Player caster, Vector direction, Location location) {
         this.currentLocation = location;
 
+        // Special Things Here
+        for (SpellModule module : executeOnCast){
+            module.executeOnCast(currentLocation, velocityVector.clone());
+        }
+
         Bukkit.getScheduler().runTaskLater(Cobalt.getInstance(), () -> {
             long period = 1;
             this.staticProjectileTask = Bukkit.getScheduler().runTaskTimer(Cobalt.getInstance(), this, 0, period);
@@ -69,41 +85,26 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
         if (lifetime <= 0) onProjectileDeath();
         lifetime -= .05;
 
-        display();
-        giveEffect();
+        display(); // TODO: Replace with onTick particles
+
+        // Special Things Here
+        for (SpellModule module : executeOnTick){
+            module.executeOnTick(currentLocation, velocityVector.clone());
+        }
+
+        if (movementStopped) staticProjectileTask.cancel();
     }
 
     private void display(){
-        ParticleStyleSphere sphereStyle = new ParticleStyleSphere(Particle.TOWN_AURA);
-        sphereStyle.setRadius(radius);
-        sphereStyle.setDensity((int)Math.round(4 * Math.PI * Math.pow(radius, 2)));
-        List<PParticle> particles = sphereStyle.getParticles(currentLocation);
-
-        for (PParticle part : particles){
-            for (Player p : Bukkit.getOnlinePlayers()){
-                p.spawnParticle(sphereStyle.getParticle(), part.getLocation(), 1, 0, 0, 0, 0);
-            }
-        }
+        if (particleGroup != null) particleGroup.display(currentLocation);
     }
 
     private void onProjectileDeath(){
-        staticProjectileTask.cancel();
-    }
-
-    private void giveEffect(){
-        if (givesEffect != null){
-            World world = currentLocation.getWorld();
-            if (world != null){
-                List<Entity> nearbyEntities = new ArrayList<>(world.getNearbyEntities(currentLocation, radius, radius, radius));
-
-                for (Entity e : nearbyEntities){
-                    if (e instanceof LivingEntity && e.getLocation().distance(currentLocation) <= radius){
-                        LivingEntity le = (LivingEntity)e;
-                        le.addPotionEffect(givesEffect);
-                    }
-                }
-            }
+        // Special Things Here
+        for (SpellModule module : executeOnDeath){
+            module.executeOnDeath(currentLocation, velocityVector.clone());
         }
+        staticProjectileTask.cancel();
     }
 
     @Override
@@ -115,7 +116,11 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
         StaticProjectileShape staticProjectileShape;
         double radius;
         double lifetime;
-        PotionEffect givesEffect;
+        ParticleGroup particleGroup;
+
+        List<SpellModule> executeOnCast = new ArrayList<>();
+        List<SpellModule> executeOnTick = new ArrayList<>();
+        List<SpellModule> executeOnDeath = new ArrayList<>();
 
         /**
          * Creates a new spell builder with an internalized spell name. Automatically generates the display name
@@ -140,15 +145,34 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
             obj.setLifetime(lifetime);
             obj.setRadius(radius);
             obj.setStaticProjectileShape(staticProjectileShape);
-            obj.setGivesEffect(givesEffect);
+            obj.setParticleGroup(particleGroup);
+
+            obj.setExecuteOnCast(executeOnCast);
+            obj.setExecuteOnTick(executeOnTick);
+            obj.setExecuteOnDeath(executeOnDeath);
 
             return super.build();
         }
 
         protected StaticProjectileSpellBuilder getThis() { return this; }
 
-        public StaticProjectileSpellBuilder setGivesEffect(PotionEffect effect){
-            this.givesEffect = effect;
+        public StaticProjectileSpellBuilder addExecuteOnCast(SpellModule executeThis){
+            executeOnCast.add(executeThis);
+            return getThis();
+        }
+
+        public StaticProjectileSpellBuilder addExecuteOnTick(SpellModule executeThis){
+            executeOnTick.add(executeThis);
+            return getThis();
+        }
+
+        public StaticProjectileSpellBuilder addExecuteOnDeath(SpellModule executeThis){
+            executeOnDeath.add(executeThis);
+            return getThis();
+        }
+
+        public StaticProjectileSpellBuilder addParticle(ParticleGroup group){
+            this.particleGroup = group;
             return getThis();
         }
 
@@ -159,7 +183,8 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
          * @return
          */
         public StaticProjectileSpellBuilder setLifetime(double lifetime){
-            this.lifetime = lifetime;
+            Random r = new Random();
+            this.lifetime = (lifetime / 50.0) + r.nextDouble() * .5;
             return getThis();
         }
 
@@ -186,7 +211,13 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
 
     public void setLifetime(double lifetime) { this.lifetime = lifetime; }
 
-    public void setGivesEffect(PotionEffect effect) { this.givesEffect = effect; }
+    public void setExecuteOnCast(List<SpellModule> executeThis) { this.executeOnCast = new ArrayList<>(executeThis); }
+
+    public void setExecuteOnTick(List<SpellModule> executeThis) { this.executeOnTick = new ArrayList<>(executeThis); }
+
+    public void setExecuteOnDeath(List<SpellModule> executeThis) { this.executeOnDeath = new ArrayList<>(executeThis); }
+
+    public void setParticleGroup(ParticleGroup particleGroup) { this.particleGroup = particleGroup; }
 
     public StaticProjectileShape getStaticProjectileShape() { return staticProjectileShape; }
 
@@ -194,5 +225,11 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
 
     public double getLifetime() { return lifetime; }
 
-    public PotionEffect getGivesEffect() { return givesEffect; }
+    public List<SpellModule> getExecuteOnCast() { return new ArrayList<>(executeOnCast); }
+
+    public List<SpellModule> getExecuteOnTick() { return new ArrayList<>(executeOnTick); }
+
+    public List<SpellModule> getExecuteOnDeath() { return new ArrayList<>(executeOnDeath); }
+
+    public ParticleGroup getParticleGroup() { return particleGroup; }
 }
