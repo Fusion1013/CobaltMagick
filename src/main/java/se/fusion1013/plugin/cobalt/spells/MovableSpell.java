@@ -65,6 +65,9 @@ public abstract class MovableSpell extends Spell implements Cloneable {
         this.bounceFriction = movableSpell.getBounceFriction();
     }
 
+    /**
+     * Applies all modifiers to the direction of the spell, and then performs a movement step
+     */
     public void move(){
         if (!moves) return;
 
@@ -134,10 +137,16 @@ public abstract class MovableSpell extends Spell implements Cloneable {
         }
     }
 
+    /**
+     * Applies air resistance to the spell
+     */
     private void applyAirResistance(){
         velocityVector.multiply(airResistanceMultiplier);
     }
 
+    /**
+     * Applies gravity to the spell
+     */
     private void applyGravity(){
         velocityVector.subtract(new Vector(0, gravityMultiplier * .05, 0));
     }
@@ -169,7 +178,6 @@ public abstract class MovableSpell extends Spell implements Cloneable {
         }
     }
 
-    // MOVABLE BUILDER
     /**
      * Builds a new <code>MovableSpell</code>
      */
@@ -207,6 +215,10 @@ public abstract class MovableSpell extends Spell implements Cloneable {
             super(id, internalSpellName);
         }
 
+        /**
+         * Builds the <code>MovableSpell</code>
+         * @return a new <code>MovableSpell</code>
+         */
         @Override
         public T build() {
             obj.setMoves(moves);
@@ -227,41 +239,83 @@ public abstract class MovableSpell extends Spell implements Cloneable {
             return super.build();
         }
 
+        /**
+         * Sets if the spell moves or not
+         *
+         * @param moves if the spell moves or not
+         * @return the builder
+         */
         public B setMoves(boolean moves){
             this.moves = moves;
             return getThis();
         }
 
-        // GRAVITY
+        // ----- GRAVITY -----
 
+        /**
+         * Sets if the spell is affected by gravity or not
+         *
+         * @param affectedByGravity if the spell is affected by gravity or not
+         * @return the builder
+         */
         public B setAffectedByGravity(boolean affectedByGravity){
             this.affectedByGravity = affectedByGravity;
             return getThis();
         }
 
+        /**
+         * Sets the gravity multiplier, or the acceleration towards the gravity direction the spell experiences every tick
+         *
+         * @param gravityMultiplier the gravity multiplier, measured in blocks/second^2
+         * @return the builder
+         */
         public B addGravity(double gravityMultiplier){
             this.affectedByGravity = true;
             this.gravityMultiplier = gravityMultiplier;
             return getThis();
         }
 
-        // COLLISION
+        // ----- COLLISION -----
 
+        /**
+         * Sets if the spell collides with entities or not. If it doesn't, <code>onEntityCollision</code> will not be called
+         *
+         * @param collidesWithEntities if the spell collides with entities
+         * @return the builder
+         */
         public B setCollidesWithEntities(boolean collidesWithEntities){
             this.collidesWithEntities = collidesWithEntities;
             return getThis();
         }
 
+        /**
+         * Sets if the spell collides with blocks or not. If it doesn't, <code>onBlockCollision</code> will not be called
+         *
+         * @param collidesWithBlocks if the spell collides with entities
+         * @return the builder
+         */
         public B setCollidesWithBlocks(boolean collidesWithBlocks){
             this.collidesWithBlocks = collidesWithBlocks;
             return getThis();
         }
 
+        /**
+         * Sets if the spell pierces entities or not. If it doesn't, the spell will be cancelled on collision
+         *
+         * @param piercesEntities if the spell pierces entities
+         * @return the builder
+         */
         public B setPiercesEntities(boolean piercesEntities){
             this.piercesEntities = piercesEntities;
             return getThis();
         }
 
+        /**
+         * Sets the radius of the collider
+         *
+         * @param colliderRadius the radius of the collider
+         * @return the builder
+         */
         public B setColliderRadius(double colliderRadius){
             this.colliderRadius = colliderRadius;
             return getThis();
@@ -269,11 +323,23 @@ public abstract class MovableSpell extends Spell implements Cloneable {
 
         // AIR RESISTANCE
 
+        /**
+         * Sets if the spell is affected by air resistance
+         *
+         * @param affectedByAirResistance if the spell is affected by air resistance
+         * @return the builder
+         */
         public B setAffectedByAirResistance(boolean affectedByAirResistance){
             this.affectedByAirResistance = affectedByAirResistance;
             return getThis();
         }
 
+        /**
+         * Sets the air resistance multiplier
+         *
+         * @param airResistanceMultiplier the air resistance multiplier
+         * @return the builder
+         */
         public B setAirResistance(double airResistanceMultiplier){
             this.affectedByAirResistance = true;
             this.airResistanceMultiplier = airResistanceMultiplier;
@@ -282,11 +348,23 @@ public abstract class MovableSpell extends Spell implements Cloneable {
 
         // BOUNCE
 
+        /**
+         * Sets if the spell is bouncy. If true, the spell will bounce upon collision with a block
+         *
+         * @param isBouncy if the spell is bouncy
+         * @return the builder
+         */
         public B setIsBouncy(boolean isBouncy){
             this.isBouncy = isBouncy;
             return getThis();
         }
 
+        /**
+         * Sets the friction the bounce induces on the spell
+         *
+         * @param bounceFriction the bounce friction
+         * @return the builder
+         */
         public B setBounceFriction(Vector bounceFriction){
             this.isBouncy = true;
             this.bounceFriction = bounceFriction.clone();
