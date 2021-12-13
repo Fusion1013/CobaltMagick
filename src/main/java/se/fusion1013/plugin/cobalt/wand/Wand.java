@@ -282,7 +282,8 @@ public class Wand implements Runnable { // TODO: Move things to abstract class a
         meta.setDisplayName(ChatColor.WHITE + "" + ChatColor.BOLD + "Wand");
         meta.setLore(getLore());
 
-        meta.setCustomModelData(1);
+        meta.setCustomModelData(getWandModelData());
+
         if (meta instanceof  LeatherArmorMeta){
             LeatherArmorMeta leatherArmorMeta = (LeatherArmorMeta)meta;
             Random r = new Random();
@@ -291,6 +292,25 @@ public class Wand implements Runnable { // TODO: Move things to abstract class a
 
         is.setItemMeta(meta);
         return is;
+    }
+
+    /**
+     * Gets the wand model depending on the stats of the wand
+     *
+     * @return model id for this wand
+     */
+    public int getWandModelData(){
+        int data = 111;
+
+        if (shuffle) data += 100;
+
+        if (capacity > 14) data += 20;
+        else if (capacity > 4) data += 10;
+
+        if (spellsPerCast >= 3) data += 2;
+        else if (spellsPerCast >= 2) data += 1;
+
+        return data;
     }
 
     public List<String> getLore(){
