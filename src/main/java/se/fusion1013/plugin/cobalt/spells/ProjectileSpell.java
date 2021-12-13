@@ -26,6 +26,7 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
     double currentLifetime;
     ParticleGroup particleGroup;
 
+    List<SpellModule> executeOnCast = new ArrayList<>();
     List<SpellModule> executeOnTick = new ArrayList<>();
     List<SpellModule> executeOnBlockCollision = new ArrayList<>();
     List<SpellModule> executeOnEntityCollision = new ArrayList<>();
@@ -68,6 +69,7 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
 
         this.directionModifier = projectileSpell.getDirectionModifier();
 
+        this.executeOnCast = projectileSpell.getExecuteOnCast();
         this.executeOnTick = projectileSpell.getExecuteOnTick();
         this.executeOnBlockCollision = projectileSpell.getExecuteOnBlockCollision();
         this.executeOnEntityCollision = projectileSpell.getExecuteOnEntityCollision();
@@ -141,6 +143,11 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
         this.velocityVector.multiply(velocity);
         Vector casterVelocity = caster.getVelocity().clone();
         this.velocityVector.add(casterVelocity.setY(0));
+
+        // Special Things Here
+        for (SpellModule module : executeOnCast){
+            module.executeOnCast(currentLocation, velocityVector.clone());
+        }
 
         // Start projectile tick
         Bukkit.getScheduler().runTaskLater(Cobalt.getInstance(), () -> {
@@ -233,11 +240,8 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
         }
     }
 
-    // TODO: Switch to using custom particles for each spell
     private void display(){
-        for (Player p : Bukkit.getOnlinePlayers()){
-            particleGroup.display(currentLocation);
-        }
+        if (particleGroup != null) particleGroup.display(currentLocation);
     }
 
     @Override
@@ -274,6 +278,7 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
         double lifetime = 50; // Measured in 1/50 seconds
         ParticleGroup particleGroup;
 
+        List<SpellModule> executeOnCast = new ArrayList<>();
         List<SpellModule> executeOnTick = new ArrayList<>();
         List<SpellModule> executeOnBlockCollision = new ArrayList<>();
         List<SpellModule> executeOnEntityCollision = new ArrayList<>();
@@ -316,6 +321,7 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
             obj.setLifetime(lifetime);
             obj.setParticleGroup(particleGroup);
 
+            obj.setExecuteOnCast(executeOnCast);
             obj.setExecuteOnTick(executeOnTick);
             obj.setExecuteOnBlockCollision(executeOnBlockCollision);
             obj.setExecuteOnEntityCollision(executeOnEntityCollision);
@@ -324,6 +330,11 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
             obj.setTrigger(triggerType);
 
             return super.build();
+        }
+
+        public ProjectileSpellBuilder addExecuteOnCast(SpellModule executeThis){
+            executeOnCast.add(executeThis);
+            return getThis();
         }
 
         public ProjectileSpellBuilder addExecuteOnTick(SpellModule executeThis){
@@ -351,8 +362,7 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
             return getThis();
         }
 
-        // TODO: Use ParticleGroup
-        public ProjectileSpellBuilder addParticle(ParticleGroup group){
+        public ProjectileSpellBuilder setParticle(ParticleGroup group){
             this.particleGroup = group;
             return getThis();
         }
@@ -363,22 +373,22 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
          * @param radius the radius of the projectile in blocks
          * @return the builder
          */
-        public ProjectileSpellBuilder addRadius(double radius){
+        public ProjectileSpellBuilder setRadius(double radius){
             this.radius = radius;
             return getThis();
         }
 
-        public ProjectileSpellBuilder addSpread(double spread){
+        public ProjectileSpellBuilder setSpread(double spread){
             this.spread = spread;
             return getThis();
         }
 
-        public ProjectileSpellBuilder addVelocity(double velocity){
+        public ProjectileSpellBuilder setVelocity(double velocity){
             this.velocity = velocity / 20;
             return getThis();
         }
 
-        public ProjectileSpellBuilder addLifetime(double lifetime){
+        public ProjectileSpellBuilder setLifetime(double lifetime){
             Random r = new Random();
             this.lifetime = (lifetime / 50.0) + r.nextDouble() * .5;
             return getThis();
@@ -416,6 +426,8 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
      */
     public void setDirectionModifier(Vector directionModifier) { this.directionModifier = directionModifier; }
 
+    public void setExecuteOnCast(List<SpellModule> executeThis) { this.executeOnCast = new ArrayList<>(executeThis); }
+
     public void setExecuteOnTick(List<SpellModule> executeThis) { this.executeOnTick = new ArrayList<>(executeThis); }
 
     public void setExecuteOnBlockCollision(List<SpellModule> executeThis) { this.executeOnBlockCollision = new ArrayList<>(executeThis); }
@@ -445,6 +457,8 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
     public List<TriggerType> getTriggerTypes() { return triggerTypes; }
 
     public Vector getDirectionModifier() { return directionModifier.clone(); }
+
+    public List<SpellModule> getExecuteOnCast() { return new ArrayList<>(executeOnCast); }
 
     public List<SpellModule> getExecuteOnTick() { return new ArrayList<>(executeOnTick); }
 
