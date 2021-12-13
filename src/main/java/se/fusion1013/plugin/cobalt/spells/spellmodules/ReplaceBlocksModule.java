@@ -52,6 +52,9 @@ public class ReplaceBlocksModule implements SpellModule {
     }
 
     @Override
+    public void executeOnCast(Location location, Vector velocityVector) { replaceBlocksInSphere(location); }
+
+    @Override
     public void executeOnTick(Location location, Vector velocityVector) {
         replaceBlocksInSphere(location);
     }

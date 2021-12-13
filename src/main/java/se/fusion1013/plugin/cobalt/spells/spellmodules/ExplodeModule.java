@@ -40,6 +40,9 @@ public class ExplodeModule implements SpellModule {
     }
 
     @Override
+    public void executeOnCast(Location location, Vector velocityVector) { explode(location, velocityVector); }
+
+    @Override
     public void executeOnTick(Location location, Vector velocityVector) {
         explode(location, velocityVector);
     }

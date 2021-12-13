@@ -44,6 +44,9 @@ public class DamageModule implements SpellModule {
     }
 
     @Override
+    public void executeOnCast(Location location, Vector directionVector) { }
+
+    @Override
     public void executeOnTick(Location location, Vector velocityVector) { }
 
     @Override

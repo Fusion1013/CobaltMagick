@@ -7,9 +7,10 @@ import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;
 
 public interface SpellModule {
-    void executeOnTick(Location location, Vector directionVector);
-    void executeOnBlockHit(Location location, Vector directionVector, Block blockHit, BlockFace hitBlockFace);
-    void executeOnEntityHit(Location location, Vector directionVector, Entity entityHit);
-    void executeOnDeath(Location location, Vector directionVector);
+    void executeOnCast(Location location, Vector velocityVector);
+    void executeOnTick(Location location, Vector velocityVector);
+    void executeOnBlockHit(Location location, Vector velocityVector, Block blockHit, BlockFace hitBlockFace);
+    void executeOnEntityHit(Location location, Vector velocityVector, Entity entityHit);
+    void executeOnDeath(Location location, Vector velocityVector);
     boolean cancelsCast();
 }
