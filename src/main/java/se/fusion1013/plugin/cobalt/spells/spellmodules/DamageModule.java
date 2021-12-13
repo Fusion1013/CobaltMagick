@@ -7,6 +7,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
 
+import java.util.Random;
+
 public class DamageModule implements SpellModule {
 
     int damage;
@@ -55,8 +57,20 @@ public class DamageModule implements SpellModule {
             if (setsFire) entity.setFireTicks(fireTicks);
             if (knockback) entity.setVelocity(entity.getVelocity().add(velocityVector.clone().normalize().multiply(knockbackForce)));
 
-            entity.damage(damage);
+            entity.damage(getDamageWithCrit());
         }
+    }
+
+    private int getDamageWithCrit(){
+        int critIncrease = (int)criticalChance;
+        Random r = new Random();
+        double chance = r.nextDouble();
+        if (criticalChance-critIncrease >= chance){
+            critIncrease++;
+        }
+        critIncrease++;
+
+        return damage * critIncrease;
     }
 
     @Override
