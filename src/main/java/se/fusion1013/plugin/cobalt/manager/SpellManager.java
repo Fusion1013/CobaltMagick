@@ -14,6 +14,7 @@ import se.fusion1013.plugin.cobalt.particle.ParticleGroup;
 import se.fusion1013.plugin.cobalt.particle.styles.ParticleStylePoint;
 import se.fusion1013.plugin.cobalt.particle.styles.ParticleStyleSphere;
 import se.fusion1013.plugin.cobalt.spells.*;
+import se.fusion1013.plugin.cobalt.spells.spellmodules.AreaEffectModule;
 import se.fusion1013.plugin.cobalt.spells.spellmodules.DamageModule;
 import se.fusion1013.plugin.cobalt.spells.spellmodules.ExplodeModule;
 import se.fusion1013.plugin.cobalt.spells.spellmodules.ReplaceBlocksModule;
@@ -44,66 +45,66 @@ public class SpellManager extends Manager {
     // ----- PROJECTILE SPELLS ----- ID: 1+XXX
 
     public static final Spell SPARK_BOLT = register(new ProjectileSpell.ProjectileSpellBuilder(10, "spark_bolt")
-            .addManaDrain(5).addRadius(.2).addVelocity(16).addLifetime(80).addCastDelay(0.05).addSpread(-1)
+            .addManaDrain(5).setRadius(.2).setVelocity(16).setLifetime(80).addCastDelay(0.05).setSpread(-1)
             .addExecuteOnEntityCollision(new DamageModule(3, true).setCriticalChance(5))
             .addDescription("A weak but enchanting sparkling projectile")
-            .addParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
+            .setParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
                     new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.SPELL_WITCH).setCount(5).setOffset(new Vector(.1, .1, .1)).build()
             ).build())
             .setCustomModel(2)
             .build());
 
     public static final Spell BUBBLE_SPARK = register(new ProjectileSpell.ProjectileSpellBuilder(11, "bubble_spark")
-            .addManaDrain(5).addRadius(.4).addSpread(22.9).addVelocity(5).addLifetime(100).addCastDelay(-0.08)
+            .addManaDrain(5).setRadius(.4).setSpread(22.9).setVelocity(5).setLifetime(100).addCastDelay(-0.08)
             .addExecuteOnEntityCollision(new DamageModule(5, true))
             .addDescription("A bouncy, inaccurate spell")
             .setIsBouncy(true)
-            .addParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
+            .setParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
                     new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.CLOUD).build()
             ).build())
             .setCustomModel(3)
             .build());
 
     public static final Spell BOUNCING_BURST = register(new ProjectileSpell.ProjectileSpellBuilder(12, "bouncing_burst")
-            .addManaDrain(5).addRadius(.4).addSpread(0.6).addVelocity(14).addLifetime(750).addCastDelay(-0.03).addGravity(3)
+            .addManaDrain(5).setRadius(.4).setSpread(0.6).setVelocity(14).setLifetime(750).addCastDelay(-0.03).addGravity(3)
             .addExecuteOnEntityCollision(new DamageModule(3, true))
             .addExecuteOnEntityCollision(new ExplodeModule(1, true))
             .addDescription("A very bouncy projectile")
             .setIsBouncy(true)
-            .addParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
+            .setParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
                     new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.SPELL).build()
             ).build())
             .setCustomModel(4)
             .build());
 
     public static final Spell FIREBOLT = register(new ProjectileSpell.ProjectileSpellBuilder(13, "firebolt")
-            .addManaDrain(50).addRadius(.7).addSpread(2.9).addVelocity(5.3).addLifetime(500).addCastDelay(.5).addGravity(2)
+            .addManaDrain(50).setRadius(.7).setSpread(2.9).setVelocity(5.3).setLifetime(500).addCastDelay(.5).addGravity(2)
             .addExecuteOnEntityCollision(new ExplodeModule(2, true).setsFire().destroysBlocks())
             .addExecuteOnDeath(new ExplodeModule(2, true).setsFire().destroysBlocks())
             .addExecuteOnBlockCollision(new ExplodeModule(2, true).setsFire().destroysBlocks().onlyIfVelocityExceeds(.75))
             .addDescription("A bouncy, explosive bolt")
             .setIsBouncy(true)
-            .addParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
+            .setParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
                     new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.FLAME).setCount(3).setOffset(new Vector(.1, .1, .1)).build()
             ).build())
             .setCustomModel(5)
             .build());
 
     public static final Spell BURST_OF_AIR = register(new ProjectileSpell.ProjectileSpellBuilder(14, "burst_of_air")
-            .addManaDrain(5).addRadius(.4).addVelocity(8).addLifetime(40).addCastDelay(.05).addSpread(-2)
+            .addManaDrain(5).setRadius(.4).setVelocity(8).setLifetime(40).addCastDelay(.05).setSpread(-2)
             .addExecuteOnEntityCollision(new DamageModule(6, true).setKnockback(3))
             .addDescription("A brittle burst of air capable of greatly pushing objects")
-            .addParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
+            .setParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
                     new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.CLOUD).setCount(2).build()
             ).build())
             .setCustomModel(6)
             .build());
 
     public static final Spell SPARK_BOLT_WITH_TRIGGER = register(new ProjectileSpell.ProjectileSpellBuilder(15, "spark_bolt_with_trigger")
-            .addManaDrain(10).addRadius(.2).addVelocity(16).addLifetime(80).addCastDelay(0.05)
+            .addManaDrain(10).setRadius(.2).setVelocity(16).setLifetime(80).addCastDelay(0.05)
             .addExecuteOnEntityCollision(new DamageModule(3, true).setCriticalChance(5))
             .addDescription("A spark bolt that casts another spell upon collision")
-            .addParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
+            .setParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
                     new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.SPELL_WITCH).setCount(5).setOffset(new Vector(.1, .1, .1)).build()
             ).build())
             .addTrigger(Spell.TriggerType.COLLISION)
@@ -111,12 +112,12 @@ public class SpellManager extends Manager {
             .build());
 
     public static final Spell SPARK_BOLT_WITH_DOUBLE_TRIGGER = register(new ProjectileSpell.ProjectileSpellBuilder(16, "spark_bolt_with_double_trigger")
-            .addManaDrain(15).addRadius(.2).addVelocity(14).addLifetime(80).addCastDelay(0.07)
+            .addManaDrain(15).setRadius(.2).setVelocity(14).setLifetime(80).addCastDelay(0.07)
             .addExecuteOnEntityCollision(new DamageModule(4, true).setCriticalChance(5))
             .addExecuteOnBlockCollision(new ExplodeModule(1, true))
             .addExecuteOnEntityCollision(new ExplodeModule(1, true))
             .addDescription("A spark bolt that casts two new spells upon collision")
-            .addParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
+            .setParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
                     new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.SPELL_WITCH).setCount(5).setOffset(new Vector(.1, .1, .1)).build()
             ).build())
             .addTrigger(Spell.TriggerType.COLLISION)
@@ -125,10 +126,10 @@ public class SpellManager extends Manager {
             .build());
 
     public static final Spell SPARK_BOLT_WITH_TIMER = register(new ProjectileSpell.ProjectileSpellBuilder(17, "spark_bolt_with_timer")
-            .addManaDrain(10).addRadius(.2).addVelocity(16).addLifetime(80).addCastDelay(0.05)
+            .addManaDrain(10).setRadius(.2).setVelocity(16).setLifetime(80).addCastDelay(0.05)
             .addExecuteOnEntityCollision(new DamageModule(3, true).setCriticalChance(5))
             .addDescription("A spark bolt that casts another spell upon collision")
-            .addParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
+            .setParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
                     new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.SPELL_WITCH).setCount(5).setOffset(new Vector(.1, .1, .1)).build()
             ).build())
             .addTrigger(Spell.TriggerType.TIMER)
@@ -136,10 +137,10 @@ public class SpellManager extends Manager {
             .build());
 
     public static final Spell BLACK_HOLE = register(new ProjectileSpell.ProjectileSpellBuilder(18, "black_hole")
-            .addManaDrain(180).addRadius(4).addVelocity(4).addLifetime(120).addCastDelay(1.33)
+            .addManaDrain(180).setRadius(4).setVelocity(4).setLifetime(120).addCastDelay(1.33)
             .addExecuteOnTick(new ReplaceBlocksModule(Material.AIR, 4, false).setDropItems().setSlowReplace().setReplaceNonAir())
             .addDescription("A slow orb of void that eats through all obstacles")
-            .addParticle(new ParticleGroup.ParticleGroupBuilder()
+            .setParticle(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.SQUID_INK).setRadius(4).setDensity(75).build())
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.CRIT_MAGIC).setRadius(4).setDensity(75).build())
                     .build())
@@ -148,11 +149,11 @@ public class SpellManager extends Manager {
             .build());
 
     public static final Spell DIGGING_BLAST = register(new ProjectileSpell.ProjectileSpellBuilder(19, "digging_blast")
-            .addManaDrain(0).addRadius(1).addVelocity(.01).addLifetime(2).addCastDelay(0.02).addRechargeTime(-0.17)
+            .addManaDrain(0).setRadius(1).setVelocity(.01).setLifetime(2).addCastDelay(0.02).addRechargeTime(-0.17)
             .addExecuteOnEntityCollision(new DamageModule(3, true))
             .addExecuteOnTick(new ReplaceBlocksModule(Material.AIR, 1, false).setReplaceNonAir().setDropItems())
             .addDescription("A weak but enchanting sparkling projectile")
-            .addParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
+            .setParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
                     new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.END_ROD).setCount(10).setOffset(new Vector(.1, .1, .1)).build())
                     .build())
             .setCustomModel(25)
@@ -160,14 +161,14 @@ public class SpellManager extends Manager {
             .build());
 
     public static final Spell NUKE = register(new ProjectileSpell.ProjectileSpellBuilder(110, "nuke")
-            .addManaDrain(200).addRadius(1).addVelocity(20).addLifetime(200).addSpread(.6).addCastDelay(.33).addRechargeTime(10).addGravity(.9)
+            .addManaDrain(200).setRadius(1).setVelocity(20).setLifetime(200).setSpread(.6).addCastDelay(.33).addRechargeTime(10).addGravity(.9)
             .addExecuteOnEntityCollision(new DamageModule(75, true))
             .addExecuteOnEntityCollision(new ReplaceBlocksModule(Material.AIR, 10, true).setReplaceNonAir().setNoSound())
             .addExecuteOnBlockCollision(new ReplaceBlocksModule(Material.AIR, 10, true).setReplaceNonAir().setNoSound())
             .addExecuteOnEntityCollision(new ExplodeModule(20, true).setsFire().destroysBlocks())
             .addExecuteOnBlockCollision(new ExplodeModule(20, true).setsFire().destroysBlocks())
             .addDescription("Take cover!")
-            .addParticle(new ParticleGroup.ParticleGroupBuilder()
+            .setParticle(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.LAVA).setCount(10).setOffset(new Vector(.5, .5, .5)).build())
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.FLAME).setRadius(.7).setDensity(20).build())
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.SMOKE_NORMAL).setRadius(.5).setDensity(10).build())
@@ -177,14 +178,14 @@ public class SpellManager extends Manager {
             .build());
 
     public static final Spell GIGA_NUKE = register(new ProjectileSpell.ProjectileSpellBuilder(111, "giga_nuke")
-            .addManaDrain(500).addRadius(1).addVelocity(20).addLifetime(200).addSpread(.6).addCastDelay(.83).addRechargeTime(13.33).addGravity(.9)
+            .addManaDrain(500).setRadius(1).setVelocity(20).setLifetime(200).setSpread(.6).addCastDelay(.83).addRechargeTime(13.33).addGravity(.9)
             .addExecuteOnEntityCollision(new DamageModule(250, true))
             .addExecuteOnEntityCollision(new ReplaceBlocksModule(Material.AIR, 20, true).setReplaceNonAir().setNoSound())
             .addExecuteOnBlockCollision(new ReplaceBlocksModule(Material.AIR, 20, true).setReplaceNonAir().setNoSound())
             .addExecuteOnEntityCollision(new ExplodeModule(30, true).setsFire().destroysBlocks())
             .addExecuteOnBlockCollision(new ExplodeModule(30, true).setsFire().destroysBlocks())
             .addDescription("What do you expect?")
-            .addParticle(new ParticleGroup.ParticleGroupBuilder()
+            .setParticle(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.LAVA).setCount(20).setOffset(new Vector(.5, .5, .5)).build())
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.FLAME).setRadius(.9).setDensity(40).build())
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.SMOKE_NORMAL).setRadius(.7).setDensity(20).build())
@@ -197,17 +198,19 @@ public class SpellManager extends Manager {
     // ----- STATIC PROJECTILE SPELLS ----- ID: 2+XXX
 
     public static final Spell CIRCLE_OF_BUOYANCY = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(20, "circle_of_buoyancy")
-            .addManaDrain(10).addCastDelay(.25).setRadius(5).setLifetime(10)
+            .addManaDrain(10).addCastDelay(.25).setRadius(5).setLifetime(500)
             .addDescription("A field of levitative magic")
-            .setGivesEffect(new PotionEffect(PotionEffectType.LEVITATION, 10, 0, false, false))
+            .addExecuteOnTick(new AreaEffectModule(new PotionEffect(PotionEffectType.LEVITATION, 2, 0, false, false), 5, false))
+            .addParticle(new ParticleGroup.ParticleGroupBuilder()
+                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(150).build())
+                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(20).setInSphere().build())
+                    .build())
             .setCustomModel(7)
             .build());
 
-    /*
-    // TODO: THE FOLLOWING TWO SHOULD BE STATIC PROJECTILES (THE BLACK HOLES)
-    public static final Spell GIGA_BLACK_HOLE = register(new ProjectileSpell.ProjectileSpellBuilder(110, "giga_black_hole")
-            .addManaDrain(240).addRadius(8).addVelocity(4).addLifetime(500).addCastDelay(1.33)
-            .addExecuteOnTick(new ReplaceBlocksModule(Material.AIR, 8, false).setDropItems().setReplaceNonAir())
+    public static final Spell GIGA_BLACK_HOLE = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(21, "giga_black_hole")
+            .addManaDrain(240).setRadius(8).setLifetime(500).addCastDelay(1.33)
+            .addExecuteOnTick(new ReplaceBlocksModule(Material.AIR, 8, false).setDropItems().setReplaceNonAir().setSlowReplace())
             .addDescription("A growing orb of negative energy that destroys everything in its reach")
             .addParticle(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.SQUID_INK).setRadius(8).setDensity(150).build())
@@ -217,9 +220,9 @@ public class SpellManager extends Manager {
             .setCollidesWithBlocks(false).setCollidesWithEntities(false)
             .build());
 
-    public static final Spell OMEGA_BLACK_HOLE = register(new ProjectileSpell.ProjectileSpellBuilder(111, "omega_black_hole")
-            .addManaDrain(500).addRadius(20).addVelocity(.01).addLifetime(1000).addCastDelay(1).addRechargeTime(1.67)
-            .addExecuteOnTick(new ReplaceBlocksModule(Material.AIR, 20, false).setReplaceNonAir())
+    public static final Spell OMEGA_BLACK_HOLE = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(22, "omega_black_hole")
+            .addManaDrain(500).setRadius(20).setLifetime(1000).addCastDelay(1).addRechargeTime(1.67)
+            .addExecuteOnTick(new ReplaceBlocksModule(Material.AIR, 20, false).setReplaceNonAir().setSlowReplace())
             .addDescription("Even light dies eventually...")
             .addParticle(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.SQUID_INK).setRadius(20).setDensity(300).build())
@@ -228,7 +231,6 @@ public class SpellManager extends Manager {
             .setCustomModel(27)
             .setCollidesWithBlocks(false).setCollidesWithEntities(false)
             .build());
-     */
 
     // ----- PASSIVE SPELLS ----- ID: 3+XXX
 
