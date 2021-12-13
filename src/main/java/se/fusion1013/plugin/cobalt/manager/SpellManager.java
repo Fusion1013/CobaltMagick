@@ -78,7 +78,7 @@ public class SpellManager extends Manager {
 
     public static final Spell FIREBOLT = register(new ProjectileSpell.ProjectileSpellBuilder(13, "firebolt")
             .addManaDrain(50).addRadius(.7).addSpread(2.9).addVelocity(5.3).addLifetime(500).addCastDelay(.5).addGravity(2)
-            .addExecuteOnEntityCollision(new DamageModule(45, true).setsFire(40))
+            .addExecuteOnEntityCollision(new ExplodeModule(2, true).setsFire().destroysBlocks())
             .addExecuteOnDeath(new ExplodeModule(2, true).setsFire().destroysBlocks())
             .addExecuteOnBlockCollision(new ExplodeModule(2, true).setsFire().destroysBlocks().onlyIfVelocityExceeds(.75))
             .addDescription("A bouncy, explosive bolt")
