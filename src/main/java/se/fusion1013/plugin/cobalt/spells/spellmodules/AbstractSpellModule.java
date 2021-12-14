@@ -1,6 +1,9 @@
 package se.fusion1013.plugin.cobalt.spells.spellmodules;
 
 import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobalt.Cobalt;
 
@@ -15,6 +18,10 @@ public abstract class AbstractSpellModule<B extends AbstractSpellModule> impleme
     int expandTime = 1;
     boolean animateRadius = false;
 
+    int maxIterationsPerTick = 1;
+    int currentIterations = 0;
+    boolean canRun = true;
+
     public AbstractSpellModule() { }
 
     public AbstractSpellModule(AbstractSpellModule target){
@@ -23,6 +30,14 @@ public abstract class AbstractSpellModule<B extends AbstractSpellModule> impleme
         this.targetRadius = target.targetRadius;
         this.expandTime = target.expandTime;
         this.animateRadius = target.animateRadius;
+        this.maxIterationsPerTick = target.maxIterationsPerTick;
+        this.currentIterations = target.currentIterations;
+        this.canRun = target.canRun;
+    }
+
+    public B setMaxIterationsPerTick(int maxIterationsPerTick){
+        this.maxIterationsPerTick = maxIterationsPerTick;
+        return getThis();
     }
 
     public B animateRadius(double startRadius, int expandTime){
@@ -46,11 +61,29 @@ public abstract class AbstractSpellModule<B extends AbstractSpellModule> impleme
         return clone;
     }
 
+
+    @Override
+    public void executeOnEntityHit(Location location, Vector velocityVector, Entity entityHit) {
+        currentIterations++;
+        canRun = currentIterations <= maxIterationsPerTick;
+    }
+
+    @Override
+    public void executeOnBlockHit(Location location, Vector velocityVector, Block blockHit, BlockFace hitBlockFace) {
+        currentIterations++;
+        canRun = currentIterations <= maxIterationsPerTick;
+    }
+
     @Override
     public void executeOnTick(Location location, Vector velocityVector) {
         if (currentRadius < targetRadius){
             currentRadius += Math.min((targetRadius - startRadius) / (double)expandTime, targetRadius);
         }
+    }
+
+    @Override
+    public void reset() {
+        currentIterations = 0;
     }
 
     @Override
