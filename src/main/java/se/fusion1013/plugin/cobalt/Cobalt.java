@@ -77,6 +77,7 @@ public final class Cobalt extends JavaPlugin implements CobaltPlugin {
         WarpCommand.register();
         GamemodeCommand.register();
         CGiveCommand.register();
+        KillSpellsCommand.register();
     }
 
     /**
