@@ -4,7 +4,6 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
-import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -14,9 +13,7 @@ import se.fusion1013.plugin.cobalt.Cobalt;
 import se.fusion1013.plugin.cobalt.database.Database;
 import se.fusion1013.plugin.cobalt.manager.LocaleManager;
 import se.fusion1013.plugin.cobalt.spells.CastParser;
-import se.fusion1013.plugin.cobalt.spells.IModifier;
 import se.fusion1013.plugin.cobalt.spells.ISpell;
-import se.fusion1013.plugin.cobalt.spells.Spell;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -168,6 +165,7 @@ public class Wand implements Runnable { // TODO: Move things to abstract class a
         }
 
         currentMana = Math.max(0, currentMana - manaUsed);
+        currentMana = Math.min(currentMana, manaMax);
         castCooldown = Math.max(0, castDelayInduced);
 
         // Check if all spells in the wand has been cast. If they have, start recharge cooldown
