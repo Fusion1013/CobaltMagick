@@ -3,11 +3,13 @@ package se.fusion1013.plugin.cobalt.manager;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobalt.Cobalt;
 import se.fusion1013.plugin.cobalt.particle.ParticleGroup;
@@ -25,6 +27,33 @@ public class SpellManager extends Manager {
 
     public static final Map<Integer, Spell> INBUILT_SPELLS = new HashMap<>();
     static NamespacedKey spellKey = new NamespacedKey(Cobalt.getInstance(), "spell");
+
+    private Map<Integer, Spell> activeSpells = new HashMap<>();
+    private Map<Integer, BukkitTask> activeSpellTasks = new HashMap<>();
+    public void addActiveSpell(Spell spell, BukkitTask task, int hashCode){
+        activeSpells.put(hashCode, spell);
+        activeSpellTasks.put(hashCode, task);
+    }
+    public void removeActiveSpell(int hashCode){
+        activeSpells.remove(hashCode);
+        activeSpellTasks.remove(hashCode);
+    }
+
+    /**
+     * Kills all active spells. Returns the number of spells killed
+     *
+     * @return number of spells killed
+     */
+    public int killAllSpells(){
+        int nSpells = activeSpellTasks.size();
+        for (BukkitTask s : activeSpellTasks.values()){
+            s.cancel();
+        }
+        activeSpells.clear();
+        activeSpellTasks.clear();
+        return nSpells;
+    }
+
 
     private static SpellManager INSTANCE = null;
     /**
