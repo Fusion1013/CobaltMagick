@@ -93,7 +93,18 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
             module.executeOnTick(currentLocation, velocityVector.clone());
         }
 
-        if (movementStopped) staticProjectileTask.cancel();
+        if (movementStopped) killParticle();
+    }
+
+    private void killParticle(){
+        SpellManager.getInstance().removeActiveSpell(this.hashCode());
+        staticProjectileTask.cancel();
+        movementStopped = true;
+    }
+
+    @Override
+    public void cancelTask() {
+        killParticle();
     }
 
     private void display(){
@@ -105,7 +116,7 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
         for (SpellModule module : executeOnDeath){
             module.executeOnDeath(currentLocation, velocityVector.clone());
         }
-        staticProjectileTask.cancel();
+        killParticle();
     }
 
     @Override
