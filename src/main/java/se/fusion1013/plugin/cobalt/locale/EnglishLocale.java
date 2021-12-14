@@ -58,6 +58,9 @@ public class EnglishLocale implements Locale {
                 this.put("commands.gamemode.change", "&7Set &3%player_name%&7's gamemode to &3%gamemode%");
                 this.put("commands.gamemode.error.gamemode_not_found", "&7Gamemode &3%gamemode% &7not found");
 
+                this.put("#6", "killspells");
+                this.put("commands.killspells.killall.success", "&7Killed &3%killed_spells% &7spells");
+
                 this.put("#10", "Misc");
                 this.put("command-not-implemented", "&7Command not yet implemented");
                 this.put("command-unknown", "&7Unknown command");
