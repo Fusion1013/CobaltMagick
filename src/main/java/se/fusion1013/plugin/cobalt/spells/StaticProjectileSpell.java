@@ -177,14 +177,14 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
         }
 
         /**
-         * Sets the lifetime of the spell
+         * Sets the lifetime of the spell and applies a small random value
          *
          * @param lifetime lifetime of the spell measured in seconds
          * @return
          */
         public StaticProjectileSpellBuilder setLifetime(double lifetime){
             Random r = new Random();
-            this.lifetime = (lifetime / 50.0) + r.nextDouble() * .5;
+            this.lifetime = lifetime + r.nextDouble() * .5;
             return getThis();
         }
 
