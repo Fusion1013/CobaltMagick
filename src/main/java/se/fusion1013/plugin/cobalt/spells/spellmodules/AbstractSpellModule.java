@@ -10,10 +10,10 @@ import java.util.List;
 public abstract class AbstractSpellModule<B extends AbstractSpellModule> implements SpellModule, Cloneable {
 
     double currentRadius = 1;
-    private double startRadius = 0;
-    private double targetRadius = 1;
-    private int expandTime = 1;
-    private boolean animateRadius = false;
+    double startRadius = 0;
+    double targetRadius = 1;
+    int expandTime = 1;
+    boolean animateRadius = false;
 
     public AbstractSpellModule(){ }
 
@@ -32,6 +32,12 @@ public abstract class AbstractSpellModule<B extends AbstractSpellModule> impleme
         this.targetRadius = currentRadius;
         this.currentRadius = startRadius;
         return getThis();
+    }
+
+    public void setRadius(double radius){
+        currentRadius = radius;
+        startRadius = radius;
+        targetRadius = radius;
     }
 
     public static List<SpellModule> cloneList(List<SpellModule> list) {
