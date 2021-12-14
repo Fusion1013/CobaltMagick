@@ -23,7 +23,7 @@ public class ReplaceBlocksModule extends AbstractSpellModule<ReplaceBlocksModule
 
     public ReplaceBlocksModule(Material replaceMaterial, double radius, boolean cancelsCast){
         this.replaceMaterial = replaceMaterial;
-        this.currentRadius = radius;
+        setRadius(radius);
         this.cancelsCast = cancelsCast;
     }
 
