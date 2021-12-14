@@ -13,4 +13,5 @@ public interface SpellModule {
     void executeOnEntityHit(Location location, Vector velocityVector, Entity entityHit);
     void executeOnDeath(Location location, Vector velocityVector);
     boolean cancelsCast();
+    SpellModule clone();
 }
