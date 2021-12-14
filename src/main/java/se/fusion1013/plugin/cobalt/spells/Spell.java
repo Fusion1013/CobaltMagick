@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import se.fusion1013.plugin.cobalt.Cobalt;
+import se.fusion1013.plugin.cobalt.spells.spellmodifiers.SpellModifier;
 import se.fusion1013.plugin.cobalt.wand.Wand;
 
 import java.util.ArrayList;
@@ -26,8 +27,6 @@ public abstract class Spell implements ISpell, Cloneable {
     static NamespacedKey spellKey = new NamespacedKey(Cobalt.getInstance(), "spell");
 
     boolean hasCast = false;
-
-    List<IModifier> modifiers = new ArrayList<>();
 
     // Shown Attributes
     int uses;
@@ -78,15 +77,6 @@ public abstract class Spell implements ISpell, Cloneable {
     }
 
     // ----- GETTERS / SETTERS -----
-
-    /**
-     * Adds modifiers to a spell
-     *
-     * @param modifiers modifiers to add to the spell
-     */
-    public void addModifiers(List<IModifier> modifiers) {
-        this.modifiers = modifiers;
-    }
 
     /**
      * Gets a new <code>ItemStack</code> representing a castable spell
