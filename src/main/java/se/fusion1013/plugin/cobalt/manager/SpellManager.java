@@ -16,6 +16,7 @@ import se.fusion1013.plugin.cobalt.particle.ParticleGroup;
 import se.fusion1013.plugin.cobalt.particle.styles.ParticleStylePoint;
 import se.fusion1013.plugin.cobalt.particle.styles.ParticleStyleSphere;
 import se.fusion1013.plugin.cobalt.spells.*;
+import se.fusion1013.plugin.cobalt.spells.spellmodifiers.AddSpellModuleModifier;
 import se.fusion1013.plugin.cobalt.spells.spellmodules.*;
 
 import java.util.ArrayList;
@@ -284,6 +285,33 @@ public class SpellManager extends Manager {
     // ----- UTILITY SPELLS ----- ID: 4+XXX
 
     // ----- PROJECTILE MODIFIER SPELLS ----- ID: 5+XXX
+
+    public static final Spell ADD_MANA = register(new ProjectileModifierSpell.ProjectileModifierSpellBuilder(51, "add_mana")
+            .addManaDrain(-30).addCastDelay(.17)
+            .addDescription("Immediately adds 30 mana to the wand")
+            .setCustomModel(1)
+            .build());
+
+    public static final Spell TEST_SPELL = register(new ProjectileModifierSpell.ProjectileModifierSpellBuilder(52, "test_spell")
+            .addManaDrain(10).addCastDelay(.17)
+            .addDescription("Test Spell")
+            .addSpellModifier(new AddSpellModuleModifier().addOnTick(new AreaEffectModule(5, false).setPotionEffect(new PotionEffect(PotionEffectType.POISON, 2, 0))))
+            .setCustomModel(1)
+            .build());
+
+    public static final Spell FREEZE_CHARGE = register(new ProjectileModifierSpell.ProjectileModifierSpellBuilder(53, "freeze_charge")
+            .addManaDrain(10)
+            .addSpellModifier(new AddSpellModuleModifier().addOnEntityCollision(new DamageModule(5, false)))
+            .addSpellModifier(new AddSpellModuleModifier().addOnCollision(new ReplaceBlocksModule(Material.SNOW, 5, false).onlySetTopBlocks()))
+            .addSpellModifier(new AddSpellModuleModifier().addOnCollision(new AreaEffectModule(5, false).setInstantFreeze(200)))
+            .addSpellModifier(new AddSpellModuleModifier().addOnCollision(new ParticleModule(
+                    new ParticleGroup.ParticleGroupBuilder()
+                            .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.SNOWFLAKE).setDensity(200).setSpeed(.4).setRadius(2).setInSphere().build())
+                            .build()
+                    , false
+            )))
+            .addDescription("Gives a projectile a frozen charge, that it will release on impact")
+            .build());
 
     // ----- MATERIAL SPELLS ----- ID: 6+XXX
 
