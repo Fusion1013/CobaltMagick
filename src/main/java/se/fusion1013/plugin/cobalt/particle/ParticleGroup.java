@@ -13,9 +13,22 @@ import se.fusion1013.plugin.cobalt.particle.styles.ParticleStyle;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ParticleGroup implements IParticleGroup {
+public class ParticleGroup implements IParticleGroup, Cloneable {
 
     private List<ParticleStyle> particleStyleList; // List of particles in the group
+
+    public ParticleGroup(){}
+
+    public ParticleGroup(ParticleGroup target){
+        this.particleStyleList = cloneList(target.particleStyleList);
+    }
+
+    // TODO: Move to abstract particle style class
+    public static List<ParticleStyle> cloneList(List<ParticleStyle> list) {
+        List<ParticleStyle> clone = new ArrayList<ParticleStyle>(list.size());
+        for (ParticleStyle item : list) clone.add(item.clone());
+        return clone;
+    }
 
     public void display(Location location){
         for (Player p : Bukkit.getOnlinePlayers()){
@@ -27,6 +40,11 @@ public class ParticleGroup implements IParticleGroup {
                 }
             }
         }
+    }
+
+    @Override
+    public ParticleGroup clone() {
+        return new ParticleGroup(this);
     }
 
     // ---------- GETTERS / SETTERS ----------
