@@ -14,10 +14,7 @@ import se.fusion1013.plugin.cobalt.particle.ParticleGroup;
 import se.fusion1013.plugin.cobalt.particle.styles.ParticleStylePoint;
 import se.fusion1013.plugin.cobalt.particle.styles.ParticleStyleSphere;
 import se.fusion1013.plugin.cobalt.spells.*;
-import se.fusion1013.plugin.cobalt.spells.spellmodules.AreaEffectModule;
-import se.fusion1013.plugin.cobalt.spells.spellmodules.DamageModule;
-import se.fusion1013.plugin.cobalt.spells.spellmodules.ExplodeModule;
-import se.fusion1013.plugin.cobalt.spells.spellmodules.ReplaceBlocksModule;
+import se.fusion1013.plugin.cobalt.spells.spellmodules.*;
 
 import java.awt.geom.Area;
 import java.util.ArrayList;
@@ -163,6 +160,12 @@ public class SpellManager extends Manager {
 
     public static final Spell NUKE = register(new ProjectileSpell.ProjectileSpellBuilder(110, "nuke")
             .addManaDrain(200).setRadius(1).setVelocity(20).setLifetime(200).setSpread(.6).addCastDelay(.33).addRechargeTime(10).addGravity(.9)
+            .addExecuteOnBlockCollision(new ParticleModule(new ParticleGroup.ParticleGroupBuilder()
+                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.FLAME).setCount(500).setOffset(new Vector(2, 2, 2)).setSpeed(1).build())
+                    .build(), false))
+            .addExecuteOnEntityCollision(new ParticleModule(new ParticleGroup.ParticleGroupBuilder()
+                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.FLAME).setCount(500).setOffset(new Vector(2, 2, 2)).setSpeed(1).build())
+                    .build(), false))
             .addExecuteOnEntityCollision(new DamageModule(75, true))
             .addExecuteOnEntityCollision(new ExplodeModule(10, true).setsFire().destroysBlocks())
             .addExecuteOnBlockCollision(new ExplodeModule(10, true).setsFire().destroysBlocks())
@@ -178,9 +181,22 @@ public class SpellManager extends Manager {
 
     public static final Spell GIGA_NUKE = register(new ProjectileSpell.ProjectileSpellBuilder(111, "giga_nuke")
             .addManaDrain(500).setRadius(1).setVelocity(20).setLifetime(200).setSpread(.6).addCastDelay(.83).addRechargeTime(13.33).addGravity(.9)
+            .addExecuteOnBlockCollision(new ParticleModule(new ParticleGroup.ParticleGroupBuilder()
+                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.FLAME).setCount(500).setOffset(new Vector(3, 3, 3)).setSpeed(1).build())
+                    .build(), false))
+            .addExecuteOnEntityCollision(new ParticleModule(new ParticleGroup.ParticleGroupBuilder()
+                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.FLAME).setCount(500).setOffset(new Vector(3, 3, 3)).setSpeed(1).build())
+                    .build(), false))
             .addExecuteOnEntityCollision(new DamageModule(250, true))
             .addExecuteOnEntityCollision(new ExplodeModule(20, true).setsFire().destroysBlocks())
             .addExecuteOnBlockCollision(new ExplodeModule(20, true).setsFire().destroysBlocks())
+            .addDescription("What do you expect?")
+            .setParticle(new ParticleGroup.ParticleGroupBuilder()
+                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.LAVA).setCount(20).setOffset(new Vector(.5, .5, .5)).build())
+                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.FLAME).setRadius(.9).setDensity(40).build())
+                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.SMOKE_NORMAL).setRadius(.7).setDensity(20).build())
+                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.SMOKE_LARGE).setCount(4).setOffset(new Vector(.2, .2, .2)).build())
+                    .build())
             .addDescription("What do you expect?")
             .setParticle(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.LAVA).setCount(20).setOffset(new Vector(.5, .5, .5)).build())
