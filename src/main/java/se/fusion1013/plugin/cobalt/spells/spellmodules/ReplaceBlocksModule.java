@@ -14,6 +14,8 @@ public class ReplaceBlocksModule implements SpellModule {
     double radius;
     boolean cancelsCast;
 
+    boolean setTopBlocks = false;
+
     boolean dropItems = false;
     boolean slowReplace = false;
     boolean replaceNonAir = false;
@@ -24,6 +26,16 @@ public class ReplaceBlocksModule implements SpellModule {
         this.replaceMaterial = replaceMaterial;
         this.radius = radius;
         this.cancelsCast = cancelsCast;
+    }
+
+    /**
+     * Sets if only blocks on top of another blocks will be placed. Setting this will ignore any values for Drop Items, Replace Non Air, Hollow Replace and No Sound
+     *
+     * @return the module
+     */
+    public ReplaceBlocksModule onlySetTopBlocks(){
+        this.setTopBlocks = true;
+        return this;
     }
 
     public ReplaceBlocksModule setNoSound(){
@@ -75,7 +87,8 @@ public class ReplaceBlocksModule implements SpellModule {
     }
 
     private void replaceBlocksInSphere(Location location){
-        BlockUtil.setBlocksInSphere(location, replaceMaterial, (int)Math.round(radius), dropItems, slowReplace, replaceNonAir, hollowReplace, noSound);
+        if (setTopBlocks) BlockUtil.setTopBlocksInSphere(location, replaceMaterial, (int)Math.round(radius), slowReplace);
+        else BlockUtil.setBlocksInSphere(location, replaceMaterial, (int)Math.round(radius), dropItems, slowReplace, replaceNonAir, hollowReplace, noSound);
     }
 
     @Override
