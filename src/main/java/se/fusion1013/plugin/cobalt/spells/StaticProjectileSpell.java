@@ -234,6 +234,12 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
 
     public void setExecuteOnDeath(List<SpellModule> executeThis) { this.executeOnDeath = new ArrayList<>(executeThis); }
 
+    public void addExecuteOnCast(SpellModule executeThis) { this.executeOnCast.add(executeThis); }
+
+    public void addExecuteOnTick(SpellModule executeThis) { this.executeOnTick.add(executeThis); }
+
+    public void addExecuteOnDeath(SpellModule executeThis) { this.executeOnDeath.add(executeThis); }
+
     public void setParticleGroup(ParticleGroup particleGroup) { this.particleGroup = particleGroup; }
 
     public StaticProjectileShape getStaticProjectileShape() { return staticProjectileShape; }
