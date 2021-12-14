@@ -99,7 +99,7 @@ public class SpellManager extends Manager {
             .addDescription("A very bouncy projectile")
             .setIsBouncy(true)
             .setParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
-                    new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.SPELL).build()
+                    new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.VILLAGER_HAPPY).setCount(4).setOffset(new Vector(.1, .1, .1)).build()
             ).build())
             .setCustomModel(4)
             .build());
@@ -289,14 +289,7 @@ public class SpellManager extends Manager {
     public static final Spell ADD_MANA = register(new ProjectileModifierSpell.ProjectileModifierSpellBuilder(51, "add_mana")
             .addManaDrain(-30).addCastDelay(.17)
             .addDescription("Immediately adds 30 mana to the wand")
-            .setCustomModel(1)
-            .build());
-
-    public static final Spell TEST_SPELL = register(new ProjectileModifierSpell.ProjectileModifierSpellBuilder(52, "test_spell")
-            .addManaDrain(10).addCastDelay(.17)
-            .addDescription("Test Spell")
-            .addSpellModifier(new AddSpellModuleModifier().addOnTick(new AreaEffectModule(5, false).setPotionEffect(new PotionEffect(PotionEffectType.POISON, 2, 0))))
-            .setCustomModel(1)
+            .setCustomModel(30)
             .build());
 
     public static final Spell FREEZE_CHARGE = register(new ProjectileModifierSpell.ProjectileModifierSpellBuilder(53, "freeze_charge")
@@ -306,11 +299,12 @@ public class SpellManager extends Manager {
             .addSpellModifier(new AddSpellModuleModifier().addOnCollision(new AreaEffectModule(5, false).setInstantFreeze(200)))
             .addSpellModifier(new AddSpellModuleModifier().addOnCollision(new ParticleModule(
                     new ParticleGroup.ParticleGroupBuilder()
-                            .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.SNOWFLAKE).setDensity(200).setSpeed(.4).setRadius(2).setInSphere().build())
+                            .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.SNOWFLAKE).setDensity(100).setSpeed(.1).setRadius(5).setInSphere().build())
                             .build()
                     , false
             )))
             .addDescription("Gives a projectile a frozen charge, that it will release on impact")
+            .setCustomModel(31)
             .build());
 
     // ----- MATERIAL SPELLS ----- ID: 6+XXX
