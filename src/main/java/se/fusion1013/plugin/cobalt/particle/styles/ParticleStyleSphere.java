@@ -10,13 +10,24 @@ import java.util.List;
 
 public class ParticleStyleSphere extends ParticleStyle implements IParticleStyle {
     private int density;
-    private double radius;
+
+    private double currentRadius;
+    private double startRadius;
+    private double targetRadius;
+    private int expandTime;
+
     private boolean inSphere;
 
     public ParticleStyleSphere(ParticleStyleSphere target){
         super(target);
         this.density = target.density;
-        this.radius = target.radius;
+
+        this.currentRadius = target.currentRadius;
+        this.startRadius = target.startRadius;
+        this.expandTime = target.expandTime;
+        this.targetRadius = target.targetRadius;
+
+        this.inSphere = target.inSphere;
     }
 
     public ParticleStyleSphere(Particle particle){
@@ -27,11 +38,14 @@ public class ParticleStyleSphere extends ParticleStyle implements IParticleStyle
 
     public void setDefaults(){
         density = 150;
-        radius = 5;
+        currentRadius = 5;
     }
 
     @Override
     public List<PParticle> getParticles(Location location){
+        if (currentRadius < targetRadius){
+            currentRadius += Math.min((targetRadius - startRadius) / (double)expandTime, targetRadius);
+        }
         if (inSphere) return particlesInSphere(location);
         else return particlesOnSphere(location);
     }
@@ -40,7 +54,7 @@ public class ParticleStyleSphere extends ParticleStyle implements IParticleStyle
         List<PParticle> particles = new ArrayList<>();
 
         for (int i = 0; i < this.density; i++){
-            particles.add(new PParticle(center.clone().add(GeometryUtil.getPointOnSphere(radius)), offset.getX(), offset.getY(), offset.getZ(), speed, count));
+            particles.add(new PParticle(center.clone().add(GeometryUtil.getPointOnSphere(currentRadius)), offset.getX(), offset.getY(), offset.getZ(), speed, count));
         }
 
         return particles;
@@ -50,13 +64,20 @@ public class ParticleStyleSphere extends ParticleStyle implements IParticleStyle
         List<PParticle> particles = new ArrayList<>();
 
         for (int i = 0; i < this.density; i++){
-            particles.add(new PParticle(center.clone().add(GeometryUtil.getPointInSphere(radius)), offset.getX(), offset.getY(), offset.getZ(), speed, count));
+            particles.add(new PParticle(center.clone().add(GeometryUtil.getPointInSphere(currentRadius)), offset.getX(), offset.getY(), offset.getZ(), speed, count));
         }
 
         return particles;
     }
 
-    public void setRadius(double radius) { this.radius = radius; }
+    public void setRadius(double radius) { this.targetRadius = radius; }
+
+    public void setStartRadius(double startRadius) {
+        this.startRadius = startRadius;
+        this.currentRadius = startRadius;
+    }
+
+    public void setExpandTime(int expandTime) { this.expandTime = expandTime; }
 
     public void setDensity(int density) { this.density = density; }
 
@@ -79,13 +100,22 @@ public class ParticleStyleSphere extends ParticleStyle implements IParticleStyle
 
     public static class ParticleStyleSphereBuilder extends ParticleStyleBuilder<ParticleStyleSphere, ParticleStyleSphere.ParticleStyleSphereBuilder> {
 
-        double radius = 1;
+        double targetRadius = 1;
+        double startRadius = 0;
+        boolean animateRadius = false;
+        int expandTime = 1;
+
         int density = 1; // TODO: Change default value
         boolean inSphere;
 
         @Override
         public ParticleStyleSphere build(){
-            obj.setRadius(radius);
+            obj.setRadius(targetRadius);
+
+            if (animateRadius) obj.setStartRadius(startRadius);
+            else obj.setStartRadius(targetRadius);
+            obj.setExpandTime(expandTime);
+
             obj.setDensity(density);
             obj.setInSphere(inSphere);
             return super.build();
@@ -95,8 +125,15 @@ public class ParticleStyleSphere extends ParticleStyle implements IParticleStyle
 
         protected ParticleStyleSphere.ParticleStyleSphereBuilder getThis() { return this; }
 
-        public ParticleStyleSphereBuilder setRadius(double radius){
-            this.radius = radius;
+        public ParticleStyleSphereBuilder animateRadius(double startRadius, int expandTime){
+            this.startRadius = startRadius;
+            this.expandTime = expandTime;
+            this.animateRadius = true;
+            return getThis();
+        }
+
+        public ParticleStyleSphereBuilder setRadius(double targetRadius){
+            this.targetRadius = targetRadius;
             return getThis();
         }
 
