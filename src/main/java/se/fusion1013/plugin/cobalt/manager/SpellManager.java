@@ -238,6 +238,18 @@ public class SpellManager extends Manager {
             .setCustomModel(7)
             .build());
 
+    public static final Spell CIRCLE_OF_THUNDER = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(24, "circle_of_thunder")
+            .addManaDrain(60).addCastDelay(.25).setRadius(5).setLifetime(120)
+            .addDescription("A field of electrifying magic")
+            .addExecuteOnTick(new EntitySpellModule(EntityType.LIGHTNING, false).addSummonCooldown(20, 20).setSummonInSphere(5))
+            .addParticle(new ParticleGroup.ParticleGroupBuilder()
+                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(150).animateRadius(0, 40).build())
+                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(20).setInSphere().animateRadius(0, 40).build())
+                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.CRIT).setRadius(5).setDensity(10).setInSphere().animateRadius(0, 40).build())
+                    .build())
+            .setCustomModel(7)
+            .build());
+
     // ----- PASSIVE SPELLS ----- ID: 3+XXX
 
     // ----- UTILITY SPELLS ----- ID: 4+XXX
