@@ -62,10 +62,15 @@ public class DamageModule extends AbstractSpellModule<DamageModule> implements S
     public void executeOnTick(Location location, Vector velocityVector) { super.executeOnTick(location, velocityVector); }
 
     @Override
-    public void executeOnBlockHit(Location location, Vector velocityVector, Block blockHit, BlockFace hitBlockFace) { }
+    public void executeOnBlockHit(Location location, Vector velocityVector, Block blockHit, BlockFace hitBlockFace) {
+        super.executeOnBlockHit(location, velocityVector, blockHit, hitBlockFace);
+    }
 
     @Override
     public void executeOnEntityHit(Location location, Vector velocityVector, Entity entityHit) {
+        super.executeOnEntityHit(location, velocityVector, entityHit);
+        if (!canRun) return;
+
         if (entityHit instanceof LivingEntity){
             LivingEntity entity = (LivingEntity)entityHit;
 
