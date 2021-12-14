@@ -39,6 +39,7 @@ public class WandEvents implements Listener {
                 for (Player p : Bukkit.getOnlinePlayers()){
                     p.spawnParticle(Particle.DUST_COLOR_TRANSITION, t.getLocation().clone().add(new Vector(0, .5, 0)), 1, .1, .3, .1, .5, new Particle.DustTransition(Color.YELLOW, Color.WHITE, 1));
                 }
+
             }
         }.runTaskTimer(Cobalt.getInstance(), 0, 1);
     }
