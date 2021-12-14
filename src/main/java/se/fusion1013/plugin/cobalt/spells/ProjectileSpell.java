@@ -48,7 +48,7 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
      *
      * @param id id of the Projectile
      * @param internalSpellName internal name of the Projectile. Example: "spark_bolt"
-     * @param spellName display name of the Projectile. Example "Spark Bolt"
+     * @param spellName display name of the Projectile. Example: "Spark Bolt"
      */
     public ProjectileSpell(int id, String internalSpellName, String spellName) {
         super(id, internalSpellName, spellName, SpellType.PROJECTILE);
