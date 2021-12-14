@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobalt.Cobalt;
+import se.fusion1013.plugin.cobalt.manager.SpellManager;
 import se.fusion1013.plugin.cobalt.particle.ParticleGroup;
 import se.fusion1013.plugin.cobalt.spells.spellmodules.AbstractSpellModule;
 import se.fusion1013.plugin.cobalt.spells.spellmodules.SpellModule;
@@ -154,6 +155,7 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
         Bukkit.getScheduler().runTaskLater(Cobalt.getInstance(), () -> {
             long period = 1;
             this.projectileTask = Bukkit.getScheduler().runTaskTimer(Cobalt.getInstance(), this, 0, period);
+            SpellManager.getInstance().addActiveSpell(this, projectileTask, this.hashCode());
         }, 0);
     }
 
@@ -172,7 +174,7 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
         // Particle After Movement Handle
         if (currentLifetime * 2 <= lifetime) executeTrigger(TriggerType.TIMER);
 
-        if (movementStopped) projectileTask.cancel();
+        if (movementStopped) killParticle();
     }
 
     /**
@@ -224,8 +226,14 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
     }
 
     private void killParticle(){
+        SpellManager.getInstance().removeActiveSpell(this.hashCode());
         projectileTask.cancel();
         movementStopped = true;
+    }
+
+    @Override
+    public void cancelTask() {
+        killParticle();
     }
 
     private void executeTrigger(TriggerType type){
