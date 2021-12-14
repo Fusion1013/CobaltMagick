@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobalt.Cobalt;
+import se.fusion1013.plugin.cobalt.spells.spellmodifiers.AbstractSpellModifier;
 import se.fusion1013.plugin.cobalt.wand.Wand;
 
 import java.util.ArrayList;
@@ -15,6 +16,8 @@ public class MulticastSpell extends Spell implements Cloneable, Runnable {
     double increaseSpread;
     Formation formation = Formation.NONE;
     List<ISpell> spellsToCast = new ArrayList<>();
+
+    List<ProjectileModifierSpell> modifierSpells = new ArrayList<>();
 
     public MulticastSpell(int id, String internalSpellName, String spellName) {
         super(id, internalSpellName, spellName, SpellType.MULTICAST);
@@ -36,9 +39,9 @@ public class MulticastSpell extends Spell implements Cloneable, Runnable {
         super.performPreCast(wandSpells, casts, spellPos);
 
         if (formation == Formation.NONE){
-            spellsToCast = new CastParser(wandSpells, numberSpellsToCast, spellPos+1).prepareCast();
+            spellsToCast = new CastParser(wandSpells, numberSpellsToCast, spellPos+1).addModifiers(modifierSpells).prepareCast();
         } else {
-            spellsToCast = new CastParser(wandSpells, formation.getDirectionModifiers().length, spellPos+1).prepareCast();
+            spellsToCast = new CastParser(wandSpells, formation.getDirectionModifiers().length, spellPos+1).addModifiers(modifierSpells).prepareCast();
             for (int i = 0; i < spellsToCast.size(); i++){
                 ISpell spell = spellsToCast.get(i);
                 if (spell instanceof ProjectileSpell) {
@@ -147,6 +150,10 @@ public class MulticastSpell extends Spell implements Cloneable, Runnable {
     public void setIncreaseSpread(double increaseSpread) { this.increaseSpread = increaseSpread; }
 
     public void setFormation(Formation formation) { this.formation = formation; }
+
+    public void setModifierSpells(List<ProjectileModifierSpell> modifierSpells) { this.modifierSpells = new ArrayList<>(modifierSpells); }
+
+    public void addModifierSpell(ProjectileModifierSpell modifierSpell) { this.modifierSpells.add(modifierSpell); }
 
     public int getNumberSpellsToCast() { return this.numberSpellsToCast; }
 
