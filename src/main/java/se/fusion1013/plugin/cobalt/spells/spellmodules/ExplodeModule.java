@@ -22,7 +22,7 @@ public class ExplodeModule extends AbstractSpellModule<ExplodeModule> implements
     boolean executed = false;
 
     public ExplodeModule(double radius, boolean cancelsCast){
-        this.currentRadius = radius;
+        setRadius(radius);
         this.cancelsCast = cancelsCast;
     }
 
