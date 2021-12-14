@@ -9,7 +9,7 @@ import org.bukkit.util.Vector;
 
 import java.util.Random;
 
-public class DamageModule implements SpellModule {
+public class DamageModule extends AbstractSpellModule<DamageModule> implements SpellModule {
 
     int damage;
     boolean cancelsCast;
@@ -24,6 +24,18 @@ public class DamageModule implements SpellModule {
     public DamageModule(int damage, boolean cancelsCast){
         this.damage = damage;
         this.cancelsCast = cancelsCast;
+    }
+
+    public DamageModule(DamageModule target){
+        super(target);
+        this.damage = target.damage;
+        this.cancelsCast = target.cancelsCast;
+
+        this.setsFire = target.setsFire;
+        this.fireTicks = target.fireTicks;
+        this.knockback = target.knockback;
+        this.knockbackForce = target.knockbackForce;
+        this.criticalChance = target.criticalChance;
     }
 
     public DamageModule setCriticalChance(double criticalChance){
@@ -47,7 +59,7 @@ public class DamageModule implements SpellModule {
     public void executeOnCast(Location location, Vector directionVector) { }
 
     @Override
-    public void executeOnTick(Location location, Vector velocityVector) { }
+    public void executeOnTick(Location location, Vector velocityVector) { super.executeOnTick(location, velocityVector); }
 
     @Override
     public void executeOnBlockHit(Location location, Vector velocityVector, Block blockHit, BlockFace hitBlockFace) { }
@@ -83,4 +95,11 @@ public class DamageModule implements SpellModule {
     public boolean cancelsCast() {
         return false;
     }
+
+    @Override
+    public DamageModule clone() {
+        return new DamageModule(this);
+    }
+
+    protected DamageModule getThis() { return this; }
 }

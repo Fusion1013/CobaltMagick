@@ -10,9 +10,8 @@ import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobalt.util.BlockUtil;
 import se.fusion1013.plugin.cobalt.util.GeometryUtil;
 
-public class ExplodeModule implements SpellModule {
+public class ExplodeModule extends AbstractSpellModule<ExplodeModule> implements SpellModule {
 
-    double radius;
     boolean cancelsCast;
 
     // Optional Variables
@@ -23,8 +22,18 @@ public class ExplodeModule implements SpellModule {
     boolean executed = false;
 
     public ExplodeModule(double radius, boolean cancelsCast){
-        this.radius = radius;
+        this.currentRadius = radius;
         this.cancelsCast = cancelsCast;
+    }
+
+    public ExplodeModule(ExplodeModule target){
+        super(target);
+        this.cancelsCast = target.cancelsCast;
+
+        this.fire = target.fire;
+        this.destroyBlocks = target.destroyBlocks;
+        this.executeOnlyIfVelocityExceeds = target.executeOnlyIfVelocityExceeds;
+        this.executed = target.executed;
     }
 
     public ExplodeModule destroysBlocks(){
@@ -47,6 +56,7 @@ public class ExplodeModule implements SpellModule {
 
     @Override
     public void executeOnTick(Location location, Vector velocityVector) {
+        super.executeOnTick(location, velocityVector);
         explode(location, velocityVector);
     }
 
@@ -71,14 +81,14 @@ public class ExplodeModule implements SpellModule {
         World world = location.getWorld();
         if (velocityVector.length() < executeOnlyIfVelocityExceeds) return;
 
-        BlockUtil.setBlocksInSphere(location, Material.AIR, (int)radius, false, false, true, false, true);
-        for (int i = 0; i < radius * 10; i++){
-            Vector pos = GeometryUtil.getPointOnSphere(radius).add(location.toVector());
-            if (world != null) world.createExplosion(new Location(world, pos.getX(), pos.getY(), pos.getZ()), (float)Math.min(5, radius), fire, destroyBlocks);
+        BlockUtil.setBlocksInSphere(location, Material.AIR, (int) currentRadius, false, false, true, false, true);
+        for (int i = 0; i < currentRadius * 10; i++){
+            Vector pos = GeometryUtil.getPointOnSphere(currentRadius).add(location.toVector());
+            if (world != null) world.createExplosion(new Location(world, pos.getX(), pos.getY(), pos.getZ()), (float)Math.min(5, currentRadius), fire, destroyBlocks);
         }
-        for (int i = 0; i < radius * 10; i++){
-            Vector pos = GeometryUtil.getPointInSphere(radius).add(location.toVector());
-            if (world != null) world.createExplosion(new Location(world, pos.getX(), pos.getY(), pos.getZ()), (float)Math.min(5, radius), fire, destroyBlocks);
+        for (int i = 0; i < currentRadius * 10; i++){
+            Vector pos = GeometryUtil.getPointInSphere(currentRadius).add(location.toVector());
+            if (world != null) world.createExplosion(new Location(world, pos.getX(), pos.getY(), pos.getZ()), (float)Math.min(5, currentRadius), fire, destroyBlocks);
         }
         // if (world != null) world.createExplosion(location, explosionPower, fire, destroyBlocks);
 
@@ -89,4 +99,11 @@ public class ExplodeModule implements SpellModule {
     public boolean cancelsCast() {
         return (executed && cancelsCast);
     }
+
+    @Override
+    public ExplodeModule clone() {
+        return new ExplodeModule(this);
+    }
+
+    protected ExplodeModule getThis() { return this; }
 }

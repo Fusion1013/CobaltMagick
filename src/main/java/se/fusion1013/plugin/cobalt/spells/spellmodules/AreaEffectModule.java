@@ -15,9 +15,8 @@ import java.util.List;
 /**
  * Performs an operation on all entities in a spherical area
  */
-public class AreaEffectModule implements SpellModule {
+public class AreaEffectModule extends AbstractSpellModule<AreaEffectModule> implements SpellModule {
 
-    double radius;
     boolean cancelsCast;
 
     // Optional Variables
@@ -25,8 +24,16 @@ public class AreaEffectModule implements SpellModule {
     boolean freezing;
 
     public AreaEffectModule(double radius, boolean cancelsCast){
-        this.radius = radius;
+        this.currentRadius = radius;
         this.cancelsCast = cancelsCast;
+    }
+
+    public AreaEffectModule(AreaEffectModule target){
+        super(target);
+        this.cancelsCast = target.cancelsCast;
+
+        this.effect = target.effect;
+        this.freezing = target.freezing;
     }
 
     public AreaEffectModule setFreezing(){
@@ -46,6 +53,7 @@ public class AreaEffectModule implements SpellModule {
 
     @Override
     public void executeOnTick(Location location, Vector velocityVector) {
+        super.executeOnTick(location, velocityVector);
         giveEffectsInSphere(location);
     }
 
@@ -72,10 +80,10 @@ public class AreaEffectModule implements SpellModule {
     private void giveEffectsInSphere(Location location){
         World world = location.getWorld();
         if (world != null){
-            List<Entity> nearbyEntities = new ArrayList<>(world.getNearbyEntities(location, radius, radius, radius));
+            List<Entity> nearbyEntities = new ArrayList<>(world.getNearbyEntities(location, currentRadius, currentRadius, currentRadius));
 
             for (Entity e : nearbyEntities){
-                if (e instanceof LivingEntity && e.getLocation().distance(location) <= radius){
+                if (e instanceof LivingEntity && e.getLocation().distance(location) <= currentRadius){
                     LivingEntity le = (LivingEntity)e;
 
                     if (effect != null) le.addPotionEffect(effect);
@@ -84,4 +92,11 @@ public class AreaEffectModule implements SpellModule {
             }
         }
     }
+
+    @Override
+    public AreaEffectModule clone() {
+        return new AreaEffectModule(this);
+    }
+
+    protected AreaEffectModule getThis() { return this; }
 }

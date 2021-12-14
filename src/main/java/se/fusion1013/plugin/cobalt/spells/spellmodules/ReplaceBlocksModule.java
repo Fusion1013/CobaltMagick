@@ -8,10 +8,9 @@ import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobalt.util.BlockUtil;
 
-public class ReplaceBlocksModule implements SpellModule {
+public class ReplaceBlocksModule extends AbstractSpellModule<ReplaceBlocksModule> implements SpellModule {
 
     Material replaceMaterial;
-    double radius;
     boolean cancelsCast;
 
     boolean setTopBlocks = false;
@@ -24,8 +23,22 @@ public class ReplaceBlocksModule implements SpellModule {
 
     public ReplaceBlocksModule(Material replaceMaterial, double radius, boolean cancelsCast){
         this.replaceMaterial = replaceMaterial;
-        this.radius = radius;
+        this.currentRadius = radius;
         this.cancelsCast = cancelsCast;
+    }
+
+    public ReplaceBlocksModule(ReplaceBlocksModule target){
+        super(target);
+        this.replaceMaterial = target.replaceMaterial;
+        this.cancelsCast = target.cancelsCast;
+
+        this.setTopBlocks = target.setTopBlocks;
+
+        this.dropItems = target.dropItems;
+        this.slowReplace = target.slowReplace;
+        this.replaceNonAir = target.replaceNonAir;
+        this.hollowReplace = target.hollowReplace;
+        this.noSound = target.noSound;
     }
 
     /**
@@ -68,6 +81,7 @@ public class ReplaceBlocksModule implements SpellModule {
 
     @Override
     public void executeOnTick(Location location, Vector velocityVector) {
+        super.executeOnTick(location, velocityVector);
         replaceBlocksInSphere(location);
     }
 
@@ -87,12 +101,19 @@ public class ReplaceBlocksModule implements SpellModule {
     }
 
     private void replaceBlocksInSphere(Location location){
-        if (setTopBlocks) BlockUtil.setTopBlocksInSphere(location, replaceMaterial, (int)Math.round(radius), slowReplace);
-        else BlockUtil.setBlocksInSphere(location, replaceMaterial, (int)Math.round(radius), dropItems, slowReplace, replaceNonAir, hollowReplace, noSound);
+        if (setTopBlocks) BlockUtil.setTopBlocksInSphere(location, replaceMaterial, (int)Math.round(currentRadius), slowReplace);
+        else BlockUtil.setBlocksInSphere(location, replaceMaterial, (int)Math.round(currentRadius), dropItems, slowReplace, replaceNonAir, hollowReplace, noSound);
     }
 
     @Override
     public boolean cancelsCast() {
         return cancelsCast;
     }
+
+    @Override
+    public ReplaceBlocksModule clone() {
+        return new ReplaceBlocksModule(this);
+    }
+
+    protected ReplaceBlocksModule getThis() { return this; }
 }
