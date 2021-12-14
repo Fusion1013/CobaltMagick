@@ -69,11 +69,15 @@ public class EntitySpellModule extends AbstractSpellModule<EntitySpellModule> im
 
     @Override
     public void executeOnBlockHit(Location location, Vector velocityVector, Block blockHit, BlockFace hitBlockFace) {
+        super.executeOnBlockHit(location, velocityVector, blockHit, hitBlockFace);
+        if (!canRun) return;
         if (currentCooldown <= 0) summon(location);
     }
 
     @Override
     public void executeOnEntityHit(Location location, Vector velocityVector, Entity entityHit) {
+        super.executeOnEntityHit(location, velocityVector, entityHit);
+        if (!canRun) return;
         if (currentCooldown <= 0) summon(location);
     }
 
