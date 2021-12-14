@@ -161,8 +161,10 @@ public class BlockUtil {
             Block block = l.getBlock();
             int breakTime = Math.min((int)block.getType().getHardness(), 20);
 
-            Cobalt.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(Cobalt.getInstance(), () ->
-                    replaceBlock(l, setBlock, dropItems, replaceNonAir, noSound), r.nextInt(0, 10) + breakTime);
+            if (block.getType() != setBlock){
+                Cobalt.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(Cobalt.getInstance(), () ->
+                        replaceBlock(l, setBlock, dropItems, replaceNonAir, noSound), r.nextInt(0, 10) + breakTime);
+            }
         }
         return circleBlocks.size();
     }
@@ -174,7 +176,7 @@ public class BlockUtil {
         for (Location l : circleBlocks){
             Block block = l.getBlock();
             Block lowerBlock = l.add(new Vector(0, -1, 0)).getBlock();
-            if (lowerBlock.getType() != Material.AIR && lowerBlock.getType() != setBlock && block.getType() == Material.AIR){
+            if (lowerBlock.getType() != Material.AIR && lowerBlock.getType() != setBlock && block.getType() == Material.AIR && block.getType() != setBlock){
                 if (slow){
                     Cobalt.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(Cobalt.getInstance(), () ->
                             block.setType(setBlock), r.nextInt(0, 10));
@@ -197,6 +199,7 @@ public class BlockUtil {
      */
     private static void replaceBlock(Location location, Material setBlock, boolean dropItems, boolean replaceNonAir, boolean noSound){
         Block block = location.getBlock();
+        if (block.getType() == setBlock) return;
 
         if (!replaceNonAir && block.getType() != Material.AIR) return;
         if (block.getType().getHardness() <= 0) return;
