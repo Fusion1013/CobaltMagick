@@ -70,12 +70,6 @@ public class WandEvents implements Listener {
         uuidList.add(p.getUniqueId());
         openWandInventory(wand, p);
         event.setCancelled(true);
-
-        Cobalt.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(Cobalt.getInstance(), new Runnable() {
-            public void run() {
-                uuidList.remove(event.getPlayer().getUniqueId());
-            }
-        }, 1);
     }
 
     /**
@@ -91,7 +85,10 @@ public class WandEvents implements Listener {
 
         Wand wand = Wand.getWand(is);
         if (wand == null) return;
-        if (uuidList.contains(p.getUniqueId())) return;
+        if (uuidList.contains(p.getUniqueId())) {
+            uuidList.remove(p.getUniqueId());
+            return;
+        }
 
         castSpells(wand, p, event.getAction());
     }
