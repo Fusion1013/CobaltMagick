@@ -24,7 +24,7 @@ public class AreaEffectModule extends AbstractSpellModule<AreaEffectModule> impl
     boolean freezing;
 
     public AreaEffectModule(double radius, boolean cancelsCast){
-        this.currentRadius = radius;
+        setRadius(radius);
         this.cancelsCast = cancelsCast;
     }
 
