@@ -78,6 +78,9 @@ public class MulticastSpell extends Spell implements Cloneable, Runnable {
     public void run() { }
 
     @Override
+    public void cancelTask() { }
+
+    @Override
     public Spell clone() {
         return new MulticastSpell(this);
     }
