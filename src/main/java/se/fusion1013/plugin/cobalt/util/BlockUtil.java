@@ -3,6 +3,7 @@ package se.fusion1013.plugin.cobalt.util;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobalt.Cobalt;
 
 import java.util.ArrayList;
@@ -162,6 +163,25 @@ public class BlockUtil {
 
             Cobalt.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(Cobalt.getInstance(), () ->
                     replaceBlock(l, setBlock, dropItems, replaceNonAir, noSound), r.nextInt(0, 10) + breakTime);
+        }
+        return circleBlocks.size();
+    }
+
+    public static int setTopBlocksInSphere(Location centerBlock, Material setBlock, int radius, boolean slow){
+        List<Location> circleBlocks = generateSphere(centerBlock, radius, false);
+        Random r = new Random();
+
+        for (Location l : circleBlocks){
+            Block block = l.getBlock();
+            Block lowerBlock = l.add(new Vector(0, -1, 0)).getBlock();
+            if (lowerBlock.getType() != Material.AIR && lowerBlock.getType() != setBlock && block.getType() == Material.AIR){
+                if (slow){
+                    Cobalt.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(Cobalt.getInstance(), () ->
+                            block.setType(setBlock), r.nextInt(0, 10));
+                } else {
+                    block.setType(setBlock);
+                }
+            }
         }
         return circleBlocks.size();
     }
