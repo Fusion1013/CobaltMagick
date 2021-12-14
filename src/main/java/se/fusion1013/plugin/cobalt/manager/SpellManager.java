@@ -219,7 +219,7 @@ public class SpellManager extends Manager {
 
     // ----- STATIC PROJECTILE SPELLS ----- ID: 2+XXX
 
-    public static final Spell CIRCLE_OF_BUOYANCY = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(20, "circle_of_buoyancy")
+    public static final Spell SPHERE_OF_BUOYANCY = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(20, "sphere_of_buoyancy")
             .addManaDrain(10).addCastDelay(.25).setRadius(5).setLifetime(120)
             .addDescription("A field of levitative magic")
             .addExecuteOnTick(new AreaEffectModule(5, false).setPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 2, 0, false, false)).animateRadius(0, 40))
@@ -254,7 +254,7 @@ public class SpellManager extends Manager {
             .setCollidesWithBlocks(false).setCollidesWithEntities(false)
             .build());
 
-    public static final Spell CIRCLE_OF_STILLNESS = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(23, "circle_of_stillness")
+    public static final Spell SPHERE_OF_STILLNESS = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(23, "sphere_of_stillness")
             .addManaDrain(50).addCastDelay(.25).setRadius(5).setLifetime(120)
             .addDescription("A field of freezing magic")
             .addExecuteOnTick(new AreaEffectModule(5, false).setFreezing().animateRadius(0, 40))
@@ -267,7 +267,7 @@ public class SpellManager extends Manager {
             .setCustomModel(7)
             .build());
 
-    public static final Spell CIRCLE_OF_THUNDER = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(24, "circle_of_thunder")
+    public static final Spell SPHERE_OF_THUNDER = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(24, "sphere_of_thunder")
             .addManaDrain(60).addCastDelay(.25).setRadius(5).setLifetime(120)
             .addDescription("A field of electrifying magic")
             .addExecuteOnTick(new EntitySpellModule(EntityType.LIGHTNING, false).addSummonCooldown(20, 20).setSummonInSphere(5))
