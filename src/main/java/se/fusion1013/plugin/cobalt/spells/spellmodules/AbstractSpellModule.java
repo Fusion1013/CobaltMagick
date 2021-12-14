@@ -15,7 +15,7 @@ public abstract class AbstractSpellModule<B extends AbstractSpellModule> impleme
     int expandTime = 1;
     boolean animateRadius = false;
 
-    public AbstractSpellModule(){ }
+    public AbstractSpellModule() { }
 
     public AbstractSpellModule(AbstractSpellModule target){
         this.currentRadius = target.currentRadius;
