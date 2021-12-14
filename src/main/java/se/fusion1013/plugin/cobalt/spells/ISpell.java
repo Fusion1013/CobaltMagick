@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
+import se.fusion1013.plugin.cobalt.spells.spellmodifiers.SpellModifier;
 import se.fusion1013.plugin.cobalt.wand.Wand;
 
 import java.util.List;
@@ -51,7 +52,6 @@ public interface ISpell {
      * @param spellPos
      */
     void performPreCast(List<ISpell> wandSpells, int casts, int spellPos);
-    void addModifiers(List<IModifier> modifiers);
 
     Spell clone();
 }
