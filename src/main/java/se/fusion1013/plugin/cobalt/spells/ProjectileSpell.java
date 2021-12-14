@@ -10,6 +10,7 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobalt.Cobalt;
 import se.fusion1013.plugin.cobalt.particle.ParticleGroup;
+import se.fusion1013.plugin.cobalt.spells.spellmodules.AbstractSpellModule;
 import se.fusion1013.plugin.cobalt.spells.spellmodules.SpellModule;
 import se.fusion1013.plugin.cobalt.wand.Wand;
 
@@ -397,6 +398,8 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
 
     // ------ GETTERS / SETTERS -----
 
+    // TODO: Clone all objects inside executeOn lists
+
     public void addDelayedSpell(DelayedSpell delayedSpell) { this.delayedSpells.add(delayedSpell); }
 
     public void setRadius(double radius){
@@ -452,19 +455,19 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
         return lifetime;
     }
 
-    public ParticleGroup getParticleGroup() { return particleGroup; }
+    public ParticleGroup getParticleGroup() { return particleGroup.clone(); }
 
     public List<TriggerType> getTriggerTypes() { return triggerTypes; }
 
     public Vector getDirectionModifier() { return directionModifier.clone(); }
 
-    public List<SpellModule> getExecuteOnCast() { return new ArrayList<>(executeOnCast); }
+    public List<SpellModule> getExecuteOnCast() { return AbstractSpellModule.cloneList(executeOnCast); }
 
-    public List<SpellModule> getExecuteOnTick() { return new ArrayList<>(executeOnTick); }
+    public List<SpellModule> getExecuteOnTick() { return AbstractSpellModule.cloneList(executeOnTick); }
 
-    public List<SpellModule> getExecuteOnBlockCollision() { return new ArrayList<>(executeOnBlockCollision); }
+    public List<SpellModule> getExecuteOnBlockCollision() { return AbstractSpellModule.cloneList(executeOnBlockCollision); }
 
-    public List<SpellModule> getExecuteOnEntityCollision() { return new ArrayList<>(executeOnEntityCollision); }
+    public List<SpellModule> getExecuteOnEntityCollision() { return AbstractSpellModule.cloneList(executeOnEntityCollision); }
 
-    public List<SpellModule> getExecuteOnDeath() { return new ArrayList<>(executeOnDeath); }
+    public List<SpellModule> getExecuteOnDeath() { return AbstractSpellModule.cloneList(executeOnDeath); }
 }
