@@ -18,24 +18,24 @@ public class WarpCommand {
 
     public static void register(){
         CommandAPICommand warpListCommand = new CommandAPICommand("list")
-                .withPermission("cobalt.command.list")
+                .withPermission("cobalt.command.warp.list")
                 .executesPlayer(WarpCommand::warpList);
         warpListCommand.register();
 
         CommandAPICommand warpDeleteCommand = new CommandAPICommand("delete")
-                .withPermission("cobalt.command.delete")
+                .withPermission("cobalt.command.warp.delete")
                 .withArguments(new StringArgument("warp name").replaceSuggestions(info -> getWarpNames()))
                 .executesPlayer(WarpCommand::warpDelete);
         warpDeleteCommand.register();
 
         CommandAPICommand warpInfoCommand = new CommandAPICommand("info")
-                .withPermission("cobalt.command.info")
+                .withPermission("cobalt.command.warp.info")
                 .withArguments(new StringArgument("warp name").replaceSuggestions(info -> getWarpNames()))
                 .executesPlayer(WarpCommand::warpInfo);
         warpInfoCommand.register();
 
         CommandAPICommand warpCreateCommand = new CommandAPICommand("create")
-                .withPermission("cobalt.command.warp")
+                .withPermission("cobalt.command.warp.create")
                 .withArguments(new StringArgument("warp name"))
                 .executesPlayer(WarpCommand::warpCreate);
         warpCreateCommand.register();
