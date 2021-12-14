@@ -14,6 +14,7 @@ public class CastParser {
     List<ISpell> clonedSpells;
     int casts;
     int startPos;
+    List<ProjectileModifierSpell> modifierSpells = new ArrayList<>();
 
     public CastParser(List<ISpell> spells, int casts){
         this.spells = spells;
@@ -27,9 +28,14 @@ public class CastParser {
         this.startPos = startPos;
     }
 
+    public CastParser addModifiers(List<ProjectileModifierSpell> modifierSpells){
+        this.modifierSpells = modifierSpells;
+        return this;
+    }
+
     public List<ISpell> prepareCast(){
         List<ISpell> spellsToCast = new ArrayList<>();
-        List<IModifier> modifiers = new ArrayList<>();
+        List<ProjectileModifierSpell> modifiers = new ArrayList<>();
 
         int castSpells = 0;
 
@@ -43,11 +49,18 @@ public class CastParser {
             // Check if the spell is able to be cast
             if (!actualSpellInstance.getHasCast() && castSpells < casts){
 
-                if (cs instanceof IModifier){ // Adds projectile modifiers
-                    modifiers.add((IModifier) cs);
+                if (cs instanceof ProjectileModifierSpell){ // Adds projectile modifiers
+                    modifiers.add((ProjectileModifierSpell) cs);
                 } else {
-                    // Adds projectile modifiers to the spell and clears the modifiers list
-                    cs.addModifiers(modifiers);
+                    // Apply modifiers
+                    for (ProjectileModifierSpell pms : modifiers){
+                        pms.modifySpell(cs);
+                        spellsToCast.add(pms);
+                    }
+                    for (ProjectileModifierSpell pms : this.modifierSpells){
+                        pms.modifySpell(cs);
+                        spellsToCast.add(pms);
+                    }
                     modifiers.clear();
 
                     cs.performPreCast(spells, casts, i);
