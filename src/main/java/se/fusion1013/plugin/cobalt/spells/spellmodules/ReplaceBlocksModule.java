@@ -87,11 +87,15 @@ public class ReplaceBlocksModule extends AbstractSpellModule<ReplaceBlocksModule
 
     @Override
     public void executeOnBlockHit(Location location, Vector velocityVector, Block blockHit, BlockFace hitBlockFace) {
+        super.executeOnBlockHit(location, velocityVector, blockHit, hitBlockFace);
+        if (!canRun) return;
         replaceBlocksInSphere(location);
     }
 
     @Override
     public void executeOnEntityHit(Location location, Vector velocityVector, Entity entityHit) {
+        super.executeOnEntityHit(location, velocityVector, entityHit);
+        if (!canRun) return;
         replaceBlocksInSphere(location);
     }
 
