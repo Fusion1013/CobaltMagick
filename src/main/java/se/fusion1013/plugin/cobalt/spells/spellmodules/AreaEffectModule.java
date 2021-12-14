@@ -22,6 +22,7 @@ public class AreaEffectModule extends AbstractSpellModule<AreaEffectModule> impl
     // Optional Variables
     PotionEffect effect;
     boolean freezing;
+    int instantFreeze = 0;
 
     public AreaEffectModule(double radius, boolean cancelsCast){
         setRadius(radius);
@@ -34,6 +35,12 @@ public class AreaEffectModule extends AbstractSpellModule<AreaEffectModule> impl
 
         this.effect = target.effect;
         this.freezing = target.freezing;
+        this.instantFreeze = target.instantFreeze;
+    }
+
+    public AreaEffectModule setInstantFreeze(int ticks){
+        this.instantFreeze = ticks;
+        return this;
     }
 
     public AreaEffectModule setFreezing(){
@@ -88,6 +95,7 @@ public class AreaEffectModule extends AbstractSpellModule<AreaEffectModule> impl
 
                     if (effect != null) le.addPotionEffect(effect);
                     if (freezing) le.setFreezeTicks(le.getFreezeTicks() + 4);
+                    if (le.getFreezeTicks() < instantFreeze) le.setFreezeTicks(instantFreeze);
                 }
             }
         }
