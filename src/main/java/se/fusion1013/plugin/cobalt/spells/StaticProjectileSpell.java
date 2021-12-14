@@ -1,16 +1,12 @@
 package se.fusion1013.plugin.cobalt.spells;
 
 import org.bukkit.*;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobalt.Cobalt;
-import se.fusion1013.plugin.cobalt.particle.PParticle;
 import se.fusion1013.plugin.cobalt.particle.ParticleGroup;
-import se.fusion1013.plugin.cobalt.particle.styles.ParticleStyleSphere;
+import se.fusion1013.plugin.cobalt.spells.spellmodules.AbstractSpellModule;
 import se.fusion1013.plugin.cobalt.spells.spellmodules.SpellModule;
 import se.fusion1013.plugin.cobalt.wand.Wand;
 
@@ -21,7 +17,9 @@ import java.util.Random;
 public class StaticProjectileSpell extends MovableSpell implements Cloneable, Runnable {
 
     StaticProjectileShape staticProjectileShape;
+
     double radius;
+
     double lifetime;
     ParticleGroup particleGroup;
 
@@ -48,11 +46,12 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
      * @param spell <code>StaticProjectileSpell</code> to copy the parameters of
      */
     public StaticProjectileSpell(StaticProjectileSpell spell) {
-        super(spell); // TODO: Copy all variables
+        super(spell);
         this.staticProjectileShape = spell.getStaticProjectileShape();
-        this.radius = spell.getRadius();
         this.lifetime = spell.getLifetime();
         this.particleGroup = spell.getParticleGroup();
+
+        this.radius = spell.getRadius();
 
         this.executeOnCast = spell.getExecuteOnCast();
         this.executeOnTick = spell.getExecuteOnTick();
@@ -114,7 +113,9 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
 
     public static class StaticProjectileSpellBuilder extends MovableSpellBuilder<StaticProjectileSpell, StaticProjectileSpellBuilder> {
         StaticProjectileShape staticProjectileShape;
-        double radius;
+
+        private double radius = 0;
+
         double lifetime;
         ParticleGroup particleGroup;
 
@@ -143,9 +144,10 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
         @Override
         public StaticProjectileSpell build() {
             obj.setLifetime(lifetime);
-            obj.setRadius(radius);
             obj.setStaticProjectileShape(staticProjectileShape);
             obj.setParticleGroup(particleGroup);
+
+            obj.setRadius(radius);
 
             obj.setExecuteOnCast(executeOnCast);
             obj.setExecuteOnTick(executeOnTick);
@@ -205,6 +207,8 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
 
     // ------ GETTERS / SETTERS -----
 
+    // TODO: Clone all objects inside executeOn lists
+
     public void setStaticProjectileShape(StaticProjectileShape shape) { this.staticProjectileShape = shape; }
 
     public void setRadius(double radius) { this.radius = radius; }
@@ -225,11 +229,13 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
 
     public double getLifetime() { return lifetime; }
 
-    public List<SpellModule> getExecuteOnCast() { return new ArrayList<>(executeOnCast); }
+    public List<SpellModule> getExecuteOnCast() {
+        return AbstractSpellModule.cloneList(executeOnCast);
+    }
 
-    public List<SpellModule> getExecuteOnTick() { return new ArrayList<>(executeOnTick); }
+    public List<SpellModule> getExecuteOnTick() { return AbstractSpellModule.cloneList(executeOnTick); }
 
-    public List<SpellModule> getExecuteOnDeath() { return new ArrayList<>(executeOnDeath); }
+    public List<SpellModule> getExecuteOnDeath() { return AbstractSpellModule.cloneList(executeOnDeath); }
 
-    public ParticleGroup getParticleGroup() { return particleGroup; }
+    public ParticleGroup getParticleGroup() { return particleGroup.clone(); }
 }
