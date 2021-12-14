@@ -184,6 +184,8 @@ public abstract class Spell implements ISpell, Cloneable {
         return ChatColor.WHITE + prefix + ChatColor.BLUE + value + ChatColor.WHITE + suffix;
     }
 
+    public abstract void cancelTask();
+
     /**
      * Builds a new spell. Subclasses should extend this class when creating their own builders
      */
