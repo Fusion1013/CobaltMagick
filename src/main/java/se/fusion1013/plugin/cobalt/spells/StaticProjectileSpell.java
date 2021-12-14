@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobalt.Cobalt;
+import se.fusion1013.plugin.cobalt.manager.SpellManager;
 import se.fusion1013.plugin.cobalt.particle.ParticleGroup;
 import se.fusion1013.plugin.cobalt.spells.spellmodules.AbstractSpellModule;
 import se.fusion1013.plugin.cobalt.spells.spellmodules.SpellModule;
@@ -76,6 +77,7 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
         Bukkit.getScheduler().runTaskLater(Cobalt.getInstance(), () -> {
             long period = 1;
             this.staticProjectileTask = Bukkit.getScheduler().runTaskTimer(Cobalt.getInstance(), this, 0, period);
+            SpellManager.getInstance().addActiveSpell(this, staticProjectileTask, this.hashCode());
         }, 0);
     }
 
