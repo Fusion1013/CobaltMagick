@@ -447,6 +447,16 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
 
     public void setExecuteOnDeath(List<SpellModule> executeThis) { this.executeOnDeath = new ArrayList<>(executeThis); }
 
+    public void addExecuteOnCast(SpellModule executeThis) { this.executeOnCast.add(executeThis); }
+
+    public void addExecuteOnTick(SpellModule executeThis) { this.executeOnTick.add(executeThis); }
+
+    public void addExecuteOnEntityCollision(SpellModule executeThis) { this.executeOnEntityCollision.add(executeThis); }
+
+    public void addExecuteOnBlockCollision(SpellModule executeThis) { this.executeOnBlockCollision.add(executeThis); }
+
+    public void addExecuteOnDeath(SpellModule executeThis) { this.executeOnDeath.add(executeThis); }
+
     public double getRadius(){
         return radius;
     }
