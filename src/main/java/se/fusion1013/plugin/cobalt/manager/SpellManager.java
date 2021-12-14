@@ -19,6 +19,7 @@ import se.fusion1013.plugin.cobalt.spells.spellmodules.DamageModule;
 import se.fusion1013.plugin.cobalt.spells.spellmodules.ExplodeModule;
 import se.fusion1013.plugin.cobalt.spells.spellmodules.ReplaceBlocksModule;
 
+import java.awt.geom.Area;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -163,10 +164,8 @@ public class SpellManager extends Manager {
     public static final Spell NUKE = register(new ProjectileSpell.ProjectileSpellBuilder(110, "nuke")
             .addManaDrain(200).setRadius(1).setVelocity(20).setLifetime(200).setSpread(.6).addCastDelay(.33).addRechargeTime(10).addGravity(.9)
             .addExecuteOnEntityCollision(new DamageModule(75, true))
-            .addExecuteOnEntityCollision(new ReplaceBlocksModule(Material.AIR, 10, true).setReplaceNonAir().setNoSound())
-            .addExecuteOnBlockCollision(new ReplaceBlocksModule(Material.AIR, 10, true).setReplaceNonAir().setNoSound())
-            .addExecuteOnEntityCollision(new ExplodeModule(20, true).setsFire().destroysBlocks())
-            .addExecuteOnBlockCollision(new ExplodeModule(20, true).setsFire().destroysBlocks())
+            .addExecuteOnEntityCollision(new ExplodeModule(10, true).setsFire().destroysBlocks())
+            .addExecuteOnBlockCollision(new ExplodeModule(10, true).setsFire().destroysBlocks())
             .addDescription("Take cover!")
             .setParticle(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.LAVA).setCount(10).setOffset(new Vector(.5, .5, .5)).build())
@@ -180,10 +179,8 @@ public class SpellManager extends Manager {
     public static final Spell GIGA_NUKE = register(new ProjectileSpell.ProjectileSpellBuilder(111, "giga_nuke")
             .addManaDrain(500).setRadius(1).setVelocity(20).setLifetime(200).setSpread(.6).addCastDelay(.83).addRechargeTime(13.33).addGravity(.9)
             .addExecuteOnEntityCollision(new DamageModule(250, true))
-            .addExecuteOnEntityCollision(new ReplaceBlocksModule(Material.AIR, 20, true).setReplaceNonAir().setNoSound())
-            .addExecuteOnBlockCollision(new ReplaceBlocksModule(Material.AIR, 20, true).setReplaceNonAir().setNoSound())
-            .addExecuteOnEntityCollision(new ExplodeModule(30, true).setsFire().destroysBlocks())
-            .addExecuteOnBlockCollision(new ExplodeModule(30, true).setsFire().destroysBlocks())
+            .addExecuteOnEntityCollision(new ExplodeModule(20, true).setsFire().destroysBlocks())
+            .addExecuteOnBlockCollision(new ExplodeModule(20, true).setsFire().destroysBlocks())
             .addDescription("What do you expect?")
             .setParticle(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.LAVA).setCount(20).setOffset(new Vector(.5, .5, .5)).build())
@@ -198,9 +195,9 @@ public class SpellManager extends Manager {
     // ----- STATIC PROJECTILE SPELLS ----- ID: 2+XXX
 
     public static final Spell CIRCLE_OF_BUOYANCY = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(20, "circle_of_buoyancy")
-            .addManaDrain(10).addCastDelay(.25).setRadius(5).setLifetime(500)
+            .addManaDrain(10).addCastDelay(.25).setRadius(5).setLifetime(120)
             .addDescription("A field of levitative magic")
-            .addExecuteOnTick(new AreaEffectModule(new PotionEffect(PotionEffectType.LEVITATION, 2, 0, false, false), 5, false))
+            .addExecuteOnTick(new AreaEffectModule(5, false).setPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 2, 0, false, false)))
             .addParticle(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(150).build())
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(20).setInSphere().build())
@@ -209,7 +206,7 @@ public class SpellManager extends Manager {
             .build());
 
     public static final Spell GIGA_BLACK_HOLE = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(21, "giga_black_hole")
-            .addManaDrain(240).setRadius(8).setLifetime(500).addCastDelay(1.33)
+            .addManaDrain(240).setRadius(8).setLifetime(10).addCastDelay(1.33)
             .addExecuteOnTick(new ReplaceBlocksModule(Material.AIR, 8, false).setDropItems().setReplaceNonAir().setSlowReplace())
             .addDescription("A growing orb of negative energy that destroys everything in its reach")
             .addParticle(new ParticleGroup.ParticleGroupBuilder()
@@ -221,7 +218,7 @@ public class SpellManager extends Manager {
             .build());
 
     public static final Spell OMEGA_BLACK_HOLE = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(22, "omega_black_hole")
-            .addManaDrain(500).setRadius(20).setLifetime(1000).addCastDelay(1).addRechargeTime(1.67)
+            .addManaDrain(500).setRadius(20).setLifetime(20).addCastDelay(1).addRechargeTime(1.67)
             .addExecuteOnTick(new ReplaceBlocksModule(Material.AIR, 20, false).setReplaceNonAir().setSlowReplace())
             .addDescription("Even light dies eventually...")
             .addParticle(new ParticleGroup.ParticleGroupBuilder()
@@ -230,6 +227,19 @@ public class SpellManager extends Manager {
                     .build())
             .setCustomModel(27)
             .setCollidesWithBlocks(false).setCollidesWithEntities(false)
+            .build());
+
+    public static final Spell CIRCLE_OF_STILLNESS = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(23, "circle_of_stillness")
+            .addManaDrain(50).addCastDelay(.25).setRadius(5).setLifetime(120)
+            .addDescription("A field of freezing magic")
+            .addExecuteOnTick(new AreaEffectModule(5, false).setFreezing())
+            .addExecuteOnTick(new ReplaceBlocksModule(Material.SNOW, 5, false).onlySetTopBlocks().setSlowReplace())
+            .addParticle(new ParticleGroup.ParticleGroupBuilder()
+                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(150).build())
+                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(20).setInSphere().build())
+                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.SNOWFLAKE).setRadius(5).setDensity(10).setInSphere().build())
+                    .build())
+            .setCustomModel(7)
             .build());
 
     // ----- PASSIVE SPELLS ----- ID: 3+XXX
