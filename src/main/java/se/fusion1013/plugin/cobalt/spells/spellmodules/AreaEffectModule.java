@@ -12,41 +12,56 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Performs an operation on all entities in a spherical area
+ */
 public class AreaEffectModule implements SpellModule {
 
-    PotionEffect effect;
     double radius;
     boolean cancelsCast;
 
-    public AreaEffectModule(PotionEffect effect, double radius, boolean cancelsCast){
-        this.effect = effect;
+    // Optional Variables
+    PotionEffect effect;
+    boolean freezing;
+
+    public AreaEffectModule(double radius, boolean cancelsCast){
         this.radius = radius;
         this.cancelsCast = cancelsCast;
     }
 
+    public AreaEffectModule setFreezing(){
+        freezing = true;
+        return this;
+    }
+
+    public AreaEffectModule setPotionEffect(PotionEffect effect){
+        this.effect = effect;
+        return this;
+    }
+
     @Override
     public void executeOnCast(Location location, Vector velocityVector) {
-        giveEffectInSphere(location);
+        giveEffectsInSphere(location);
     }
 
     @Override
     public void executeOnTick(Location location, Vector velocityVector) {
-        giveEffectInSphere(location);
+        giveEffectsInSphere(location);
     }
 
     @Override
     public void executeOnBlockHit(Location location, Vector velocityVector, Block blockHit, BlockFace hitBlockFace) {
-        giveEffectInSphere(location);
+        giveEffectsInSphere(location);
     }
 
     @Override
     public void executeOnEntityHit(Location location, Vector velocityVector, Entity entityHit) {
-        giveEffectInSphere(location);
+        giveEffectsInSphere(location);
     }
 
     @Override
     public void executeOnDeath(Location location, Vector velocityVector) {
-        giveEffectInSphere(location);
+        giveEffectsInSphere(location);
     }
 
     @Override
@@ -54,7 +69,7 @@ public class AreaEffectModule implements SpellModule {
         return cancelsCast;
     }
 
-    private void giveEffectInSphere(Location location){
+    private void giveEffectsInSphere(Location location){
         World world = location.getWorld();
         if (world != null){
             List<Entity> nearbyEntities = new ArrayList<>(world.getNearbyEntities(location, radius, radius, radius));
@@ -62,7 +77,9 @@ public class AreaEffectModule implements SpellModule {
             for (Entity e : nearbyEntities){
                 if (e instanceof LivingEntity && e.getLocation().distance(location) <= radius){
                     LivingEntity le = (LivingEntity)e;
-                    le.addPotionEffect(effect);
+
+                    if (effect != null) le.addPotionEffect(effect);
+                    if (freezing) le.setFreezeTicks(le.getFreezeTicks() + 4);
                 }
             }
         }
