@@ -176,10 +176,10 @@ public class BlockUtil {
         for (Location l : circleBlocks){
             Block block = l.getBlock();
             Block lowerBlock = l.add(new Vector(0, -1, 0)).getBlock();
+
             if (lowerBlock.getType() != Material.AIR && lowerBlock.getType() != setBlock && block.getType() == Material.AIR && block.getType() != setBlock){
                 if (slow){
-                    Cobalt.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(Cobalt.getInstance(), () ->
-                            block.setType(setBlock), r.nextInt(0, 10));
+                    Cobalt.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(Cobalt.getInstance(), () -> block.setType(setBlock), r.nextInt(0, 10));
                 } else {
                     block.setType(setBlock);
                 }
