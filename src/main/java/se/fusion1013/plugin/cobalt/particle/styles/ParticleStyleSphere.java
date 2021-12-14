@@ -3,6 +3,7 @@ package se.fusion1013.plugin.cobalt.particle.styles;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import se.fusion1013.plugin.cobalt.particle.PParticle;
+import se.fusion1013.plugin.cobalt.util.GeometryUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,14 +40,7 @@ public class ParticleStyleSphere extends ParticleStyle implements IParticleStyle
         List<PParticle> particles = new ArrayList<>();
 
         for (int i = 0; i < this.density; i++){
-            double u = Math.random();
-            double v = Math.random();
-            double theta = 2 * Math.PI * u;
-            double phi = Math.acos(2 * v - 1);
-            double dx = this.radius * Math.sin(phi) * Math.cos(theta);
-            double dy = this.radius * Math.sin(phi) * Math.sin(theta);
-            double dz = this.radius * Math.cos(phi);
-            particles.add(new PParticle(center.clone().add(dx, dy, dz), offset.getX(), offset.getY(), offset.getZ(), speed, count));
+            particles.add(new PParticle(center.clone().add(GeometryUtil.getPointOnSphere(radius)), offset.getX(), offset.getY(), offset.getZ(), speed, count));
         }
 
         return particles;
@@ -56,19 +50,7 @@ public class ParticleStyleSphere extends ParticleStyle implements IParticleStyle
         List<PParticle> particles = new ArrayList<>();
 
         for (int i = 0; i < this.density; i++){
-            double u = Math.random();
-            double v = Math.random();
-            double theta = u * 2.0 * Math.PI;
-            double phi = Math.acos(2.0 * v - 1.0);
-            double r = Math.cbrt(Math.random());
-            double sinTheta = Math.sin(theta);
-            double cosTheta = Math.cos(theta);
-            double sinPhi = Math.sin(phi);
-            double cosPhi = Math.cos(phi);
-            double x = r * sinPhi * cosTheta * this.radius;
-            double y = r * sinPhi * sinTheta * this.radius;
-            double z = r * cosPhi * this.radius;
-            particles.add(new PParticle(center.clone().add(x, y, z), offset.getX(), offset.getY(), offset.getZ(), speed, count));
+            particles.add(new PParticle(center.clone().add(GeometryUtil.getPointInSphere(radius)), offset.getX(), offset.getY(), offset.getZ(), speed, count));
         }
 
         return particles;
