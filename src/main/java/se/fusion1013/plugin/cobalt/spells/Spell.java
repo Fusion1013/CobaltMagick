@@ -100,7 +100,7 @@ public abstract class Spell implements ISpell, Cloneable {
     public ItemStack getSpellItem(List<String> lore) {
 
         lore.add("");
-        lore.add(ChatColor.BLUE + type.name().replaceAll("_", " "));
+        lore.add(type.spellColor + type.name().replaceAll("_", " "));
 
         ItemStack stack = new ItemStack(Material.CLOCK, count);
         ItemMeta meta = stack.getItemMeta();
