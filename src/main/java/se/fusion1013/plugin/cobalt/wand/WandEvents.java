@@ -1,6 +1,8 @@
 package se.fusion1013.plugin.cobalt.wand;
 
 import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -68,7 +70,17 @@ public class WandEvents implements Listener {
         Wand wand = Wand.getWand(is);
         if (wand == null || uuidList.contains(p.getUniqueId())) return;
 
-        uuidList.add(p.getUniqueId());
+        Block b = null;
+        switch (p.getGameMode()){
+            case CREATIVE:
+                b = p.getTargetBlockExact(5);
+                break;
+            default:
+                b = p.getTargetBlockExact(4);
+                break;
+        }
+
+        if (b == null) uuidList.add(p.getUniqueId());
         openWandInventory(wand, p);
         event.setCancelled(true);
     }
