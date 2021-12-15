@@ -6,6 +6,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;
+import se.fusion1013.plugin.cobalt.Cobalt;
 import se.fusion1013.plugin.cobalt.util.BlockUtil;
 
 public class ReplaceBlocksModule extends AbstractSpellModule<ReplaceBlocksModule> implements SpellModule {
@@ -20,6 +21,8 @@ public class ReplaceBlocksModule extends AbstractSpellModule<ReplaceBlocksModule
     boolean replaceNonAir = false;
     boolean hollowReplace = false;
     boolean noSound = false;
+
+    int delay;
 
     public ReplaceBlocksModule(Material replaceMaterial, double radius, boolean cancelsCast){
         this.replaceMaterial = replaceMaterial;
@@ -39,6 +42,7 @@ public class ReplaceBlocksModule extends AbstractSpellModule<ReplaceBlocksModule
         this.replaceNonAir = target.replaceNonAir;
         this.hollowReplace = target.hollowReplace;
         this.noSound = target.noSound;
+        this.delay = target.delay;
     }
 
     /**
@@ -76,6 +80,11 @@ public class ReplaceBlocksModule extends AbstractSpellModule<ReplaceBlocksModule
         return this;
     }
 
+    public ReplaceBlocksModule withDelay(int ticks){
+        this.delay = ticks;
+        return this;
+    }
+
     @Override
     public void executeOnCast(Location location, Vector velocityVector) { replaceBlocksInSphere(location); }
 
@@ -105,8 +114,10 @@ public class ReplaceBlocksModule extends AbstractSpellModule<ReplaceBlocksModule
     }
 
     private void replaceBlocksInSphere(Location location){
-        if (setTopBlocks) BlockUtil.setTopBlocksInSphere(location, replaceMaterial, (int)Math.round(currentRadius), slowReplace);
-        else BlockUtil.setBlocksInSphere(location, replaceMaterial, (int)Math.round(currentRadius), dropItems, slowReplace, replaceNonAir, hollowReplace, noSound);
+        Cobalt.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(Cobalt.getInstance(), () -> {
+            if (setTopBlocks) BlockUtil.setTopBlocksInSphere(location, replaceMaterial, (int)Math.round(currentRadius), slowReplace);
+            else BlockUtil.setBlocksInSphere(location, replaceMaterial, (int)Math.round(currentRadius), dropItems, slowReplace, replaceNonAir, hollowReplace, noSound);
+        }, delay);
     }
 
     @Override
