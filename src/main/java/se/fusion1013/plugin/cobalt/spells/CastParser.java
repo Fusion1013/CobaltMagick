@@ -47,7 +47,7 @@ public class CastParser {
             ISpell actualSpellInstance = spells.get(i);
 
             // Check if the spell is able to be cast
-            if (!actualSpellInstance.getHasCast() && castSpells < casts){
+            if (!actualSpellInstance.getHasCast() && castSpells < casts && actualSpellInstance.getCount() > 0){
 
                 if (cs instanceof ProjectileModifierSpell){ // Adds projectile modifiers
                     modifiers.add((ProjectileModifierSpell) cs);
@@ -69,6 +69,7 @@ public class CastParser {
                 }
 
                 actualSpellInstance.setHasCast(true); // TODO: Make sure this works as expected
+                if (actualSpellInstance.getConsumeOnUse()) actualSpellInstance.setCount(actualSpellInstance.getCount() - 1);
             }
         }
         return spellsToCast;
