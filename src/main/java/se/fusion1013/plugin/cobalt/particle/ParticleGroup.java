@@ -34,9 +34,11 @@ public class ParticleGroup implements IParticleGroup, Cloneable {
         for (Player p : Bukkit.getOnlinePlayers()){
             for (IParticleStyle ps : particleStyleList){
                 List<PParticle> particles = ps.getParticles(location);
+                Object extra = ps.getExtra();
 
                 for (PParticle particle : particles){
-                    p.spawnParticle(ps.getParticle(), particle.getLocation(), particle.getCount(), particle.getxOff(), particle.getyOff(), particle.getzOff(), particle.getSpeed());
+                    if (extra != null) p.spawnParticle(ps.getParticle(), particle.getLocation(), particle.getCount(), particle.getxOff(), particle.getyOff(), particle.getzOff(), particle.getSpeed(), extra);
+                    else p.spawnParticle(ps.getParticle(), particle.getLocation(), particle.getCount(), particle.getxOff(), particle.getyOff(), particle.getzOff(), particle.getSpeed());
                 }
             }
         }
