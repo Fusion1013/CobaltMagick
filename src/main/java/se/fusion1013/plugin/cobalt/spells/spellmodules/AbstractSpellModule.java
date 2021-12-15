@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobalt.Cobalt;
 
@@ -84,13 +85,13 @@ public abstract class AbstractSpellModule<B extends AbstractSpellModule> impleme
 
 
     @Override
-    public void executeOnEntityHit(Location location, Vector velocityVector, Entity entityHit) {
+    public void executeOnEntityHit(Player caster, Location location, Vector velocityVector, Entity entityHit) {
         currentIterations++;
         canRun = currentIterations <= maxIterationsPerTick && canRun;
     }
 
     @Override
-    public void executeOnBlockHit(Location location, Vector velocityVector, Block blockHit, BlockFace hitBlockFace) {
+    public void executeOnBlockHit(Player caster, Location location, Vector velocityVector, Block blockHit, BlockFace hitBlockFace) {
         currentIterations++;
         canRun = currentIterations <= maxIterationsPerTick && canRun;
     }
