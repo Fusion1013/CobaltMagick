@@ -14,6 +14,7 @@ public abstract class ParticleStyle implements IParticleStyle, Cloneable {
     int count;
     double speed;
     String internalStyleName;
+    Object extra;
 
     public ParticleStyle(ParticleStyle target){
         if (target != null){
@@ -22,6 +23,7 @@ public abstract class ParticleStyle implements IParticleStyle, Cloneable {
             this.offset = target.getOffset();
             this.count = target.getCount();
             this.speed = target.getSpeed();
+            this.extra = target.getExtra();
         }
     }
 
@@ -39,6 +41,14 @@ public abstract class ParticleStyle implements IParticleStyle, Cloneable {
     public void setCount(int count) { this.count = count; }
 
     public void setSpeed(double speed) { this.speed = speed; }
+
+    public void setExtra(Object extra) {
+        this.extra = extra;
+    }
+
+    public Object getExtra() {
+        return extra;
+    }
 
     @Override
     public String getInternalName() {
@@ -85,6 +95,7 @@ public abstract class ParticleStyle implements IParticleStyle, Cloneable {
         Vector offset = new Vector(0, 0, 0);
         int count = 1;
         double speed = 0;
+        Object extra;
 
         // TODO: Set other variables for individual particles (/particle <particle> <x,y,z> <xOff,yOff,zOff> <speed> <count> <extra>)
         public ParticleStyleBuilder(){
@@ -96,12 +107,18 @@ public abstract class ParticleStyle implements IParticleStyle, Cloneable {
             obj.setOffset(offset);
             obj.setCount(count);
             obj.setSpeed(speed);
+            obj.setExtra(extra);
 
             return obj;
         }
 
         protected abstract T createObj();
         protected abstract B getThis();
+
+        public B setExtra(Object extra) {
+            this.extra = extra;
+            return getThis();
+        }
 
         public B setParticle(Particle particle){
             this.particle = particle;
