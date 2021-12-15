@@ -100,9 +100,9 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
     }
 
     private void resetModules(){
-        for (SpellModule module : executeOnCast) module.reset();
-        for (SpellModule module : executeOnTick) module.reset();
-        for (SpellModule module : executeOnDeath) module.reset();
+        for (SpellModule module : executeOnCast) module.update();
+        for (SpellModule module : executeOnTick) module.update();
+        for (SpellModule module : executeOnDeath) module.update();
     }
 
     private void killParticle(){
