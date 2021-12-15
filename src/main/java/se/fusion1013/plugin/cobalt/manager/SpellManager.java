@@ -97,7 +97,7 @@ public class SpellManager extends Manager {
             .addExecuteOnEntityCollision(new DamageModule(3, true))
             .addExecuteOnEntityCollision(new ExplodeModule(1, true))
             .addDescription("A very bouncy projectile")
-            .setIsBouncy(true).setBounceFriction(new Vector(.99, .8, .99))
+            .setIsBouncy(true).setBounceFriction(new Vector(.99, .9, .99))
             .setParticle(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.VILLAGER_HAPPY).setCount(4).setOffset(new Vector(.1, .1, .1)).build())
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.FALLING_SPORE_BLOSSOM).setSpeed(0).setRadius(.3).setDensity(20).animateRadius(0, 10).build())
@@ -308,6 +308,22 @@ public class SpellManager extends Manager {
                             .build(), false)))
             .addDescription("Gives a projectile a frozen charge, that it will release on impact")
             .setCustomModel(31)
+            .build());
+
+    public static final Spell ELECTRIC_CHARGE = register(new ProjectileModifierSpell.ProjectileModifierSpellBuilder(54, "electric_charge")
+            .addManaDrain(8)
+            .addSpellModifier(new AddSpellModuleModifier().addOnEntityCollision(new DamageModule(3, false)))
+            .addSpellModifier(new AddSpellModuleModifier().addOnCollision(new EntitySpellModule(EntityType.LIGHTNING, false)))
+            .addSpellModifier(new AddSpellModuleModifier().addOnCollision(new ParticleModule(
+                    new ParticleGroup.ParticleGroupBuilder()
+                            .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.ELECTRIC_SPARK).setDensity(40).setSpeed(.3).setRadius(1).setInSphere().build())
+                            .build(), false)))
+            .addSpellModifier(new AddSpellModuleModifier().addOnTick(new ParticleModule(
+                    new ParticleGroup.ParticleGroupBuilder()
+                            .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.ELECTRIC_SPARK).build())
+                            .build(), false)))
+            .addDescription("Gives a projectile a electric charge, that it will release on impact")
+            .setCustomModel(34)
             .build());
 
     // ----- MATERIAL SPELLS ----- ID: 6+XXX
