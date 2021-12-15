@@ -28,8 +28,10 @@ public abstract class Spell implements ISpell, Cloneable {
 
     boolean hasCast = false;
 
+    int count = 1; // The number of spells in the itemstack
+
     // Shown Attributes
-    int uses;
+    boolean consumeOnUse;
     int manaDrain;
     double castDelay;
     double rechargeTime;
@@ -55,13 +57,15 @@ public abstract class Spell implements ISpell, Cloneable {
         this.customModelData = spell.getCustomModelData();
         this.type = spell.getSpellType();
 
-        this.uses = spell.getUses();
         this.manaDrain = spell.getManaDrain();
         this.castDelay = spell.getCastDelay();
         this.rechargeTime = spell.getRechargeTime();
         this.description = spell.getDescription();
         this.hasCast = spell.getHasCast();
         this.delayedSpells = spell.getDelayedSpells();
+        this.consumeOnUse = spell.getConsumeOnUse();
+
+        this.count = spell.getCount();
     }
 
     /**
@@ -73,7 +77,6 @@ public abstract class Spell implements ISpell, Cloneable {
 
     @Override
     public void castSpell(Wand wand, Player player) {
-
     }
 
     // ----- GETTERS / SETTERS -----
@@ -99,13 +102,14 @@ public abstract class Spell implements ISpell, Cloneable {
         lore.add("");
         lore.add(ChatColor.BLUE + type.name().replaceAll("_", " "));
 
-        ItemStack stack = new ItemStack(Material.CLOCK, 1);
+        ItemStack stack = new ItemStack(Material.CLOCK, count);
         ItemMeta meta = stack.getItemMeta();
 
         if (meta != null) {
             meta.getPersistentDataContainer().set(spellKey, PersistentDataType.INTEGER, id);
 
-            meta.setDisplayName(type.spellColor + spellName);
+            if (consumeOnUse) meta.setDisplayName(type.spellColor + spellName + " (-)");
+            else meta.setDisplayName(type.spellColor + spellName);
             meta.setLore(lore);
 
             meta.setCustomModelData(customModelData);
@@ -186,11 +190,6 @@ public abstract class Spell implements ISpell, Cloneable {
         int id;
         String internalSpellName;
         String spellName;
-        String description;
-        int manaDrain;
-
-        double castDelay;
-        double rechargeTime;
 
         /**
          * Creates a new spell builder with an internalized spell name. Automatically generates the display name
@@ -225,6 +224,12 @@ public abstract class Spell implements ISpell, Cloneable {
                 spellName += Character.toUpperCase(s.charAt(0)) + s.substring(1) + " ";
             }
             spellName = spellName.substring(0, spellName.length()-1);
+        }
+
+        public B consumeOnUse(int defaultCount){
+            obj.consumeOnUse = true;
+            obj.setCount(defaultCount);
+            return getThis();
         }
 
         public B setCustomModel(int modelId){
@@ -285,7 +290,9 @@ public abstract class Spell implements ISpell, Cloneable {
     public boolean getHasCast() { return hasCast; }
 
     @Override
-    public void setHasCast(boolean hasCast) { this.hasCast = hasCast; }
+    public void setHasCast(boolean hasCast) {
+        this.hasCast = hasCast;
+    }
 
     @Override
     public String getInternalSpellName() {
@@ -313,8 +320,23 @@ public abstract class Spell implements ISpell, Cloneable {
     }
 
     @Override
-    public int getUses() {
-        return uses;
+    public boolean getConsumeOnUse() {
+        return consumeOnUse;
+    }
+
+    @Override
+    public void setConsumeOnUse(boolean consume) {
+        this.consumeOnUse = consume;
+    }
+
+    @Override
+    public int getCount() {
+        return count;
+    }
+
+    @Override
+    public void setCount(int count) {
+        this.count = count;
     }
 
     @Override
