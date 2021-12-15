@@ -121,7 +121,6 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
     public void castSpell(Wand wand, Player caster, Vector direction, Location location){
         super.castSpell(wand, caster);
         this.wand = wand;
-        this.caster = caster;
         this.velocityVector = direction;
         this.currentLocation = location;
         this.currentLifetime = lifetime;
@@ -179,10 +178,10 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
 
         if (movementStopped) killParticle();
 
-        resetModules();
+        updateModules();
     }
 
-    private void resetModules(){
+    private void updateModules(){
         for (SpellModule module : executeOnCast) module.update();
         for (SpellModule module : executeOnTick) module.update();
         for (SpellModule module : executeOnDeath) module.update();
@@ -256,7 +255,7 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
                 List<ISpell> spellsToCast = ds.getSpellsToCast();
 
                 for (ISpell sp : spellsToCast){
-                    sp.castSpell(wand, caster, velocityVector.clone(), currentLocation.clone());
+                    sp.castSpell(wand, caster, velocityVector.clone().normalize(), currentLocation.clone());
                 }
             }
         }
