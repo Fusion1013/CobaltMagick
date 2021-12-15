@@ -56,7 +56,8 @@ public class ExplodeModule extends AbstractSpellModule<ExplodeModule> implements
 
     @Override
     public void executeOnTick(Location location, Vector velocityVector) {
-        super.executeOnTick(location, velocityVector);
+        if (!canRun) return;
+
         explode(location, velocityVector);
     }
 
@@ -64,6 +65,7 @@ public class ExplodeModule extends AbstractSpellModule<ExplodeModule> implements
     public void executeOnBlockHit(Location location, Vector velocityVector, Block blockHit, BlockFace hitBlockFace) {
         super.executeOnBlockHit(location, velocityVector, blockHit, hitBlockFace);
         if (!canRun) return;
+
         explode(location, velocityVector);
     }
 
@@ -71,6 +73,7 @@ public class ExplodeModule extends AbstractSpellModule<ExplodeModule> implements
     public void executeOnEntityHit(Location location, Vector velocityVector, Entity entityHit) {
         super.executeOnEntityHit(location, velocityVector, entityHit);
         if (!canRun) return;
+
         explode(location, velocityVector);
     }
 
