@@ -30,7 +30,8 @@ public class ParticleModule extends AbstractSpellModule<ParticleModule> implemen
 
     @Override
     public void executeOnTick(Location location, Vector velocityVector) {
-        super.executeOnTick(location, velocityVector);
+        if (!canRun) return;
+
         display(location);
     }
 
@@ -38,6 +39,7 @@ public class ParticleModule extends AbstractSpellModule<ParticleModule> implemen
     public void executeOnBlockHit(Location location, Vector velocityVector, Block blockHit, BlockFace hitBlockFace) {
         super.executeOnBlockHit(location, velocityVector, blockHit, hitBlockFace);
         if (!canRun) return;
+
         display(location);
     }
 
@@ -45,6 +47,7 @@ public class ParticleModule extends AbstractSpellModule<ParticleModule> implemen
     public void executeOnEntityHit(Location location, Vector velocityVector, Entity entityHit) {
         super.executeOnEntityHit(location, velocityVector, entityHit);
         if (!canRun) return;
+
         display(location);
     }
 
