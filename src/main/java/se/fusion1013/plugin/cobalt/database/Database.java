@@ -189,7 +189,7 @@ public abstract class Database {
     public void updateWandSpells(List<Wand> wands){
 
         String deleteWandSpells = "DELETE FROM wand_spells WHERE wand_id = ?";
-        String insertWandSpell = "INSERT INTO wand_spells(wand_id, spell_id, is_always_cast, slot, count, uses) VALUES(?,?,?,?, ?, ?)";
+        String insertWandSpell = "INSERT INTO wand_spells(wand_id, spell_id, is_always_cast, slot, count) VALUES(?,?,?,?, ?)";
 
         Connection conn = null;
         PreparedStatement pstmt1 = null, pstmt2 = null;
