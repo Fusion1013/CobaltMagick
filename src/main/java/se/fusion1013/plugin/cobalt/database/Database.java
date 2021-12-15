@@ -108,7 +108,9 @@ public abstract class Database {
             while (rsSpells.next()){
                 int spellId = rsSpells.getInt("spell_id");
                 boolean isAlwaysCast = rsSpells.getBoolean("is_always_cast");
+                int count = rsSpells.getInt("count");
                 ISpell spell = SpellManager.getSpell(spellId);
+                spell.setCount(count);
                 if (isAlwaysCast) alwaysCast.add(spell);
                 else spellList.add(spell);
             }
@@ -143,9 +145,6 @@ public abstract class Database {
         int capacity = wand.getCapacity();
         double spread = wand.getSpread();
         int wandTier = wand.getWandTier();
-
-        List<ISpell> alwaysCastSpells = wand.getAlwaysCast();
-        List<ISpell> spells = wand.getSpells();
 
         try {
             Connection conn = getSQLConnection();
@@ -190,7 +189,7 @@ public abstract class Database {
     public void updateWandSpells(List<Wand> wands){
 
         String deleteWandSpells = "DELETE FROM wand_spells WHERE wand_id = ?";
-        String insertWandSpell = "INSERT INTO wand_spells(wand_id, spell_id, is_always_cast, slot) VALUES(?,?,?,?)";
+        String insertWandSpell = "INSERT INTO wand_spells(wand_id, spell_id, is_always_cast, slot, count, uses) VALUES(?,?,?,?, ?, ?)";
 
         Connection conn = null;
         PreparedStatement pstmt1 = null, pstmt2 = null;
@@ -215,6 +214,7 @@ public abstract class Database {
                     pstmt2.setInt(2, currentSpell.getId());
                     pstmt2.setBoolean(3, true);
                     pstmt2.setInt(4, i);
+                    pstmt2.setInt(5, currentSpell.getCount());
                     rowsAffected += pstmt2.executeUpdate();
                 }
                 for (int i = 0; i < wand.getSpells().size(); i++){
@@ -224,6 +224,7 @@ public abstract class Database {
                     pstmt2.setInt(2, currentSpell.getId());
                     pstmt2.setBoolean(3, false);
                     pstmt2.setInt(4, i);
+                    pstmt2.setInt(5, currentSpell.getCount());
                     rowsAffected += pstmt2.executeUpdate();
                 }
 
