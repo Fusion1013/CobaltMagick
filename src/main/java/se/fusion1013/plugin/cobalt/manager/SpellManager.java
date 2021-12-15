@@ -253,7 +253,7 @@ public class SpellManager extends Manager {
             .addExecuteOnCast(new SoundSpellModule(Sound.ENTITY_ILLUSIONER_PREPARE_MIRROR, SoundCategory.PLAYERS, false).setPitch(2))
             .addDescription("After a period of time, you'll be returned to where you cast this spell")
             .setParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
-                    new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.END_ROD).setCount(5).setOffset(new Vector(.1, .1, .1)).build()
+                    new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.END_ROD).setCount(1).build()
             ).build())
             .setCustomModel(37)
             .build());
