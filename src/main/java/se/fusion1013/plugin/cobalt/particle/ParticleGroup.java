@@ -25,7 +25,7 @@ public class ParticleGroup implements IParticleGroup, Cloneable {
 
     // TODO: Move to abstract particle style class
     public static List<ParticleStyle> cloneList(List<ParticleStyle> list) {
-        List<ParticleStyle> clone = new ArrayList<ParticleStyle>(list.size());
+        List<ParticleStyle> clone = new ArrayList<>(list.size());
         for (ParticleStyle item : list) clone.add(item.clone());
         return clone;
     }
