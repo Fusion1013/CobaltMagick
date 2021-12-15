@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobalt.particle.ParticleGroup;
 
@@ -24,35 +25,35 @@ public class ParticleModule extends AbstractSpellModule<ParticleModule> implemen
     }
 
     @Override
-    public void executeOnCast(Location location, Vector velocityVector) {
+    public void executeOnCast(Player caster, Location location, Vector velocityVector) {
         display(location);
     }
 
     @Override
-    public void executeOnTick(Location location, Vector velocityVector) {
+    public void executeOnTick(Player caster, Location location, Vector velocityVector) {
         if (!canRun) return;
 
         display(location);
     }
 
     @Override
-    public void executeOnBlockHit(Location location, Vector velocityVector, Block blockHit, BlockFace hitBlockFace) {
-        super.executeOnBlockHit(location, velocityVector, blockHit, hitBlockFace);
+    public void executeOnBlockHit(Player caster, Location location, Vector velocityVector, Block blockHit, BlockFace hitBlockFace) {
+        super.executeOnBlockHit(caster, location, velocityVector, blockHit, hitBlockFace);
         if (!canRun) return;
 
         display(location);
     }
 
     @Override
-    public void executeOnEntityHit(Location location, Vector velocityVector, Entity entityHit) {
-        super.executeOnEntityHit(location, velocityVector, entityHit);
+    public void executeOnEntityHit(Player caster, Location location, Vector velocityVector, Entity entityHit) {
+        super.executeOnEntityHit(caster, location, velocityVector, entityHit);
         if (!canRun) return;
 
         display(location);
     }
 
     @Override
-    public void executeOnDeath(Location location, Vector velocityVector) {
+    public void executeOnDeath(Player caster, Location location, Vector velocityVector) {
         display(location);
     }
 
