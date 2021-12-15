@@ -34,7 +34,6 @@ public class AbstractGUIListener implements Listener {
 
         UUID inventoryUUID = AbstractGUI.openInventories.get(playerUUID);
 
-        // TODO: You should not be able to stack spells inside a wand inventory
         ItemStack clickedStack = e.getCurrentItem();
         ItemStack heldStack = e.getWhoClicked().getItemOnCursor();
         boolean validClick;
@@ -93,7 +92,9 @@ public class AbstractGUIListener implements Listener {
             ItemStack stack = inventory.getItem(i);
             if (stack != null) {
                 ISpell spell = SpellManager.getSpell(stack);
-                if (spell != null) spells.add(spell);
+                if (spell != null) {
+                    spells.add(spell);
+                }
             }
         }
 
