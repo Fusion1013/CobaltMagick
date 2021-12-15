@@ -98,9 +98,10 @@ public class SpellManager extends Manager {
             .addExecuteOnEntityCollision(new ExplodeModule(1, true))
             .addDescription("A very bouncy projectile")
             .setIsBouncy(true)
-            .setParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
-                    new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.VILLAGER_HAPPY).setCount(4).setOffset(new Vector(.1, .1, .1)).build()
-            ).build())
+            .setParticle(new ParticleGroup.ParticleGroupBuilder()
+                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.VILLAGER_HAPPY).setCount(4).setOffset(new Vector(.1, .1, .1)).build())
+                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.FALLING_SPORE_BLOSSOM).setSpeed(0).setRadius(.3).setDensity(20).animateRadius(0, 10).build())
+                    .build())
             .setCustomModel(4)
             .build());
 
@@ -275,7 +276,7 @@ public class SpellManager extends Manager {
             .addParticle(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(150).animateRadius(0, 40).build())
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(20).setInSphere().animateRadius(0, 40).build())
-                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.CRIT).setRadius(5).setDensity(10).setInSphere().animateRadius(0, 40).build())
+                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.ELECTRIC_SPARK).setRadius(5).setDensity(10).setInSphere().animateRadius(0, 40).setSpeed(.2).build())
                     .build())
             .setCustomModel(7)
             .build());
@@ -300,9 +301,11 @@ public class SpellManager extends Manager {
             .addSpellModifier(new AddSpellModuleModifier().addOnCollision(new ParticleModule(
                     new ParticleGroup.ParticleGroupBuilder()
                             .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.SNOWFLAKE).setDensity(100).setSpeed(.1).setRadius(5).setInSphere().build())
-                            .build()
-                    , false
-            )))
+                            .build(), false)))
+            .addSpellModifier(new AddSpellModuleModifier().addOnTick(new ParticleModule(
+                    new ParticleGroup.ParticleGroupBuilder()
+                            .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.SPIT).build())
+                            .build(), false)))
             .addDescription("Gives a projectile a frozen charge, that it will release on impact")
             .setCustomModel(31)
             .build());
