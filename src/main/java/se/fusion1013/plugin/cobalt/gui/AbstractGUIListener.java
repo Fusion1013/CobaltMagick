@@ -99,7 +99,5 @@ public class AbstractGUIListener implements Listener {
         }
 
         wand.setSpells(spells);
-
-        // Cobalt.getInstance().getRDatabase().updateWandSpells(wand);
     }
 }
