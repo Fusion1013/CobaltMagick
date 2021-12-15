@@ -47,35 +47,35 @@ public class SoundSpellModule extends AbstractSpellModule<SoundSpellModule> impl
     }
 
     @Override
-    public void executeOnCast(Location location, Vector velocityVector) {
+    public void executeOnCast(Player caster, Location location, Vector velocityVector) {
         playSound(location);
     }
 
     @Override
-    public void executeOnEntityHit(Location location, Vector velocityVector, Entity entityHit) {
-        super.executeOnEntityHit(location, velocityVector, entityHit);
+    public void executeOnEntityHit(Player caster, Location location, Vector velocityVector, Entity entityHit) {
+        super.executeOnEntityHit(caster, location, velocityVector, entityHit);
         if (!canRun) return;
 
         playSound(location);
     }
 
     @Override
-    public void executeOnBlockHit(Location location, Vector velocityVector, Block blockHit, BlockFace hitBlockFace) {
-        super.executeOnBlockHit(location, velocityVector, blockHit, hitBlockFace);
+    public void executeOnBlockHit(Player caster, Location location, Vector velocityVector, Block blockHit, BlockFace hitBlockFace) {
+        super.executeOnBlockHit(caster, location, velocityVector, blockHit, hitBlockFace);
         if (!canRun) return;
 
         playSound(location);
     }
 
     @Override
-    public void executeOnTick(Location location, Vector velocityVector) {
+    public void executeOnTick(Player caster, Location location, Vector velocityVector) {
         if (!canRun) return;
 
         playSound(location);
     }
 
     @Override
-    public void executeOnDeath(Location location, Vector velocityVector) {
+    public void executeOnDeath(Player caster, Location location, Vector velocityVector) {
         playSound(location);
     }
 
