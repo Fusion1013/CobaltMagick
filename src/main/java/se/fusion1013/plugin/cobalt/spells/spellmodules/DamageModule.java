@@ -5,6 +5,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.util.Random;
@@ -56,19 +57,19 @@ public class DamageModule extends AbstractSpellModule<DamageModule> implements S
     }
 
     @Override
-    public void executeOnCast(Location location, Vector directionVector) { }
+    public void executeOnCast(Player caster, Location location, Vector directionVector) { }
 
     @Override
-    public void executeOnTick(Location location, Vector velocityVector) { }
+    public void executeOnTick(Player caster, Location location, Vector velocityVector) { }
 
     @Override
-    public void executeOnBlockHit(Location location, Vector velocityVector, Block blockHit, BlockFace hitBlockFace) {
-        super.executeOnBlockHit(location, velocityVector, blockHit, hitBlockFace);
+    public void executeOnBlockHit(Player caster, Location location, Vector velocityVector, Block blockHit, BlockFace hitBlockFace) {
+        super.executeOnBlockHit(caster, location, velocityVector, blockHit, hitBlockFace);
     }
 
     @Override
-    public void executeOnEntityHit(Location location, Vector velocityVector, Entity entityHit) {
-        super.executeOnEntityHit(location, velocityVector, entityHit);
+    public void executeOnEntityHit(Player caster, Location location, Vector velocityVector, Entity entityHit) {
+        super.executeOnEntityHit(caster, location, velocityVector, entityHit);
         if (!canRun) return;
 
         if (entityHit instanceof LivingEntity){
@@ -94,7 +95,7 @@ public class DamageModule extends AbstractSpellModule<DamageModule> implements S
     }
 
     @Override
-    public void executeOnDeath(Location location, Vector velocityVector) { }
+    public void executeOnDeath(Player caster, Location location, Vector velocityVector) { }
 
     @Override
     public boolean cancelsCast() {
