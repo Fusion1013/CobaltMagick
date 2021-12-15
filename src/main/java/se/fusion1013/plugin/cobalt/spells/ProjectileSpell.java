@@ -76,6 +76,8 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
         this.executeOnBlockCollision = projectileSpell.getExecuteOnBlockCollision();
         this.executeOnEntityCollision = projectileSpell.getExecuteOnEntityCollision();
         this.executeOnDeath = projectileSpell.getExecuteOnDeath();
+
+        this.caster = projectileSpell.getCaster();
     }
 
     @Override
@@ -123,6 +125,7 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
         this.velocityVector = direction;
         this.currentLocation = location;
         this.currentLifetime = lifetime;
+        this.caster = caster;
 
         // Apply spread
         double actualSpread = wand.getSpread() + spread;
@@ -148,7 +151,7 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
 
         // Special Things Here
         for (SpellModule module : executeOnCast){
-            module.executeOnCast(currentLocation, velocityVector.clone());
+            module.executeOnCast(caster, currentLocation, velocityVector.clone());
         }
 
         // Start projectile tick
@@ -169,7 +172,7 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
 
         // Special Things Here
         for (SpellModule module : executeOnTick){
-            module.executeOnTick(currentLocation, velocityVector.clone());
+            module.executeOnTick(caster, currentLocation, velocityVector.clone());
         }
         // Particle After Movement Handle
         if (currentLifetime * 2 <= lifetime) executeTrigger(TriggerType.TIMER);
@@ -192,7 +195,7 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
      */
     public void onProjectileDeath(){
         for (SpellModule module : executeOnDeath){
-            module.executeOnDeath(currentLocation, velocityVector);
+            module.executeOnDeath(caster, currentLocation, velocityVector);
         }
         executeTrigger(TriggerType.EXPIRATION);
 
@@ -209,7 +212,7 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
         super.onEntityCollide(hitEntity);
 
         for (SpellModule module : executeOnEntityCollision){
-            module.executeOnEntityHit(currentLocation, velocityVector, hitEntity);
+            module.executeOnEntityHit(caster, currentLocation, velocityVector, hitEntity);
 
             if (module.cancelsCast()) killParticle();
         }
@@ -228,7 +231,7 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
         super.onBlockCollide(hitBlock, hitBlockFace);
 
         for (SpellModule module : executeOnBlockCollision){
-            module.executeOnBlockHit(currentLocation, velocityVector, hitBlock, hitBlockFace);
+            module.executeOnBlockHit(caster, currentLocation, velocityVector, hitBlock, hitBlockFace);
 
             if (module.cancelsCast()) killParticle();
         }
@@ -351,26 +354,68 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
             return super.build();
         }
 
+        /**
+         * Adds a spell to be executed both on entity and block collision
+         *
+         * @param executeThis the <code>SpellModule</code> to execute
+         * @return the builder
+         */
+        public ProjectileSpellBuilder addExecuteOnCollision(SpellModule executeThis){
+            executeOnBlockCollision.add(executeThis);
+            executeOnEntityCollision.add(executeThis);
+            return getThis();
+        }
+
+        /**
+         * Adds a spell to be executed both on cast
+         *
+         * @param executeThis the <code>SpellModule</code> to execute
+         * @return the builder
+         */
         public ProjectileSpellBuilder addExecuteOnCast(SpellModule executeThis){
             executeOnCast.add(executeThis);
             return getThis();
         }
 
+        /**
+         * Adds a spell to be executed both on tick
+         *
+         * @param executeThis the <code>SpellModule</code> to execute
+         * @return the builder
+         */
         public ProjectileSpellBuilder addExecuteOnTick(SpellModule executeThis){
             executeOnTick.add(executeThis);
             return getThis();
         }
 
+        /**
+         * Adds a spell to be executed both on block collision
+         *
+         * @param executeThis the <code>SpellModule</code> to execute
+         * @return the builder
+         */
         public ProjectileSpellBuilder addExecuteOnBlockCollision(SpellModule executeThis){
             executeOnBlockCollision.add(executeThis);
             return getThis();
         }
 
+        /**
+         * Adds a spell to be executed both on entity collision
+         *
+         * @param executeThis the <code>SpellModule</code> to execute
+         * @return the builder
+         */
         public ProjectileSpellBuilder addExecuteOnEntityCollision(SpellModule executeThis){
             executeOnEntityCollision.add(executeThis);
             return getThis();
         }
 
+        /**
+         * Adds a spell to be executed both on death
+         *
+         * @param executeThis the <code>SpellModule</code> to execute
+         * @return the builder
+         */
         public ProjectileSpellBuilder addExecuteOnDeath(SpellModule executeThis){
             executeOnDeath.add(executeThis);
             return getThis();
@@ -409,7 +454,7 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
 
         public ProjectileSpellBuilder setLifetime(double lifetime){
             Random r = new Random();
-            this.lifetime = (lifetime / 50.0) + r.nextDouble() * .5;
+            this.lifetime = lifetime + r.nextDouble() * .5;
             return getThis();
         }
     }
@@ -498,4 +543,6 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
     public List<SpellModule> getExecuteOnEntityCollision() { return AbstractSpellModule.cloneList(executeOnEntityCollision); }
 
     public List<SpellModule> getExecuteOnDeath() { return AbstractSpellModule.cloneList(executeOnDeath); }
+
+    public Player getCaster() { return this.caster; }
 }
