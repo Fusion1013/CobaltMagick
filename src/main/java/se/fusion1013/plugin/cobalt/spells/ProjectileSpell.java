@@ -117,7 +117,7 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
 
     @Override
     public void castSpell(Wand wand, Player caster, Vector direction, Location location){
-
+        super.castSpell(wand, caster);
         this.wand = wand;
         this.caster = caster;
         this.velocityVector = direction;
