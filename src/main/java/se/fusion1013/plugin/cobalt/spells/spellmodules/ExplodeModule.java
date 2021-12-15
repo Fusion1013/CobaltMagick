@@ -6,6 +6,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobalt.util.BlockUtil;
 import se.fusion1013.plugin.cobalt.util.GeometryUtil;
@@ -52,33 +53,33 @@ public class ExplodeModule extends AbstractSpellModule<ExplodeModule> implements
     }
 
     @Override
-    public void executeOnCast(Location location, Vector velocityVector) { explode(location, velocityVector); }
+    public void executeOnCast(Player caster, Location location, Vector velocityVector) { explode(location, velocityVector); }
 
     @Override
-    public void executeOnTick(Location location, Vector velocityVector) {
+    public void executeOnTick(Player caster, Location location, Vector velocityVector) {
         if (!canRun) return;
 
         explode(location, velocityVector);
     }
 
     @Override
-    public void executeOnBlockHit(Location location, Vector velocityVector, Block blockHit, BlockFace hitBlockFace) {
-        super.executeOnBlockHit(location, velocityVector, blockHit, hitBlockFace);
+    public void executeOnBlockHit(Player caster, Location location, Vector velocityVector, Block blockHit, BlockFace hitBlockFace) {
+        super.executeOnBlockHit(caster, location, velocityVector, blockHit, hitBlockFace);
         if (!canRun) return;
 
         explode(location, velocityVector);
     }
 
     @Override
-    public void executeOnEntityHit(Location location, Vector velocityVector, Entity entityHit) {
-        super.executeOnEntityHit(location, velocityVector, entityHit);
+    public void executeOnEntityHit(Player caster, Location location, Vector velocityVector, Entity entityHit) {
+        super.executeOnEntityHit(caster, location, velocityVector, entityHit);
         if (!canRun) return;
 
         explode(location, velocityVector);
     }
 
     @Override
-    public void executeOnDeath(Location location, Vector velocityVector) {
+    public void executeOnDeath(Player caster, Location location, Vector velocityVector) {
         explode(location, velocityVector);
     }
 
