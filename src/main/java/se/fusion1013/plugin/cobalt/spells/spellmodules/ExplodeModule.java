@@ -85,20 +85,16 @@ public class ExplodeModule extends AbstractSpellModule<ExplodeModule> implements
         World world = location.getWorld();
         if (velocityVector.length() < executeOnlyIfVelocityExceeds) return;
 
-        if (currentRadius < 10){
-            if (world != null) world.createExplosion(location, (float)currentRadius, fire, destroyBlocks);
-        } else {
-            BlockUtil.setBlocksInSphere(location, Material.AIR, (int) currentRadius, false, false, true, false, true);
-            for (int i = 0; i < currentRadius * currentRadius; i++){
-                Vector pos = GeometryUtil.getPointOnSphere(currentRadius).add(location.toVector());
-                if (world != null) world.createExplosion(new Location(world, pos.getX(), pos.getY(), pos.getZ()), (float)Math.min(7, currentRadius), fire, destroyBlocks);
-            }
-            for (int i = 0; i < currentRadius * currentRadius; i++){
-                Vector pos = GeometryUtil.getPointInSphere(currentRadius).add(location.toVector());
-                if (world != null) world.createExplosion(new Location(world, pos.getX(), pos.getY(), pos.getZ()), (float)Math.min(7, currentRadius), fire, destroyBlocks);
-            }
+        BlockUtil.setBlocksInSphere(location, Material.AIR, (int) currentRadius, false, false, true, false, true);
+        int iterations = (int)Math.max(1, currentRadius * Math.floor(currentRadius / 4));
+        for (int i = 0; i < iterations; i++){
+            Vector pos = GeometryUtil.getPointOnSphere(currentRadius).add(location.toVector());
+            if (world != null) world.createExplosion(new Location(world, pos.getX(), pos.getY(), pos.getZ()), (float)Math.min(7, currentRadius), fire, destroyBlocks);
         }
-        // if (world != null) world.createExplosion(location, explosionPower, fire, destroyBlocks);
+        for (int i = 0; i < iterations; i++){
+            Vector pos = GeometryUtil.getPointInSphere(currentRadius).add(location.toVector());
+            if (world != null) world.createExplosion(new Location(world, pos.getX(), pos.getY(), pos.getZ()), (float)Math.min(7, currentRadius), fire, destroyBlocks);
+        }
 
         executed = true;
     }
