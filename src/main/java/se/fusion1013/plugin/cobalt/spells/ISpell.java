@@ -40,7 +40,10 @@ public interface ISpell {
     ItemStack getSpellItem();
     int getCustomModelData();
     Spell.SpellType getSpellType();
-    int getUses();
+    boolean getConsumeOnUse();
+    void setConsumeOnUse(boolean consume);
+    int getCount();
+    void setCount(int count);
     String getDescription();
     List<Spell.DelayedSpell> getDelayedSpells();
 
