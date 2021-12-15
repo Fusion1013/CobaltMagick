@@ -83,11 +83,13 @@ public class TeleportSpellModule extends AbstractSpellModule<TeleportSpellModule
 
         caster.teleport(e2);
         entityHit.teleport(e1);
+        caster.setFallDistance(0);
     }
 
     private void teleportPlayer(Player caster, Location location){
         Cobalt.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(Cobalt.getInstance(), () -> {
             caster.teleport(location);
+            caster.setFallDistance(0);
         }, delay);
     }
 
