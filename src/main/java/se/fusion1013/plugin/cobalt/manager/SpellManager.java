@@ -93,11 +93,11 @@ public class SpellManager extends Manager {
             .build());
 
     public static final Spell BOUNCING_BURST = register(new ProjectileSpell.ProjectileSpellBuilder(12, "bouncing_burst")
-            .addManaDrain(5).setRadius(.4).setSpread(0.6).setVelocity(14).setLifetime(750).addCastDelay(-0.03).addGravity(3)
+            .addManaDrain(5).setRadius(.4).setSpread(0.6).setVelocity(14).setLifetime(750).addCastDelay(-0.03).addGravity(1)
             .addExecuteOnEntityCollision(new DamageModule(3, true))
             .addExecuteOnEntityCollision(new ExplodeModule(1, true))
             .addDescription("A very bouncy projectile")
-            .setIsBouncy(true)
+            .setIsBouncy(true).setBounceFriction(new Vector(.99, .8, .99))
             .setParticle(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.VILLAGER_HAPPY).setCount(4).setOffset(new Vector(.1, .1, .1)).build())
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.FALLING_SPORE_BLOSSOM).setSpeed(0).setRadius(.3).setDensity(20).animateRadius(0, 10).build())
@@ -266,7 +266,7 @@ public class SpellManager extends Manager {
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(20).setInSphere().animateRadius(0, 40).build())
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.SNOWFLAKE).setRadius(5).setDensity(10).setInSphere().animateRadius(0, 40).build())
                     .build())
-            .setCustomModel(7)
+            .setCustomModel(32)
             .build());
 
     public static final Spell SPHERE_OF_THUNDER = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(24, "sphere_of_thunder")
@@ -278,7 +278,7 @@ public class SpellManager extends Manager {
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(20).setInSphere().animateRadius(0, 40).build())
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.ELECTRIC_SPARK).setRadius(5).setDensity(10).setInSphere().animateRadius(0, 40).setSpeed(.2).build())
                     .build())
-            .setCustomModel(7)
+            .setCustomModel(33)
             .build());
 
     // ----- PASSIVE SPELLS ----- ID: 3+XXX
