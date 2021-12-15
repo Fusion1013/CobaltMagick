@@ -54,6 +54,7 @@ public class SQLite extends Database {
             "`spell_id` INTEGER NOT NULL," +
             "`is_always_cast` boolean NOT NULL," +
             "`slot` INTEGER NOT NULL," +
+            "`count` int(11) NOT NULL," +
             "PRIMARY KEY (wand_id, spell_id, slot)," +
             "FOREIGN KEY (wand_id) REFERENCES wands(id)" +
             ");";
