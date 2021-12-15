@@ -106,10 +106,10 @@ public class SpellManager extends Manager {
             .build());
 
     public static final Spell FIREBOLT = register(new ProjectileSpell.ProjectileSpellBuilder(13, "firebolt")
-            .addManaDrain(50).setRadius(.7).setSpread(2.9).setVelocity(5.3).setLifetime(500).addCastDelay(.5).addGravity(2)
-            .addExecuteOnEntityCollision(new ExplodeModule(2, true).setsFire().destroysBlocks())
-            .addExecuteOnDeath(new ExplodeModule(2, true).setsFire().destroysBlocks())
-            .addExecuteOnBlockCollision(new ExplodeModule(2, true).setsFire().destroysBlocks().onlyIfVelocityExceeds(.75))
+            .addManaDrain(50).setRadius(.7).setSpread(2.9).setVelocity(5.3).setLifetime(500).addCastDelay(.5).addGravity(2).consumeOnUse(25)
+            .addExecuteOnEntityCollision(new ExplodeModule(1, true).setsFire().destroysBlocks())
+            .addExecuteOnDeath(new ExplodeModule(1, true).setsFire().destroysBlocks())
+            .addExecuteOnBlockCollision(new ExplodeModule(1, true).setsFire().destroysBlocks().onlyIfVelocityExceeds(.75))
             .addDescription("A bouncy, explosive bolt")
             .setIsBouncy(true)
             .setParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
@@ -165,7 +165,7 @@ public class SpellManager extends Manager {
             .build());
 
     public static final Spell BLACK_HOLE = register(new ProjectileSpell.ProjectileSpellBuilder(18, "black_hole")
-            .addManaDrain(180).setRadius(4).setVelocity(4).setLifetime(120).addCastDelay(1.33)
+            .addManaDrain(180).setRadius(4).setVelocity(4).setLifetime(120).addCastDelay(1.33).consumeOnUse(3)
             .addExecuteOnTick(new ReplaceBlocksModule(Material.AIR, 4, false).setDropItems().setSlowReplace().setReplaceNonAir())
             .addDescription("A slow orb of void that eats through all obstacles")
             .setParticle(new ParticleGroup.ParticleGroupBuilder()
@@ -189,7 +189,7 @@ public class SpellManager extends Manager {
             .build());
 
     public static final Spell NUKE = register(new ProjectileSpell.ProjectileSpellBuilder(110, "nuke")
-            .addManaDrain(200).setRadius(1).setVelocity(20).setLifetime(200).setSpread(.6).addCastDelay(.33).addRechargeTime(10).addGravity(.9)
+            .addManaDrain(200).setRadius(1).setVelocity(20).setLifetime(200).setSpread(.6).addCastDelay(.33).addRechargeTime(10).addGravity(.9).consumeOnUse(1)
             .addExecuteOnEntityCollision(new DamageModule(75, true))
             .addExecuteOnEntityCollision(new ExplodeModule(10, true).setsFire().destroysBlocks())
             .addExecuteOnBlockCollision(new ExplodeModule(10, true).setsFire().destroysBlocks())
@@ -204,7 +204,7 @@ public class SpellManager extends Manager {
             .build());
 
     public static final Spell GIGA_NUKE = register(new ProjectileSpell.ProjectileSpellBuilder(111, "giga_nuke")
-            .addManaDrain(500).setRadius(1).setVelocity(20).setLifetime(200).setSpread(.6).addCastDelay(.83).addRechargeTime(13.33).addGravity(.9)
+            .addManaDrain(500).setRadius(1).setVelocity(20).setLifetime(200).setSpread(.6).addCastDelay(.83).addRechargeTime(13.33).addGravity(.9).consumeOnUse(1)
             .addExecuteOnEntityCollision(new DamageModule(250, true))
             .addExecuteOnEntityCollision(new ExplodeModule(40, true).setsFire().destroysBlocks())
             .addExecuteOnBlockCollision(new ExplodeModule(40, true).setsFire().destroysBlocks())
@@ -222,7 +222,7 @@ public class SpellManager extends Manager {
     // ----- STATIC PROJECTILE SPELLS ----- ID: 2+XXX
 
     public static final Spell SPHERE_OF_BUOYANCY = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(20, "sphere_of_buoyancy")
-            .addManaDrain(10).addCastDelay(.25).setRadius(5).setLifetime(120)
+            .addManaDrain(10).addCastDelay(.25).setRadius(5).setLifetime(120).consumeOnUse(15)
             .addDescription("A field of levitative magic")
             .addExecuteOnTick(new AreaEffectModule(5, false).setPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 2, 0, false, false)).animateRadius(0, 40))
             .addParticle(new ParticleGroup.ParticleGroupBuilder()
@@ -233,7 +233,7 @@ public class SpellManager extends Manager {
             .build());
 
     public static final Spell GIGA_BLACK_HOLE = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(21, "giga_black_hole")
-            .addManaDrain(240).setRadius(8).setLifetime(10).addCastDelay(1.33)
+            .addManaDrain(240).setRadius(8).setLifetime(10).addCastDelay(1.33).consumeOnUse(6)
             .addExecuteOnTick(new ReplaceBlocksModule(Material.AIR, 8, false).setDropItems().setReplaceNonAir().setSlowReplace().animateRadius(0, 40))
             .addDescription("A growing orb of negative energy that destroys everything in its reach")
             .addParticle(new ParticleGroup.ParticleGroupBuilder()
@@ -245,7 +245,7 @@ public class SpellManager extends Manager {
             .build());
 
     public static final Spell OMEGA_BLACK_HOLE = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(22, "omega_black_hole")
-            .addManaDrain(500).setRadius(20).setLifetime(20).addCastDelay(1).addRechargeTime(1.67)
+            .addManaDrain(500).setRadius(20).setLifetime(20).addCastDelay(1).addRechargeTime(1.67).consumeOnUse(6)
             .addExecuteOnTick(new ReplaceBlocksModule(Material.AIR, 20, false).setReplaceNonAir().setSlowReplace().animateRadius(0, 80))
             .addDescription("Even light dies eventually...")
             .addParticle(new ParticleGroup.ParticleGroupBuilder()
@@ -257,7 +257,7 @@ public class SpellManager extends Manager {
             .build());
 
     public static final Spell SPHERE_OF_STILLNESS = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(23, "sphere_of_stillness")
-            .addManaDrain(50).addCastDelay(.25).setRadius(5).setLifetime(120)
+            .addManaDrain(50).addCastDelay(.25).setRadius(5).setLifetime(120).consumeOnUse(15)
             .addDescription("A field of freezing magic")
             .addExecuteOnTick(new AreaEffectModule(5, false).setFreezing().animateRadius(0, 40))
             .addExecuteOnCast(new ReplaceBlocksModule(Material.SNOW, 5, false).onlySetTopBlocks().setSlowReplace().withDelay(15))
@@ -270,7 +270,7 @@ public class SpellManager extends Manager {
             .build());
 
     public static final Spell SPHERE_OF_THUNDER = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(24, "sphere_of_thunder")
-            .addManaDrain(60).addCastDelay(.25).setRadius(5).setLifetime(120)
+            .addManaDrain(60).addCastDelay(.25).setRadius(5).setLifetime(120).consumeOnUse(15)
             .addDescription("A field of electrifying magic")
             .addExecuteOnTick(new EntitySpellModule(EntityType.LIGHTNING, false).addSummonCooldown(20, 20).setSummonInSphere(5))
             .addParticle(new ParticleGroup.ParticleGroupBuilder()
@@ -478,7 +478,9 @@ public class SpellManager extends Manager {
 
         if (meta.getPersistentDataContainer().has(spellKey, PersistentDataType.INTEGER)){
             int spellId = meta.getPersistentDataContainer().get(spellKey, PersistentDataType.INTEGER);
-            return getSpell(spellId);
+            ISpell spell = getSpell(spellId);
+            spell.setCount(stack.getAmount());
+            return spell;
         } else {
             return null;
         }
