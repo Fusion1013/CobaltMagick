@@ -12,7 +12,8 @@ public interface SpellModule {
     void executeOnBlockHit(Location location, Vector velocityVector, Block blockHit, BlockFace hitBlockFace);
     void executeOnEntityHit(Location location, Vector velocityVector, Entity entityHit);
     void executeOnDeath(Location location, Vector velocityVector);
-    void reset();
+
+    void update();
     boolean cancelsCast();
     SpellModule clone();
 }
