@@ -26,6 +26,8 @@ public interface IParticleStyle {
 
     List<PParticle> getParticles(Location startLocation, Location endLocation);
 
+    Object getExtra();
+
     static IParticleStyle fromName(String styleName){
         return Cobalt.getInstance().getManager(ParticleStyleManager.class).getStyleByName(styleName);
     }
