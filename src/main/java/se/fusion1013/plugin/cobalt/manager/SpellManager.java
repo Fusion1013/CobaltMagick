@@ -5,6 +5,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BundleMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
@@ -206,8 +207,8 @@ public class SpellManager extends Manager {
     public static final Spell GIGA_NUKE = register(new ProjectileSpell.ProjectileSpellBuilder(111, "giga_nuke")
             .addManaDrain(500).setRadius(1).setVelocity(20).setLifetime(200).setSpread(.6).addCastDelay(.83).addRechargeTime(13.33).addGravity(.9).consumeOnUse(1)
             .addExecuteOnEntityCollision(new DamageModule(250, true))
-            .addExecuteOnEntityCollision(new ExplodeModule(40, true).setsFire().destroysBlocks())
-            .addExecuteOnBlockCollision(new ExplodeModule(40, true).setsFire().destroysBlocks())
+            .addExecuteOnEntityCollision(new ExplodeModule(25, true).setsFire().destroysBlocks())
+            .addExecuteOnBlockCollision(new ExplodeModule(25, true).setsFire().destroysBlocks())
             .addDescription("What do you expect?")
             .setParticle(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.LAVA).setCount(20).setOffset(new Vector(.5, .5, .5)).build())
@@ -224,10 +225,10 @@ public class SpellManager extends Manager {
     public static final Spell SPHERE_OF_BUOYANCY = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(20, "sphere_of_buoyancy")
             .addManaDrain(10).addCastDelay(.25).setRadius(5).setLifetime(120).consumeOnUse(15)
             .addDescription("A field of levitative magic")
-            .addExecuteOnTick(new AreaEffectModule(5, false).setPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 2, 0, false, false)).animateRadius(0, 40))
+            .addExecuteOnTick(new AreaEffectModule(5, false).setPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 2, 0, false, false)).animateRadius(0, 10))
             .addParticle(new ParticleGroup.ParticleGroupBuilder()
-                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(150).animateRadius(0, 40).build())
-                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(20).setInSphere().animateRadius(0, 40).build())
+                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(150).animateRadius(0, 10).build())
+                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(20).setInSphere().animateRadius(0, 10).build())
                     .build())
             .setCustomModel(7)
             .build());
@@ -262,8 +263,8 @@ public class SpellManager extends Manager {
             .addExecuteOnTick(new AreaEffectModule(5, false).setFreezing().animateRadius(0, 40))
             .addExecuteOnCast(new ReplaceBlocksModule(Material.SNOW, 5, false).onlySetTopBlocks().setSlowReplace().withDelay(15))
             .addParticle(new ParticleGroup.ParticleGroupBuilder()
-                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(150).animateRadius(0, 20).build())
-                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(20).setInSphere().animateRadius(0, 20).build())
+                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(150).animateRadius(0, 10).build())
+                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(20).setInSphere().animateRadius(0, 10).build())
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.SNOWFLAKE).setRadius(5).setDensity(10).setInSphere().animateRadius(0, 10).build())
                     .build())
             .setCustomModel(32)
@@ -272,11 +273,11 @@ public class SpellManager extends Manager {
     public static final Spell SPHERE_OF_THUNDER = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(24, "sphere_of_thunder")
             .addManaDrain(60).addCastDelay(.25).setRadius(5).setLifetime(120).consumeOnUse(15)
             .addDescription("A field of electrifying magic")
-            .addExecuteOnTick(new EntitySpellModule(EntityType.LIGHTNING, false).addSummonCooldown(20, 20).setSummonInSphere(5))
+            .addExecuteOnTick(new EntitySpellModule(EntityType.LIGHTNING, false).addSummonCooldown(15, 15).setSummonInSphere(5))
             .addParticle(new ParticleGroup.ParticleGroupBuilder()
-                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(150).animateRadius(0, 40).build())
-                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(20).setInSphere().animateRadius(0, 40).build())
-                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.ELECTRIC_SPARK).setRadius(5).setDensity(10).setInSphere().animateRadius(0, 40).setSpeed(.2).build())
+                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(150).animateRadius(0, 10).build())
+                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(20).setInSphere().animateRadius(0, 10).build())
+                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.ELECTRIC_SPARK).setRadius(5).setDensity(10).setInSphere().animateRadius(0, 10).setSpeed(.2).build())
                     .build())
             .setCustomModel(33)
             .build());
@@ -480,6 +481,7 @@ public class SpellManager extends Manager {
             int spellId = meta.getPersistentDataContainer().get(spellKey, PersistentDataType.INTEGER);
             ISpell spell = getSpell(spellId);
             spell.setCount(stack.getAmount());
+
             return spell;
         } else {
             return null;
