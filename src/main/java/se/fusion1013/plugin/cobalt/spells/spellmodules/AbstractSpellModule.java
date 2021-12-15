@@ -12,15 +12,21 @@ import java.util.List;
 
 public abstract class AbstractSpellModule<B extends AbstractSpellModule> implements SpellModule, Cloneable {
 
+    // Radius Options
     double currentRadius = 1;
     double startRadius = 0;
     double targetRadius = 1;
     int expandTime = 1;
     boolean animateRadius = false;
 
+    // Max Iterations Per Tick
     int maxIterationsPerTick = 1;
     int currentIterations = 0;
     boolean canRun = true;
+
+    // Cooldown
+    int currentCooldown;
+    int cooldown;
 
     public AbstractSpellModule() { }
 
@@ -30,9 +36,24 @@ public abstract class AbstractSpellModule<B extends AbstractSpellModule> impleme
         this.targetRadius = target.targetRadius;
         this.expandTime = target.expandTime;
         this.animateRadius = target.animateRadius;
+
         this.maxIterationsPerTick = target.maxIterationsPerTick;
         this.currentIterations = target.currentIterations;
         this.canRun = target.canRun;
+
+        this.currentCooldown = target.currentCooldown;
+        this.cooldown = target.cooldown;
+    }
+
+    public B setCooldown(int ticks){
+        setCooldown(ticks, 0);
+        return getThis();
+    }
+
+    public B setCooldown(int ticks, int initialCooldown){
+        this.cooldown = ticks;
+        this.currentCooldown = initialCooldown;
+        return getThis();
     }
 
     public B setMaxIterationsPerTick(int maxIterationsPerTick){
@@ -65,25 +86,29 @@ public abstract class AbstractSpellModule<B extends AbstractSpellModule> impleme
     @Override
     public void executeOnEntityHit(Location location, Vector velocityVector, Entity entityHit) {
         currentIterations++;
-        canRun = currentIterations <= maxIterationsPerTick;
+        canRun = currentIterations <= maxIterationsPerTick && canRun;
     }
 
     @Override
     public void executeOnBlockHit(Location location, Vector velocityVector, Block blockHit, BlockFace hitBlockFace) {
         currentIterations++;
-        canRun = currentIterations <= maxIterationsPerTick;
+        canRun = currentIterations <= maxIterationsPerTick && canRun;
     }
 
     @Override
-    public void executeOnTick(Location location, Vector velocityVector) {
+    public void update() {
+        currentIterations = 0;
+
+        // Radius Animation
         if (currentRadius < targetRadius){
             currentRadius += Math.min((targetRadius - startRadius) / (double)expandTime, targetRadius);
         }
-    }
 
-    @Override
-    public void reset() {
-        currentIterations = 0;
+        // Cooldown
+        if (currentCooldown > 0) currentCooldown--;
+        else currentCooldown = cooldown;
+
+        canRun = currentCooldown <= 0;
     }
 
     @Override
