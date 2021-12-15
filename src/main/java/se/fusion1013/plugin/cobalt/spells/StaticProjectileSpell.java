@@ -67,6 +67,7 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
 
     @Override
     public void castSpell(Wand wand, Player caster, Vector direction, Location location) {
+        super.castSpell(wand, caster);
         this.currentLocation = location;
 
         // Special Things Here
