@@ -260,7 +260,7 @@ public class SpellManager extends Manager {
             .addManaDrain(50).addCastDelay(.25).setRadius(5).setLifetime(120)
             .addDescription("A field of freezing magic")
             .addExecuteOnTick(new AreaEffectModule(5, false).setFreezing().animateRadius(0, 40))
-            .addExecuteOnTick(new ReplaceBlocksModule(Material.SNOW, 5, false).onlySetTopBlocks().setSlowReplace().animateRadius(0, 40))
+            .addExecuteOnCast(new ReplaceBlocksModule(Material.SNOW, 5, false).onlySetTopBlocks().setSlowReplace().animateRadius(0, 40))
             .addParticle(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(150).animateRadius(0, 40).build())
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(20).setInSphere().animateRadius(0, 40).build())
