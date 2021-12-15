@@ -16,11 +16,7 @@ public class EntitySpellModule extends AbstractSpellModule<EntitySpellModule> im
     boolean cancelsCast; // TODO: Move cancelsCast to abstract class
 
     // Optional Variables
-    int ticksBetweenSpawns = 20;
     boolean inSphere;
-
-
-    int currentCooldown = 0;
 
     public EntitySpellModule(EntityType entity, boolean cancelsCast){
         this.entity = entity;
@@ -32,7 +28,6 @@ public class EntitySpellModule extends AbstractSpellModule<EntitySpellModule> im
         this.entity = target.entity;
         this.cancelsCast = target.cancelsCast;
 
-        this.ticksBetweenSpawns = target.ticksBetweenSpawns;
         this.inSphere = target.inSphere;
     }
 
@@ -42,48 +37,37 @@ public class EntitySpellModule extends AbstractSpellModule<EntitySpellModule> im
         return getThis();
     }
 
-    public EntitySpellModule addSummonCooldown(int ticksBetweenSpawns){
-        return addSummonCooldown(ticksBetweenSpawns, 0);
-    }
-
-    public EntitySpellModule addSummonCooldown(int ticksBetweenSpawns, int initialCooldown){
-        this.ticksBetweenSpawns = ticksBetweenSpawns;
-        this.currentCooldown = initialCooldown;
-        return getThis();
-    }
-
     @Override
     public void executeOnTick(Location location, Vector velocityVector) {
-        super.executeOnTick(location, velocityVector);
+        if (!canRun) return;
 
-        if (currentCooldown > 0) currentCooldown--;
-        else currentCooldown = ticksBetweenSpawns;
-
-        if (currentCooldown <= 0) summon(location);
+        summon(location);
     }
 
     @Override
     public void executeOnCast(Location location, Vector velocityVector) {
-        if (currentCooldown <= 0) summon(location);
+        summon(location);
     }
 
     @Override
     public void executeOnBlockHit(Location location, Vector velocityVector, Block blockHit, BlockFace hitBlockFace) {
         super.executeOnBlockHit(location, velocityVector, blockHit, hitBlockFace);
         if (!canRun) return;
-        if (currentCooldown <= 0) summon(location);
+
+        summon(location);
     }
 
     @Override
     public void executeOnEntityHit(Location location, Vector velocityVector, Entity entityHit) {
         super.executeOnEntityHit(location, velocityVector, entityHit);
         if (!canRun) return;
-        if (currentCooldown <= 0) summon(location);
+
+        summon(location);
     }
 
     @Override
     public void executeOnDeath(Location location, Vector velocityVector) {
-        if (currentCooldown <= 0) summon(location);
+        summon(location);
     }
 
     private void summon(Location location){
