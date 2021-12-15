@@ -66,7 +66,7 @@ public class ProjectileModifierSpell extends Spell implements Cloneable {
     }
 
     @Override
-    public void castSpell(Wand wand, Player caster, Vector direction, Location location) { }
+    public void castSpell(Wand wand, Player caster, Vector direction, Location location) { super.castSpell(wand, caster); }
 
     @Override
     public void cancelTask() { }
