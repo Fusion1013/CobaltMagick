@@ -1,8 +1,6 @@
 package se.fusion1013.plugin.cobalt.manager;
 
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Particle;
+import org.bukkit.*;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BundleMeta;
@@ -273,7 +271,7 @@ public class SpellManager extends Manager {
     public static final Spell SPHERE_OF_THUNDER = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(24, "sphere_of_thunder")
             .addManaDrain(60).addCastDelay(.25).setRadius(5).setLifetime(120).consumeOnUse(15)
             .addDescription("A field of electrifying magic")
-            .addExecuteOnTick(new EntitySpellModule(EntityType.LIGHTNING, false).addSummonCooldown(15, 15).setSummonInSphere(5))
+            .addExecuteOnTick(new EntitySpellModule(EntityType.LIGHTNING, false).setCooldown(15, 15).setSummonInSphere(5))
             .addParticle(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(150).animateRadius(0, 10).build())
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(20).setInSphere().animateRadius(0, 10).build())
@@ -299,6 +297,7 @@ public class SpellManager extends Manager {
             .addSpellModifier(new AddSpellModuleModifier().addOnEntityCollision(new DamageModule(5, false)))
             .addSpellModifier(new AddSpellModuleModifier().addOnCollision(new ReplaceBlocksModule(Material.SNOW, 5, false).onlySetTopBlocks()))
             .addSpellModifier(new AddSpellModuleModifier().addOnCollision(new AreaEffectModule(5, false).setInstantFreeze(200)))
+            .addSpellModifier(new AddSpellModuleModifier().addOnCollision(new SoundSpellModule(Sound.BLOCK_SNOW_PLACE, SoundCategory.BLOCKS, false)))
             .addSpellModifier(new AddSpellModuleModifier().addOnCollision(new ParticleModule(
                     new ParticleGroup.ParticleGroupBuilder()
                             .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.SNOWFLAKE).setDensity(100).setSpeed(.1).setRadius(5).setInSphere().build())
@@ -315,6 +314,7 @@ public class SpellManager extends Manager {
             .addManaDrain(8)
             .addSpellModifier(new AddSpellModuleModifier().addOnEntityCollision(new DamageModule(3, false)))
             .addSpellModifier(new AddSpellModuleModifier().addOnCollision(new EntitySpellModule(EntityType.LIGHTNING, false)))
+            .addSpellModifier(new AddSpellModuleModifier().addOnCollision(new SoundSpellModule(Sound.ITEM_TRIDENT_THUNDER, SoundCategory.AMBIENT, false)))
             .addSpellModifier(new AddSpellModuleModifier().addOnCollision(new ParticleModule(
                     new ParticleGroup.ParticleGroupBuilder()
                             .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.ELECTRIC_SPARK).setDensity(40).setSpeed(.3).setRadius(1).setInSphere().build())
