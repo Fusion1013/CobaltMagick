@@ -29,6 +29,7 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
     List<SpellModule> executeOnDeath = new ArrayList<>();
 
     private BukkitTask staticProjectileTask;
+    Player caster;
 
     /**
      * Creates a new <code>StaticProjectileSpell</code> with an id, internalSpellName and a spellName
@@ -57,6 +58,7 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
         this.executeOnCast = spell.getExecuteOnCast();
         this.executeOnTick = spell.getExecuteOnTick();
         this.executeOnDeath = spell.getExecuteOnDeath();
+        this.caster = spell.getCaster();
     }
 
     @Override
@@ -69,10 +71,11 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
     public void castSpell(Wand wand, Player caster, Vector direction, Location location) {
         super.castSpell(wand, caster);
         this.currentLocation = location;
+        this.caster = caster;
 
         // Special Things Here
         for (SpellModule module : executeOnCast){
-            module.executeOnCast(currentLocation, velocityVector.clone());
+            module.executeOnCast(caster, currentLocation, velocityVector.clone());
         }
 
         Bukkit.getScheduler().runTaskLater(Cobalt.getInstance(), () -> {
@@ -91,7 +94,7 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
 
         // Special Things Here
         for (SpellModule module : executeOnTick){
-            module.executeOnTick(currentLocation, velocityVector.clone());
+            module.executeOnTick(this.caster, currentLocation, velocityVector.clone());
         }
 
         if (movementStopped) killParticle();
@@ -123,7 +126,7 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
     private void onProjectileDeath(){
         // Special Things Here
         for (SpellModule module : executeOnDeath){
-            module.executeOnDeath(currentLocation, velocityVector.clone());
+            module.executeOnDeath(this.caster, currentLocation, velocityVector.clone());
         }
         killParticle();
     }
@@ -266,4 +269,6 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
     public List<SpellModule> getExecuteOnDeath() { return AbstractSpellModule.cloneList(executeOnDeath); }
 
     public ParticleGroup getParticleGroup() { return particleGroup.clone(); }
+
+    public Player getCaster() { return this.caster; }
 }
