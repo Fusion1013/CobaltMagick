@@ -180,11 +180,11 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
     }
 
     private void resetModules(){
-        for (SpellModule module : executeOnCast) module.reset();
-        for (SpellModule module : executeOnTick) module.reset();
-        for (SpellModule module : executeOnDeath) module.reset();
-        for (SpellModule module : executeOnBlockCollision) module.reset();
-        for (SpellModule module : executeOnEntityCollision) module.reset();
+        for (SpellModule module : executeOnCast) module.update();
+        for (SpellModule module : executeOnTick) module.update();
+        for (SpellModule module : executeOnDeath) module.update();
+        for (SpellModule module : executeOnBlockCollision) module.update();
+        for (SpellModule module : executeOnEntityCollision) module.update();
     }
 
     /**
