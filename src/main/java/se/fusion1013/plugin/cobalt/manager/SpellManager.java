@@ -339,8 +339,9 @@ public class SpellManager extends Manager {
             .addParticle(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(150).animateRadius(0, 10).build())
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(20).setInSphere().animateRadius(0, 10).build())
-                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setRadius(5).setDensity(10).setInSphere().animateRadius(0, 10).setSpeed(.2).setExtra(new Particle.DustTransition(Color.GREEN, Color.LIME, 1)).build())
-                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setRadius(5).setDensity(10).setInSphere().animateRadius(0, 10).setSpeed(.2).setExtra(new Particle.DustTransition(Color.GREEN, Color.LIME, 2)).build())
+                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setRadius(5).setDensity(5).setInSphere().animateRadius(0, 10).setSpeed(.2).setExtra(new Particle.DustTransition(Color.GREEN, Color.LIME, 1)).build())
+                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setRadius(5).setDensity(5).setInSphere().animateRadius(0, 10).setSpeed(.2).setExtra(new Particle.DustTransition(Color.PURPLE, Color.fromRGB(255,192,203), 1)).build())
+                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setRadius(5).setDensity(5).setInSphere().animateRadius(0, 10).setSpeed(.2).setExtra(new Particle.DustTransition(Color.GREEN, Color.LIME, 2)).build())
                     .build())
             .setCustomModel(39)
             .build());
