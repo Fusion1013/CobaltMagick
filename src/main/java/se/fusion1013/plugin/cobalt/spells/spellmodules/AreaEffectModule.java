@@ -60,7 +60,7 @@ public class AreaEffectModule extends AbstractSpellModule<AreaEffectModule> impl
 
     @Override
     public void executeOnTick(Location location, Vector velocityVector) {
-        super.executeOnTick(location, velocityVector);
+        if (!canRun) return;
         giveEffectsInSphere(location);
     }
 
@@ -80,6 +80,7 @@ public class AreaEffectModule extends AbstractSpellModule<AreaEffectModule> impl
 
     @Override
     public void executeOnDeath(Location location, Vector velocityVector) {
+        if (!canRun) return;
         giveEffectsInSphere(location);
     }
 
