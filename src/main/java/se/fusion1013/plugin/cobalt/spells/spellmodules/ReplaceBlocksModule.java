@@ -90,7 +90,8 @@ public class ReplaceBlocksModule extends AbstractSpellModule<ReplaceBlocksModule
 
     @Override
     public void executeOnTick(Location location, Vector velocityVector) {
-        super.executeOnTick(location, velocityVector);
+        if (!canRun) return;
+
         replaceBlocksInSphere(location);
     }
 
@@ -98,6 +99,7 @@ public class ReplaceBlocksModule extends AbstractSpellModule<ReplaceBlocksModule
     public void executeOnBlockHit(Location location, Vector velocityVector, Block blockHit, BlockFace hitBlockFace) {
         super.executeOnBlockHit(location, velocityVector, blockHit, hitBlockFace);
         if (!canRun) return;
+
         replaceBlocksInSphere(location);
     }
 
@@ -105,6 +107,7 @@ public class ReplaceBlocksModule extends AbstractSpellModule<ReplaceBlocksModule
     public void executeOnEntityHit(Location location, Vector velocityVector, Entity entityHit) {
         super.executeOnEntityHit(location, velocityVector, entityHit);
         if (!canRun) return;
+
         replaceBlocksInSphere(location);
     }
 
