@@ -2,6 +2,7 @@ package se.fusion1013.plugin.cobalt.particle.styles;
 
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import se.fusion1013.plugin.cobalt.Cobalt;
 import se.fusion1013.plugin.cobalt.particle.PParticle;
 import se.fusion1013.plugin.cobalt.util.GeometryUtil;
 
@@ -33,7 +34,7 @@ public class ParticleStyleSphere extends ParticleStyle implements IParticleStyle
     public ParticleStyleSphere(Particle particle){
         super("sphere");
         this.particle = particle;
-        setDefaults();
+        // setDefaults();
     }
 
     public void setDefaults(){
