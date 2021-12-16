@@ -20,26 +20,31 @@ import java.util.List;
 public class CGiveCommand {
     public static void register(){
 
+        // Command for generating a wand with given stats
         CommandAPICommand withStatsCommand = new CommandAPICommand("withstats")
                 .withPermission("cobaltmagick.commands.cgive")
                 .withArguments(getWandArguments())
                 .executesPlayer(CGiveCommand::getWandWithStats);
 
+        // Command for generating a randomized wand with a given level
         CommandAPICommand randomWandCommand = new CommandAPICommand("random")
                 .withPermission("cobaltmagick.commands.cgive")
                 .withArguments(new IntegerArgument("level", 0, 20))
                 .executesPlayer(CGiveCommand::getRandomWand);
 
+        // Wand subcommand
         CommandAPICommand wandCommand = new CommandAPICommand("wand")
                 .withPermission("cobaltmagick.commands.cgive")
                 .withSubcommand(randomWandCommand)
                 .withSubcommand(withStatsCommand);
 
+        // Command for getting a specific spell
         CommandAPICommand spellCommand = new CommandAPICommand("spell")
                 .withPermission("cobalt.commands.cgive")
                 .withArguments(getSpellArguments())
                 .executesPlayer(CGiveCommand::getSpell);
 
+        // Main cgive command
         new CommandAPICommand("cgive")
                 .withPermission("cobaltmagick.command.cgive")
                 .withSubcommand(spellCommand)
@@ -47,6 +52,12 @@ public class CGiveCommand {
                 .register();
     }
 
+    /**
+     * Gives a random wand to the player with the specified level
+     *
+     * @param player player to give the wand to
+     * @param args command arguments
+     */
     private static void getRandomWand(Player player, Object[] args){
         LocaleManager localeManager = LocaleManager.getInstance();
 
@@ -67,6 +78,11 @@ public class CGiveCommand {
         localeManager.sendMessage(player, "commands.cgive.wand.success", placeholders);
     }
 
+    /**
+     * Gets the arguments for the spell command
+     *
+     * @return list of arguments
+     */
     private static List<Argument> getSpellArguments(){
         // Get arguments for spell command
         List<ISpell> spells = SpellManager.getAllSpells();
@@ -81,6 +97,11 @@ public class CGiveCommand {
         return spellArguments;
     }
 
+    /**
+     * Gets the arguments for the wand command
+     *
+     * @return list of arguments
+     */
     private static List<Argument> getWandArguments(){
         // Get arguments for wand with stats command
         List<Argument> wandArguments = new ArrayList<>();
@@ -96,6 +117,12 @@ public class CGiveCommand {
         return wandArguments;
     }
 
+    /**
+     * Gives a wand with the specified stats to the player
+     *
+     * @param player player to give the wand to
+     * @param args command arguments
+     */
     private static void getWandWithStats(Player player, Object[] args){
         LocaleManager localeManager = LocaleManager.getInstance();
 
@@ -121,6 +148,12 @@ public class CGiveCommand {
         localeManager.sendMessage(player, "commands.cgive.wand.success", placeholders);
     }
 
+    /**
+     * Gives the specified spell to the player
+     *
+     * @param player player to give the spell to
+     * @param args command arguments
+     */
     private static void getSpell(Player player, Object[] args){
         LocaleManager localeManager = LocaleManager.getInstance();
 
