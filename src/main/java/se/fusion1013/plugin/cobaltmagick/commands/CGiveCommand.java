@@ -2,8 +2,12 @@ package se.fusion1013.plugin.cobaltmagick.commands;
 
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.*;
+import org.bukkit.Material;
+import org.bukkit.block.ShulkerBox;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BlockStateMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.manager.LocaleManager;
 import se.fusion1013.plugin.cobaltmagick.manager.SpellManager;
@@ -22,34 +26,89 @@ public class CGiveCommand {
 
         // Command for generating a wand with given stats
         CommandAPICommand withStatsCommand = new CommandAPICommand("withstats")
-                .withPermission("cobaltmagick.commands.cgive")
+                .withPermission("cobalt.magick.commands.cgive")
                 .withArguments(getWandArguments())
                 .executesPlayer(CGiveCommand::getWandWithStats);
 
         // Command for generating a randomized wand with a given level
         CommandAPICommand randomWandCommand = new CommandAPICommand("random")
-                .withPermission("cobaltmagick.commands.cgive")
+                .withPermission("cobalt.magick.commands.cgive")
                 .withArguments(new IntegerArgument("level", 0, 20))
                 .executesPlayer(CGiveCommand::getRandomWand);
 
         // Wand subcommand
         CommandAPICommand wandCommand = new CommandAPICommand("wand")
-                .withPermission("cobaltmagick.commands.cgive")
+                .withPermission("cobalt.magick.commands.cgive")
                 .withSubcommand(randomWandCommand)
                 .withSubcommand(withStatsCommand);
 
+        // Command for getting all spells
+        CommandAPICommand allSpellsCommand = new CommandAPICommand("allspells")
+                .withPermission("cobalt.magick.commands.cgive")
+                .executesPlayer(CGiveCommand::getAllSpells);
+
         // Command for getting a specific spell
         CommandAPICommand spellCommand = new CommandAPICommand("spell")
-                .withPermission("cobalt.commands.cgive")
+                .withPermission("cobalt.magick.commands.cgive")
                 .withArguments(getSpellArguments())
                 .executesPlayer(CGiveCommand::getSpell);
 
         // Main cgive command
         new CommandAPICommand("cgive")
-                .withPermission("cobaltmagick.command.cgive")
+                .withPermission("cobalt.magick.command.cgive")
+                .withSubcommand(allSpellsCommand)
                 .withSubcommand(spellCommand)
                 .withSubcommand(wandCommand)
                 .register();
+    }
+
+    /**
+     * Gives all spells to the player
+     *
+     * @param player player to give the spells to
+     * @param args command arguments
+     */
+    private static void getAllSpells(Player player, Object[] args){
+        LocaleManager localeManager = LocaleManager.getInstance();
+
+        List<ISpell> allSpells = SpellManager.getAllSpells();
+
+        StringPlaceholders spellPlaceholder = StringPlaceholders.builder()
+                .addPlaceholder("spell_count", allSpells.size())
+                .addPlaceholder("player_name", player.getName())
+                .build();
+        ItemStack shulk = new ItemStack(Material.CYAN_SHULKER_BOX, 1);
+        BlockStateMeta bsm = (BlockStateMeta)shulk.getItemMeta();
+        ShulkerBox box = (ShulkerBox)bsm.getBlockState();
+        int counter = 0;
+
+        for (ISpell spell : allSpells){
+            ItemStack is = spell.getSpellItem();
+            if (is != null) box.getInventory().addItem(is);
+            counter++;
+
+            if (counter >= 27){
+                giveShulker(player, box);
+
+                shulk = new ItemStack(Material.CYAN_SHULKER_BOX, 1);
+                bsm = (BlockStateMeta)shulk.getItemMeta();
+                box = (ShulkerBox)bsm.getBlockState();
+                counter = 0;
+            }
+        }
+        if (!box.getInventory().isEmpty()){
+            giveShulker(player, box);
+        }
+
+        localeManager.sendMessage(player, "commands.cgive.spell.all.success", spellPlaceholder);
+    }
+
+    private static void giveShulker(Player player, ShulkerBox box){
+        ItemStack shulk = new ItemStack(Material.CYAN_SHULKER_BOX, 1);
+        BlockStateMeta meta = ((BlockStateMeta)shulk.getItemMeta());
+        meta.setBlockState(box);
+        shulk.setItemMeta(meta);
+        player.getInventory().addItem(shulk);
     }
 
     /**
