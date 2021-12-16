@@ -52,6 +52,7 @@ public class EnglishLocale implements Locale {
                 this.put("#4", "CGive");
                 this.put("commands.cgive.spell.error.spell_not_found", "&7Spell &3%spell_name% &7not found");
                 this.put("commands.cgive.spell.success", "&7Gave Spell &3%spell_name% &7to &3%player_name%");
+                this.put("commands.cgive.spell.all.success", "&7Gave &3%spell_count% &7 Spells to &3%player_name%");
                 this.put("commands.cgive.wand.success", "&7Gave new Wand to &3%player_name%");
 
                 this.put("#5", "gamemode");
