@@ -3,6 +3,7 @@ package se.fusion1013.plugin.cobaltmagick.gui;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
@@ -47,11 +48,8 @@ public class WandGUI extends AbstractGUI {
     }
 
     private static int getInventorySize(double n){
-        // x = 9
-        if (9 > n) return 9;
-
-        n = n + 4.5;
-        n = n - (n%9);
-        return (int)n;
+        int size = 0;
+        while (size < n) size +=9;
+        return size;
     }
 }
