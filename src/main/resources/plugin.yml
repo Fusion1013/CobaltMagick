@@ -1,9 +1,9 @@
 name: Cobalt
 version: ${project.version}
-main: se.fusion1013.plugin.cobalt.Cobalt
+main: se.fusion1013.plugin.cobaltmagick.CobaltMagick
 api-version: 1.13
 authors:
   - Fusion1013
-description: The Cobalt Plugin
+description: The Cobalt Magick Plugin
 depend:
   - CommandAPI

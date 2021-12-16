@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>se.fusion1013.plugin</groupId>
-    <artifactId>cobalt</artifactId>
+    <artifactId>cobaltMagick</artifactId>
     <version>0.1</version>
     <packaging>jar</packaging>
 

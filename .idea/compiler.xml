@@ -6,11 +6,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="Cobalt" />
+        <module name="CobaltMagick" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="Cobalt" target="17" />
+      <module name="CobaltMagick" target="17" />
     </bytecodeTargetLevel>
   </component>
 </project>

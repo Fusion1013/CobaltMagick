@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Cobalt.iml" filepath="$PROJECT_DIR$/Cobalt.iml" />
+      <module fileurl="file://$PROJECT_DIR$/CobaltMagick.iml" filepath="$PROJECT_DIR$/CobaltMagick.iml" />
     </modules>
   </component>
 </project>
