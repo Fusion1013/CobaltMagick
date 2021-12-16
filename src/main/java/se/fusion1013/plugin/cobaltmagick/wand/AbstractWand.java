@@ -55,6 +55,264 @@ public abstract class AbstractWand {
         this.currentMana = manaMax;
     }
 
+    public AbstractWand(int cost, int level, boolean forceUnshuffle){
+        generateRandomWand(cost, level, forceUnshuffle);
+    }
+
+    private void generateRandomWand(int cost, int level, boolean forceUnshuffle){
+        Random r = new Random();
+
+        if (level == 1 && r.nextInt(0, 101) < 50) cost = cost + 5;
+
+        // Create WandStructure
+        cost = cost + r.nextInt(-3, 4);
+        int manaChargeSpeed = 50 * level + r.nextInt(-5, 5*level + 1);
+        int manaMax = 50 + (150 * level) + (r.nextInt(-5, 6) * 10);
+
+        WandStructure wandStructure = new WandStructure(cost, manaChargeSpeed, manaMax);
+
+        int p;
+
+        // Slow mana charger
+        p = r.nextInt(0, 101);
+        if (p < 20){
+            wandStructure.manaChargeSpeed = (50 * level + r.nextInt(-5, 5*level + 1)) / 5;
+            wandStructure.manaMax = (50 + (150 * level) + (r.nextInt(-5, 6) * 10)) * 3;
+        }
+
+        // Really fast mana charger
+        p = r.nextInt(0, 101);
+        if (p < 15){
+            wandStructure.manaChargeSpeed = (50 * level + r.nextInt(-5, 5*level + 1)) * 5;
+            wandStructure.manaMax = (50 + (150 * level) + (r.nextInt(-5, 6) * 10)) / 3;
+        }
+
+        // Clamp manaMax and manaChargeSpeed to minimum values
+        if (wandStructure.manaMax < 50) wandStructure.manaMax = 50;
+        if (wandStructure.manaChargeSpeed < 10) wandStructure.manaChargeSpeed = 10;
+
+        p = r.nextInt(0, 101);
+        if (p < 15 + level*6){
+            wandStructure.forceUnshuffle = true;
+        }
+
+        p = r.nextInt(0, 101);
+        if (p < 5){
+            wandStructure.isRare = true;
+            wandStructure.cost = wandStructure.cost + 65;
+        }
+
+        String[] variables01 = {"reload_time", "fire_rate_wait", "spread_degrees", "speed_multiplier"};
+        String[] variables02 = {"deck_capacity"};
+        String[] variables03 = {"shuffle_deck_when_empty", "actions_per_round"};
+
+        shuffleTable(variables01);
+        if (!wandStructure.forceUnshuffle) shuffleTable(variables03);
+
+        for (String item : variables01) {
+            applyRandomVariable(wandStructure, item);
+        }
+        for (String value : variables02) {
+            applyRandomVariable(wandStructure, value);
+        }
+        for (String s : variables03) {
+            applyRandomVariable(wandStructure, s);
+        }
+
+        if (wandStructure.cost > 5 && r.nextInt(0, 1001) < 995){
+            if (wandStructure.shuffleDeckWhenEmpty){
+                wandStructure.deckCapacity = wandStructure.deckCapacity + (int)(wandStructure.cost/5);
+                wandStructure.cost = 0;
+            } else {
+                wandStructure.deckCapacity = wandStructure.deckCapacity + (int)(wandStructure.cost / 10);
+                wandStructure.cost = 0;
+            }
+        }
+
+        wandStructure.deckCapacity = (int)clamp(2, wandStructure.deckCapacity, 27);
+
+        if (wandStructure.deckCapacity <= 1) wandStructure.deckCapacity = 2;
+
+        if (wandStructure.reloadTime >= 60) {
+            randomAddActionsPerRound(wandStructure);
+
+            if (r.nextInt(0, 101) < 50){
+                int newActionsPerRound = wandStructure.deckCapacity;
+                for (int i = 0; i < 6; i++){
+                    int tempActionsPerRound = r.nextInt(wandStructure.actionsPerRound, wandStructure.deckCapacity+1);
+                    if (tempActionsPerRound < newActionsPerRound){
+                        newActionsPerRound = tempActionsPerRound;
+                    }
+                }
+                wandStructure.actionsPerRound = newActionsPerRound;
+            }
+        }
+        wandStructure.actionsPerRound = (int)clamp(1, wandStructure.actionsPerRound, wandStructure.deckCapacity);
+
+        this.shuffle = wandStructure.shuffleDeckWhenEmpty;
+        this.spellsPerCast = wandStructure.actionsPerRound;
+        this.castDelay = wandStructure.fireRateWait;
+        this.rechargeTime = wandStructure.reloadTime;
+        this.manaMax = wandStructure.manaMax;
+        this.manaChargeSpeed = wandStructure.manaChargeSpeed;
+        this.capacity = wandStructure.deckCapacity;
+        this.spread = wandStructure.spreadDegrees;
+        this.alwaysCast = new ArrayList<>();
+        this.wandTier = level;
+        this.currentMana = wandStructure.manaMax;
+    }
+
+    private void randomAddActionsPerRound(WandStructure gun){
+        Random r = new Random();
+        gun.actionsPerRound = gun.actionsPerRound + 1;
+        if (r.nextInt(0, 101) < 70){
+            randomAddActionsPerRound(gun);
+        }
+    }
+
+    private String[] shuffleTable(String[] t){
+        int iterations = t.length;
+        int j;
+        Random r = new Random();
+
+        for (int i = 1; i < iterations; i++){
+            j = r.nextInt(0, i);
+            String s1 = t[i];
+            String s2 = t[j];
+            t[i] = s2;
+            t[j] = s1;
+        }
+        return t;
+    }
+
+    // TODO: Replace this
+    double randReloadTimeMin = .5;
+    double randReloadTimeMax = 6.0;
+
+    double randFireRateWaitMin = .1;
+    double randFireRateWaitMax = 3.0;
+
+    double randSpreadDegreesMin = -5;
+    double randSpreadDegreesMax = 30;
+
+    double randSpeedMultiplierMin = .8;
+    double randSpeedMultiplierMax = 1.2;
+
+    double randDeckCapacityMin = 3;
+    double randDeckCapacityMax = 10;
+
+    double randActionsPerRoundMin = 1;
+    double randActionsPerRoundMax = 3;
+
+    private void applyRandomVariable(WandStructure wandStructure, String variable){
+        Random r = new Random();
+
+        double cost = wandStructure.cost;
+
+        switch (variable){
+            case "reload_time":
+                double min = clamp(1, 60-(cost*5), 240);
+                double max = 1024;
+
+                wandStructure.reloadTime = clamp(min, r.nextDouble(randReloadTimeMin, randReloadTimeMax), max);
+                wandStructure.cost = wandStructure.cost - ((60 - wandStructure.reloadTime) / 5);
+                break;
+
+            case "fire_rate_wait":
+                min = clamp(-50, 16-cost, 50);
+                max = 50;
+                wandStructure.fireRateWait = clamp(min, r.nextDouble(randFireRateWaitMin, randFireRateWaitMax), max);
+                wandStructure.cost = wandStructure.cost - (16 - wandStructure.fireRateWait);
+                break;
+
+            case "spread_degrees":
+                min = clamp(-35, cost / -1.5, 35);
+                max = 35;
+                wandStructure.spreadDegrees = clamp(min, r.nextDouble(randSpreadDegreesMin, randSpreadDegreesMax), max);
+                wandStructure.cost = wandStructure.cost - (16 - wandStructure.spreadDegrees);
+                break;
+
+            case "speed_multiplier":
+                wandStructure.speedMultiplier = r.nextDouble(randSpeedMultiplierMin, randSpeedMultiplierMax);
+                break;
+
+            case "deck_capacity":
+                min = 1;
+                max = clamp(1, (cost/5)+6, 20);
+
+                if (wandStructure.forceUnshuffle){
+                    min = 1;
+                    max = ((cost-15)/5);
+                    if (max > 6) max = 6 + ((cost - (15+6*5))/10);
+                }
+
+                max = clamp(1, max, 20);
+                wandStructure.deckCapacity = (int)clamp(min, r.nextDouble(randDeckCapacityMin, randDeckCapacityMax), max);
+                wandStructure.cost = wandStructure.cost - ((wandStructure.deckCapacity-6)*5);
+                break;
+
+            case "shuffle_deck_when_empty":
+                int random = r.nextInt(0, 2);
+                if (wandStructure.forceUnshuffle){
+                    random = 1;
+                    if (cost < (15+wandStructure.deckCapacity*5)){
+                        // This should not happen
+                    }
+                }
+
+                if (random == 1 && cost >= (15 + wandStructure.deckCapacity * 5) && wandStructure.deckCapacity <= 9){
+                    wandStructure.shuffleDeckWhenEmpty = false;
+                    wandStructure.cost = wandStructure.cost - ((15-wandStructure.deckCapacity*5));
+                }
+                break;
+
+            case "actions_per_round":
+                int[] actionCosts = new int[]{0, 5+(wandStructure.deckCapacity*2), (int)(15+(wandStructure.deckCapacity*3.5)), 35+(wandStructure.deckCapacity*5), 45+(wandStructure.deckCapacity* wandStructure.deckCapacity)};
+
+                min = 1;
+                max = 1;
+
+                for (int i = 0; i < actionCosts.length; i++){
+                    int acost = actionCosts[i];
+                    if (acost <= cost){
+                        max = i;
+                    }
+                }
+                max = clamp(1, wandStructure.deckCapacity, max);
+
+                wandStructure.actionsPerRound = (int)Math.floor(clamp(min, r.nextDouble(randActionsPerRoundMin, randActionsPerRoundMax), max));
+                double tempCost = actionCosts[(int)clamp(1, wandStructure.actionsPerRound, actionCosts.length)];
+                wandStructure.cost = wandStructure.cost - tempCost;
+                break;
+        }
+    }
+
+    private double clamp(double min, double v, double max){
+        return Math.max(min, Math.min(max, v));
+    }
+
+    private class WandStructure{
+        public double cost;
+        public int deckCapacity = 0;
+        public int actionsPerRound = 0;
+        public double reloadTime = 0;
+        public boolean shuffleDeckWhenEmpty = true;
+        public double fireRateWait = 0;
+        public double spreadDegrees = 0;
+        public double speedMultiplier = 0;
+        public double probUnshuffle = .1;
+        public double probDrawMany = .15;
+        public int manaChargeSpeed;
+        public int manaMax;
+        public boolean forceUnshuffle = false;
+        public boolean isRare = false;
+
+        public WandStructure(int cost, int manaChargeSpeed, int manaMax){
+            this.cost = cost;
+            this.manaChargeSpeed = manaChargeSpeed;
+            this.manaMax = manaMax;
+        }
+    }
 
 
 
