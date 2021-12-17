@@ -18,10 +18,6 @@ Detailed description of the spellcasting system coming soon...
 
 Coming soon...
 
-## Usage
-
-Coming soon...
-
 ## Credits
 - Lead Developer: Fusion1013
 - Contributing Artists:
