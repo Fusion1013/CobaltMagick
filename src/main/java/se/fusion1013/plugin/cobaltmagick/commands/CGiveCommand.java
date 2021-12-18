@@ -12,6 +12,7 @@ import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.manager.LocaleManager;
 import se.fusion1013.plugin.cobaltmagick.manager.SpellManager;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
+import se.fusion1013.plugin.cobaltmagick.spells.Spell;
 import se.fusion1013.plugin.cobaltmagick.util.StringPlaceholders;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
@@ -23,6 +24,11 @@ import java.util.List;
  */
 public class CGiveCommand {
     public static void register(){
+
+        CommandAPICommand fromIdCommand = new CommandAPICommand("fromid")
+                .withPermission("cobalt.magick.commands.cgive")
+                .withArguments(new IntegerArgument("id"))
+                .executesPlayer(CGiveCommand::getWandFromId);
 
         // Command for generating a wand with given stats
         CommandAPICommand withStatsCommand = new CommandAPICommand("withstats")
@@ -39,27 +45,120 @@ public class CGiveCommand {
         // Wand subcommand
         CommandAPICommand wandCommand = new CommandAPICommand("wand")
                 .withPermission("cobalt.magick.commands.cgive")
+                .withSubcommand(fromIdCommand)
                 .withSubcommand(randomWandCommand)
                 .withSubcommand(withStatsCommand);
 
+        // Command for getting all spells of type
+        CommandAPICommand ofTypeCommand = new CommandAPICommand("of_type")
+                .withPermission("cobalt.magick.commands.cgive")
+                .withArguments(getTypeArguments())
+                .executesPlayer(CGiveCommand::getAllSpells);
+
         // Command for getting all spells
-        CommandAPICommand allSpellsCommand = new CommandAPICommand("allspells")
+        CommandAPICommand allSpellsCommand = new CommandAPICommand("all_spells")
                 .withPermission("cobalt.magick.commands.cgive")
                 .executesPlayer(CGiveCommand::getAllSpells);
 
-        // Command for getting a specific spell
-        CommandAPICommand spellCommand = new CommandAPICommand("spell")
+        CommandAPICommand spellFromNameCommand = new CommandAPICommand("from_name")
                 .withPermission("cobalt.magick.commands.cgive")
                 .withArguments(getSpellArguments())
                 .executesPlayer(CGiveCommand::getSpell);
 
+        // Spell Subcommand
+        CommandAPICommand spellCommand = new CommandAPICommand("spell")
+                .withPermission("cobalt.magick.commands.cgive")
+                .withSubcommand(allSpellsCommand)
+                .withSubcommand(ofTypeCommand)
+                .withSubcommand(spellFromNameCommand);
+
         // Main cgive command
         new CommandAPICommand("cgive")
                 .withPermission("cobalt.magick.command.cgive")
-                .withSubcommand(allSpellsCommand)
                 .withSubcommand(spellCommand)
                 .withSubcommand(wandCommand)
                 .register();
+    }
+
+    /**
+     * Gets the arguments for the type command
+     *
+     * @return list of arguments
+     */
+    private static List<Argument> getTypeArguments(){
+        // Get arguments for spell command
+        Spell.SpellType[] types = Spell.SpellType.values();
+
+        String[] typeNames = new String[types.length];
+        for (int i = 0; i < types.length; i++){
+            Spell.SpellType type = types[i];
+            typeNames[i] = type.toString().toLowerCase();
+        }
+        List<Argument> typeArguments = new ArrayList<>();
+        typeArguments.add(new StringArgument("type name").replaceSuggestions(info -> typeNames));
+
+        return typeArguments;
+    }
+
+    /**
+     * Gives a specific wand to the player
+     *
+     * @param player the player to give the spells to
+     * @param args command arguments
+     */
+    private static void getWandFromId(Player player, Object[] args){
+        LocaleManager localeManager = LocaleManager.getInstance();
+        int id = (int)args[0];
+
+        StringPlaceholders spellPlaceholder = StringPlaceholders.builder()
+                .addPlaceholder("wand_id", id)
+                .addPlaceholder("player_name", player.getName())
+                .build();
+
+        Wand wand = Wand.getWandFromCache(id);
+
+        if (wand == null) {
+            localeManager.sendMessage(player, "commands.cgive.spell.fromid.wand_not_found", spellPlaceholder);
+            return;
+        }
+
+        ItemStack stack = wand.getWandItem();
+        player.getInventory().addItem(stack);
+
+        localeManager.sendMessage(player, "commands.cgive.spell.fromid.success", spellPlaceholder);
+    }
+
+    private static int getSpellOfType(Player player, Spell.SpellType type){
+        List<ISpell> allSpells = SpellManager.getAllSpells();
+
+        ItemStack shulk = new ItemStack(Material.CYAN_SHULKER_BOX, 1);
+        BlockStateMeta bsm = (BlockStateMeta)shulk.getItemMeta();
+        ShulkerBox box = (ShulkerBox)bsm.getBlockState();
+        int counter = 0;
+        int numSpells = 0;
+
+        for (ISpell spell : allSpells){
+            ItemStack is = spell.getSpellItem();
+            if (is != null && spell.getSpellType() == type) {
+                box.getInventory().addItem(is);
+                counter++;
+                numSpells++;
+            }
+
+            if (counter >= 27){
+                giveShulker(player, box, type.name());
+
+                shulk = new ItemStack(Material.CYAN_SHULKER_BOX, 1);
+                bsm = (BlockStateMeta)shulk.getItemMeta();
+                box = (ShulkerBox)bsm.getBlockState();
+                counter = 0;
+            }
+        }
+        if (!box.getInventory().isEmpty()){
+            giveShulker(player, box, type.name());
+        }
+
+        return numSpells;
     }
 
     /**
@@ -71,41 +170,30 @@ public class CGiveCommand {
     private static void getAllSpells(Player player, Object[] args){
         LocaleManager localeManager = LocaleManager.getInstance();
 
-        List<ISpell> allSpells = SpellManager.getAllSpells();
+        int spellCount = 0;
+        Spell.SpellType type;
 
-        StringPlaceholders spellPlaceholder = StringPlaceholders.builder()
-                .addPlaceholder("spell_count", allSpells.size())
-                .addPlaceholder("player_name", player.getName())
-                .build();
-        ItemStack shulk = new ItemStack(Material.CYAN_SHULKER_BOX, 1);
-        BlockStateMeta bsm = (BlockStateMeta)shulk.getItemMeta();
-        ShulkerBox box = (ShulkerBox)bsm.getBlockState();
-        int counter = 0;
-
-        for (ISpell spell : allSpells){
-            ItemStack is = spell.getSpellItem();
-            if (is != null) box.getInventory().addItem(is);
-            counter++;
-
-            if (counter >= 27){
-                giveShulker(player, box);
-
-                shulk = new ItemStack(Material.CYAN_SHULKER_BOX, 1);
-                bsm = (BlockStateMeta)shulk.getItemMeta();
-                box = (ShulkerBox)bsm.getBlockState();
-                counter = 0;
+        if (args.length > 0){
+            type = Spell.SpellType.valueOf(((String)args[0]).toUpperCase());
+            spellCount = getSpellOfType(player, type);
+        } else {
+            for (Spell.SpellType s : Spell.SpellType.values()){
+                spellCount += getSpellOfType(player, s);
             }
         }
-        if (!box.getInventory().isEmpty()){
-            giveShulker(player, box);
-        }
+
+        StringPlaceholders spellPlaceholder = StringPlaceholders.builder()
+                .addPlaceholder("spell_count", spellCount)
+                .addPlaceholder("player_name", player.getName())
+                .build();
 
         localeManager.sendMessage(player, "commands.cgive.spell.all.success", spellPlaceholder);
     }
 
-    private static void giveShulker(Player player, ShulkerBox box){
+    private static void giveShulker(Player player, ShulkerBox box, String name){
         ItemStack shulk = new ItemStack(Material.CYAN_SHULKER_BOX, 1);
         BlockStateMeta meta = ((BlockStateMeta)shulk.getItemMeta());
+        meta.setDisplayName(name);
         meta.setBlockState(box);
         shulk.setItemMeta(meta);
         player.getInventory().addItem(shulk);
