@@ -7,6 +7,9 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
+import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
+import se.fusion1013.plugin.cobaltmagick.spells.MovableSpell;
+import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
 public class TeleportSpellModule extends AbstractSpellModule<TeleportSpellModule> implements SpellModule {
 
@@ -44,32 +47,32 @@ public class TeleportSpellModule extends AbstractSpellModule<TeleportSpellModule
     }
 
     @Override
-    public void executeOnCast(Player caster, Location location, Vector velocityVector) {
-        teleport(caster, location, null);
+    public void executeOnCast(Wand wand, Player caster, ISpell spell) {
+        teleport(caster, spell.getLocation(), null);
     }
 
     @Override
-    public void executeOnTick(Player caster, Location location, Vector velocityVector) {
+    public void executeOnTick(Wand wand, Player caster, ISpell spell) {
         if (!canRun) return;
-        teleport(caster, location, null);
+        teleport(caster, spell.getLocation(), null);
     }
 
     @Override
-    public void executeOnBlockHit(Player caster, Location location, Vector velocityVector, Block blockHit, BlockFace hitBlockFace) {
+    public void executeOnBlockHit(Wand wand, Player caster, MovableSpell spell, Block blockHit, BlockFace hitBlockFace) {
         if (!canRun) return;
-        teleport(caster, location, null);
+        teleport(caster, spell.getLocation(), null);
     }
 
     @Override
-    public void executeOnEntityHit(Player caster, Location location, Vector velocityVector, Entity entityHit) {
+    public void executeOnEntityHit(Wand wand, Player caster, MovableSpell spell, Entity entityHit) {
         if (!canRun) return;
-        teleport(caster, location, entityHit);
+        teleport(caster, spell.getLocation(), entityHit);
     }
 
     @Override
-    public void executeOnDeath(Player caster, Location location, Vector velocityVector) {
+    public void executeOnDeath(Wand wand, Player caster, ISpell spell) {
         if (!canRun) return;
-        teleport(caster, location, null);
+        teleport(caster, spell.getLocation(), null);
     }
 
     private void teleport(Player caster, Location location, Entity entityHit){
