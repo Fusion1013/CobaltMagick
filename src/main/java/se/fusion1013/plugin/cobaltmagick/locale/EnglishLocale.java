@@ -54,6 +54,8 @@ public class EnglishLocale implements Locale {
                 this.put("commands.cgive.spell.success", "&7Gave Spell &3%spell_name% &7to &3%player_name%");
                 this.put("commands.cgive.spell.all.success", "&7Gave &3%spell_count% &7Spells to &3%player_name%");
                 this.put("commands.cgive.wand.success", "&7Gave new Wand to &3%player_name%");
+                this.put("commands.cgive.spell.fromid.wand_not_found", "&7Could not find wand with id &3%wand_id%");
+                this.put("commands.cgive.spell.fromid.success", "&7Gave wand with id &3%wand_id% &7to &3%player_name%");
 
                 this.put("#5", "gamemode");
                 this.put("commands.gamemode.change", "&7Set &3%player_name%&7's gamemode to &3%gamemode%");
@@ -73,6 +75,7 @@ public class EnglishLocale implements Locale {
                 this.put("list-item-id-name-location", "&7[&3%id%&7] &7Name: &3%name% &7Location: &3%x%&7x &3%y%&7y &3%z%&7z");
 
                 this.put("gradient", "<g:#ff1100:#00ff1e>GRADIENT");
+                this.put("rainbow", "&7[<r:1:1>ThisIsAReallyLongRainbowText&7]");
             }
         };
     }
