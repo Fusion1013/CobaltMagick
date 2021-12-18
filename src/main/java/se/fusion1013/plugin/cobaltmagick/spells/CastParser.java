@@ -52,11 +52,11 @@ public class CastParser {
                 } else {
                     // Apply modifiers
                     for (ProjectileModifierSpell pms : modifiers){
-                        pms.modifySpell(cs);
+                        cs = pms.modifySpell(cs);
                         spellsToCast.add(pms);
                     }
                     for (ProjectileModifierSpell pms : this.modifierSpells){
-                        pms.modifySpell(cs);
+                        cs = pms.modifySpell(cs);
                         spellsToCast.add(pms);
                     }
                     modifiers.clear();
