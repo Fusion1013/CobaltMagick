@@ -6,6 +6,9 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
+import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
+import se.fusion1013.plugin.cobaltmagick.spells.MovableSpell;
+import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +16,7 @@ import java.util.List;
 public abstract class AbstractSpellModule<B extends AbstractSpellModule> implements SpellModule, Cloneable {
 
     // Radius Options
+    boolean overrideRadius = false;
     double currentRadius = 1;
     double startRadius = 0;
     double targetRadius = 1;
@@ -31,6 +35,7 @@ public abstract class AbstractSpellModule<B extends AbstractSpellModule> impleme
     public AbstractSpellModule() { }
 
     public AbstractSpellModule(AbstractSpellModule target){
+        this.overrideRadius = target.overrideRadius;
         this.currentRadius = target.currentRadius;
         this.startRadius = target.startRadius;
         this.targetRadius = target.targetRadius;
@@ -61,19 +66,34 @@ public abstract class AbstractSpellModule<B extends AbstractSpellModule> impleme
         return getThis();
     }
 
-    public B animateRadius(double startRadius, int expandTime){
+    /**
+     * Animates the radius over the given time. This will override the radius
+     *
+     * @param startRadius
+     * @param expandTime
+     * @return
+     */
+    public B animateRadius(double startRadius, int expandTime, double endRadius){
+        this.overrideRadius = true;
         this.startRadius = startRadius;
         this.expandTime = expandTime;
         this.animateRadius = true;
-        this.targetRadius = currentRadius;
+        this.targetRadius = endRadius;
         this.currentRadius = startRadius;
         return getThis();
     }
 
-    public void setRadius(double radius){
-        currentRadius = radius;
-        startRadius = radius;
-        targetRadius = radius;
+    /**
+     * Overrides the radius. If this value is not set, the module will use the radius of the spell
+     *
+     * @param radius the new radius
+     */
+    public B overrideRadius(double radius){
+        this.overrideRadius = true;
+        this.currentRadius = radius;
+        this.startRadius = radius;
+        this.targetRadius = radius;
+        return getThis();
     }
 
     public static List<SpellModule> cloneList(List<SpellModule> list) {
@@ -82,15 +102,14 @@ public abstract class AbstractSpellModule<B extends AbstractSpellModule> impleme
         return clone;
     }
 
-
     @Override
-    public void executeOnEntityHit(Player caster, Location location, Vector velocityVector, Entity entityHit) {
+    public void executeOnEntityHit(Wand wand, Player caster, MovableSpell spell, Entity entityHit) {
         currentIterations++;
         canRun = currentIterations <= maxIterationsPerTick && canRun;
     }
 
     @Override
-    public void executeOnBlockHit(Player caster, Location location, Vector velocityVector, Block blockHit, BlockFace hitBlockFace) {
+    public void executeOnBlockHit(Wand wand, Player caster, MovableSpell spell, Block blockHit, BlockFace hitBlockFace) {
         currentIterations++;
         canRun = currentIterations <= maxIterationsPerTick && canRun;
     }
