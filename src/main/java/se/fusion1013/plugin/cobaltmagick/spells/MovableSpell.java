@@ -6,10 +6,15 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
+import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
+import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
 public abstract class MovableSpell extends Spell implements Cloneable {
+
+    private static final double velocityLimit = 50;
 
     boolean movementStopped = false;
     int ticksToIgnoreCollisions = 4; // This is to prevent the projectile to collide with the caster
@@ -20,10 +25,10 @@ public abstract class MovableSpell extends Spell implements Cloneable {
     Location currentLocation;
 
     // Collision
-    boolean collidesWithEntities;
-    boolean collidesWithBlocks;
-    boolean piercesEntities;
-    double colliderRadius;
+    boolean collidesWithEntities = true;
+    boolean collidesWithBlocks = true;
+    boolean piercesEntities = false;
+    // double colliderRadius;
 
     // Gravity Variables
     boolean affectedByGravity;
@@ -48,12 +53,15 @@ public abstract class MovableSpell extends Spell implements Cloneable {
      */
     public MovableSpell(MovableSpell movableSpell) {
         super(movableSpell);
+        this.movementStopped = movableSpell.movementStopped;
+
         this.moves = movableSpell.getMoves();
+        this.velocityVector = movableSpell.getVelocityVector();
+        this.currentLocation = movableSpell.getLocation();
 
         this.collidesWithEntities = movableSpell.getCollidesWithEntities();
         this.collidesWithBlocks = movableSpell.getCollidesWithBlocks();
         this.piercesEntities = movableSpell.getPiercesEntities();
-        this.colliderRadius = movableSpell.getColliderRadius();
 
         this.affectedByGravity = movableSpell.isAffectedByGravity();
         this.gravityMultiplier = movableSpell.getGravityMultiplier();
@@ -80,6 +88,11 @@ public abstract class MovableSpell extends Spell implements Cloneable {
         if (ticksToIgnoreCollisions > 0) ticksToIgnoreCollisions--;
     }
 
+    @Override
+    public void castSpell(Wand wand, Player player) {
+        super.castSpell(wand, player);
+    }
+
     /**
      * Moves the projectile one step in the velocityDirection
      * Fires onEntityCollide and onBlockCollide
@@ -88,43 +101,45 @@ public abstract class MovableSpell extends Spell implements Cloneable {
         double distanceMoved = 0;
         double distanceToMove = velocityVector.length();
 
+        if (distanceToMove > velocityLimit){
+            velocityVector = velocityVector.clone().normalize().multiply(50);
+            distanceToMove = 50;
+        }
+
         while (distanceMoved < distanceToMove){
             if (velocityVector.length() <= 0) return;
             if (movementStopped) return;
 
             World world = currentLocation.getWorld();
-            if (world != null && distanceToMove > 0){
+            if (world != null){
 
-                RayTraceResult result = null;
-                if (collidesWithBlocks || collidesWithEntities) result = world.rayTrace(currentLocation, velocityVector, distanceToMove, FluidCollisionMode.NEVER, true, colliderRadius, null);
+                RayTraceResult entityRayTrace = world.rayTraceEntities(currentLocation, velocityVector, distanceToMove, Math.max(radius, 1));
+                RayTraceResult blockRayTrace = world.rayTraceBlocks(currentLocation, velocityVector, distanceToMove, FluidCollisionMode.NEVER);
 
                 boolean blockCollision = false;
-                if (result != null) {
+                if (collidesWithEntities && entityRayTrace != null){
+                    // Entity Collision Detection
+                    Entity hitEntity = entityRayTrace.getHitEntity();
+                    if (hitEntity != null && ticksToIgnoreCollisions <= 0 && hitEntity != caster) onEntityCollide(hitEntity);
+                }
 
-                    if (collidesWithEntities){
-                        // Entity Collision Detection
-                        Entity hitEntity = result.getHitEntity();
-                        if (hitEntity != null && ticksToIgnoreCollisions <= 0) onEntityCollide(hitEntity);
-                    }
+                if (collidesWithBlocks && blockRayTrace != null){
+                    // Block Collision Detection
+                    Block hitBlock = blockRayTrace.getHitBlock();
+                    BlockFace hitFace = blockRayTrace.getHitBlockFace();
+                    Vector hitPos = blockRayTrace.getHitPosition();
+                    double distanceToHit = hitPos.distance(currentLocation.toVector());
+                    if (distanceMoved + distanceToHit < distanceToMove){ // If true, collision has occurred
+                        distanceMoved += distanceToHit;
 
-                    if (collidesWithBlocks){
-                        // Block Collision Detection
-                        Block hitBlock = result.getHitBlock();
-                        BlockFace hitFace = result.getHitBlockFace();
-                        Vector hitPos = result.getHitPosition();
-                        double distanceToHit = hitPos.distance(currentLocation.toVector());
-                        if (distanceMoved + distanceToHit < distanceToMove){ // If true, collision has occurred
-                            distanceMoved += distanceToHit;
+                        currentLocation.setX(hitPos.getX());
+                        currentLocation.setY(hitPos.getY());
+                        currentLocation.setZ(hitPos.getZ());
 
-                            currentLocation.setX(hitPos.getX());
-                            currentLocation.setY(hitPos.getY());
-                            currentLocation.setZ(hitPos.getZ());
+                        velocityVector.multiply(new Vector(.99, .99, .99));
 
-                            velocityVector.multiply(new Vector(.99, .99, .99));
-
-                            if (hitBlock != null) onBlockCollide(hitBlock, hitFace);
-                            blockCollision = true;
-                        }
+                        if (hitBlock != null) onBlockCollide(hitBlock, hitFace);
+                        blockCollision = true;
                     }
                 }
                 if (!blockCollision) {
@@ -177,6 +192,9 @@ public abstract class MovableSpell extends Spell implements Cloneable {
             movementStopped = true;
         }
     }
+
+    @Override
+    public abstract MovableSpell clone();
 
     /**
      * Builds a new <code>MovableSpell</code>
@@ -428,10 +446,6 @@ public abstract class MovableSpell extends Spell implements Cloneable {
         return piercesEntities;
     }
 
-    public double getColliderRadius() {
-        return colliderRadius;
-    }
-
     public boolean isAffectedByGravity() {
         return affectedByGravity;
     }
@@ -454,5 +468,16 @@ public abstract class MovableSpell extends Spell implements Cloneable {
 
     public Vector getBounceFriction() {
         return bounceFriction.clone();
+    }
+
+    public Vector getVelocityVector() {
+        if (velocityVector != null) return velocityVector.clone();
+        else return  null;
+    }
+
+    @Override
+    public Location getLocation() {
+        if (currentLocation != null) return currentLocation.clone();
+        return null;
     }
 }
