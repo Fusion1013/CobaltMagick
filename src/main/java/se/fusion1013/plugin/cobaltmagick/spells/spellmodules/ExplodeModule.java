@@ -8,8 +8,11 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
+import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
+import se.fusion1013.plugin.cobaltmagick.spells.MovableSpell;
 import se.fusion1013.plugin.cobaltmagick.util.BlockUtil;
 import se.fusion1013.plugin.cobaltmagick.util.GeometryUtil;
+import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
 public class ExplodeModule extends AbstractSpellModule<ExplodeModule> implements SpellModule {
 
@@ -22,8 +25,7 @@ public class ExplodeModule extends AbstractSpellModule<ExplodeModule> implements
 
     boolean executed = false;
 
-    public ExplodeModule(double radius, boolean cancelsCast){
-        setRadius(radius);
+    public ExplodeModule(boolean cancelsCast){
         this.cancelsCast = cancelsCast;
     }
 
@@ -53,51 +55,61 @@ public class ExplodeModule extends AbstractSpellModule<ExplodeModule> implements
     }
 
     @Override
-    public void executeOnCast(Player caster, Location location, Vector velocityVector) { explode(location, velocityVector); }
+    public void executeOnCast(Wand wand, Player caster, ISpell spell) { explode(spell); }
 
     @Override
-    public void executeOnTick(Player caster, Location location, Vector velocityVector) {
+    public void executeOnTick(Wand wand, Player caster, ISpell spell) {
         if (!canRun) return;
 
-        explode(location, velocityVector);
+        explode(spell);
     }
 
     @Override
-    public void executeOnBlockHit(Player caster, Location location, Vector velocityVector, Block blockHit, BlockFace hitBlockFace) {
-        super.executeOnBlockHit(caster, location, velocityVector, blockHit, hitBlockFace);
+    public void executeOnBlockHit(Wand wand, Player caster, MovableSpell spell, Block blockHit, BlockFace hitBlockFace) {
+        super.executeOnBlockHit(wand, caster, spell, blockHit, hitBlockFace);
         if (!canRun) return;
 
-        explode(location, velocityVector);
+        explode(spell);
     }
 
     @Override
-    public void executeOnEntityHit(Player caster, Location location, Vector velocityVector, Entity entityHit) {
-        super.executeOnEntityHit(caster, location, velocityVector, entityHit);
+    public void executeOnEntityHit(Wand wand, Player caster, MovableSpell spell, Entity entityHit) {
+        super.executeOnEntityHit(wand, caster, spell, entityHit);
         if (!canRun) return;
 
-        explode(location, velocityVector);
+        explode(spell);
     }
 
     @Override
-    public void executeOnDeath(Player caster, Location location, Vector velocityVector) {
-        explode(location, velocityVector);
+    public void executeOnDeath(Wand wand, Player caster, ISpell spell) {
+        explode(spell);
     }
 
-    private void explode(Location location, Vector velocityVector) {
+    private void explode(ISpell spell) {
         executed = false;
 
-        World world = location.getWorld();
-        if (velocityVector.length() < executeOnlyIfVelocityExceeds) return;
+        Location location = spell.getLocation();
+        Vector velocityVector = null;
+        if (spell instanceof MovableSpell movableSpell){
+            velocityVector = movableSpell.getVelocityVector();
+        }
+        double explosionRadius = spell.getRadius();
+        if (overrideRadius) explosionRadius = currentRadius;
 
-        BlockUtil.setBlocksInSphere(location, Material.AIR, (int) currentRadius, false, false, true, false, true);
-        int iterations = (int)Math.max(1, currentRadius * Math.floor(currentRadius / 4));
+        // Check if it only explodes if velocity exceeds value
+        World world = location.getWorld();
+        if (velocityVector != null) if (velocityVector.length() < executeOnlyIfVelocityExceeds) return;
+
+        // Explode
+        BlockUtil.setBlocksInSphere(location, Material.AIR, (int)explosionRadius, false, false, true, false, true);
+        int iterations = (int)Math.max(1, explosionRadius * Math.floor(explosionRadius / 4));
         for (int i = 0; i < iterations; i++){
-            Vector pos = GeometryUtil.getPointOnSphere(currentRadius).add(location.toVector());
-            if (world != null) world.createExplosion(new Location(world, pos.getX(), pos.getY(), pos.getZ()), (float)Math.min(7, currentRadius), fire, destroyBlocks);
+            Vector pos = GeometryUtil.getPointOnSphere(explosionRadius).add(location.toVector());
+            if (world != null) world.createExplosion(new Location(world, pos.getX(), pos.getY(), pos.getZ()), (float)Math.min(7, explosionRadius), fire, destroyBlocks);
         }
         for (int i = 0; i < iterations; i++){
-            Vector pos = GeometryUtil.getPointInSphere(currentRadius).add(location.toVector());
-            if (world != null) world.createExplosion(new Location(world, pos.getX(), pos.getY(), pos.getZ()), (float)Math.min(7, currentRadius), fire, destroyBlocks);
+            Vector pos = GeometryUtil.getPointInSphere(explosionRadius).add(location.toVector());
+            if (world != null) world.createExplosion(new Location(world, pos.getX(), pos.getY(), pos.getZ()), (float)Math.min(7, explosionRadius), fire, destroyBlocks);
         }
 
         executed = true;
