@@ -2,6 +2,8 @@
 
 Magick plugin for Spigot. Adds a powerful spellcasting system inspired by the game Noita.
 
+There are currently over 50 spells and more are in development.
+
 ![2021-12-17_00 38 26](https://user-images.githubusercontent.com/35802522/146464900-c004f268-6ab9-427f-bda1-d9f65f1da708.png)
 
 ## Using Magick
