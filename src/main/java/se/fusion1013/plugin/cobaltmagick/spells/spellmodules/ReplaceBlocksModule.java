@@ -6,9 +6,11 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
+import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
+import se.fusion1013.plugin.cobaltmagick.spells.MovableSpell;
 import se.fusion1013.plugin.cobaltmagick.util.BlockUtil;
+import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
 public class ReplaceBlocksModule extends AbstractSpellModule<ReplaceBlocksModule> implements SpellModule {
 
@@ -27,7 +29,7 @@ public class ReplaceBlocksModule extends AbstractSpellModule<ReplaceBlocksModule
 
     public ReplaceBlocksModule(Material replaceMaterial, double radius, boolean cancelsCast){
         this.replaceMaterial = replaceMaterial;
-        setRadius(radius);
+        overrideRadius(radius);
         this.cancelsCast = cancelsCast;
     }
 
@@ -87,34 +89,34 @@ public class ReplaceBlocksModule extends AbstractSpellModule<ReplaceBlocksModule
     }
 
     @Override
-    public void executeOnCast(Player caster, Location location, Vector velocityVector) { replaceBlocksInSphere(location); }
+    public void executeOnCast(Wand wand, Player caster, ISpell spell) { replaceBlocksInSphere(spell.getLocation()); }
 
     @Override
-    public void executeOnTick(Player caster, Location location, Vector velocityVector) {
+    public void executeOnTick(Wand wand, Player caster, ISpell spell) {
         if (!canRun) return;
 
-        replaceBlocksInSphere(location);
+        replaceBlocksInSphere(spell.getLocation());
     }
 
     @Override
-    public void executeOnBlockHit(Player caster, Location location, Vector velocityVector, Block blockHit, BlockFace hitBlockFace) {
-        super.executeOnBlockHit(caster, location, velocityVector, blockHit, hitBlockFace);
+    public void executeOnBlockHit(Wand wand, Player caster, MovableSpell spell, Block blockHit, BlockFace hitBlockFace) {
+        super.executeOnBlockHit(wand, caster, spell, blockHit, hitBlockFace);
         if (!canRun) return;
 
-        replaceBlocksInSphere(location);
+        replaceBlocksInSphere(spell.getLocation());
     }
 
     @Override
-    public void executeOnEntityHit(Player caster, Location location, Vector velocityVector, Entity entityHit) {
-        super.executeOnEntityHit(caster, location, velocityVector, entityHit);
+    public void executeOnEntityHit(Wand wand, Player caster, MovableSpell spell, Entity entityHit) {
+        super.executeOnEntityHit(wand, caster, spell, entityHit);
         if (!canRun) return;
 
-        replaceBlocksInSphere(location);
+        replaceBlocksInSphere(spell.getLocation());
     }
 
     @Override
-    public void executeOnDeath(Player caster, Location location, Vector velocityVector) {
-        replaceBlocksInSphere(location);
+    public void executeOnDeath(Wand wand, Player caster, ISpell spell) {
+        replaceBlocksInSphere(spell.getLocation());
     }
 
     private void replaceBlocksInSphere(Location location){
