@@ -9,7 +9,6 @@ import java.util.List;
 
 public class AddSpellModuleModifier extends AbstractSpellModifier<AddSpellModuleModifier> {
 
-    // TODO: Switch to lists
     List<SpellModule> onCast = new ArrayList<>();
     List<SpellModule> onTick = new ArrayList<>();
     List<SpellModule> onEntityCollision = new ArrayList<>();
@@ -26,6 +25,13 @@ public class AddSpellModuleModifier extends AbstractSpellModifier<AddSpellModule
         this.onEntityCollision = AbstractSpellModule.cloneList(target.onEntityCollision);
         this.onBlockCollision = AbstractSpellModule.cloneList(target.onBlockCollision);
         this.onDeath = AbstractSpellModule.cloneList(target.onDeath);
+    }
+
+    public AddSpellModuleModifier addOnCollisionDeath(SpellModule onCollisionDeath){
+        this.onBlockCollision.add(onCollisionDeath);
+        this.onEntityCollision.add(onCollisionDeath);
+        this.onDeath.add(onCollisionDeath);
+        return getThis();
     }
 
     public AddSpellModuleModifier addOnCast(SpellModule onCast) {
