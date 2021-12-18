@@ -44,6 +44,11 @@ public interface ISpell {
     void setCount(int count);
     String getDescription();
     List<Spell.DelayedSpell> getDelayedSpells();
+    double getRadius();
+    void setRadius(double radius);
+    Wand getWand();
+    Player getCaster();
+    Location getLocation();
 
     /**
      * Performs operations that need to be done before a spell can be cast
