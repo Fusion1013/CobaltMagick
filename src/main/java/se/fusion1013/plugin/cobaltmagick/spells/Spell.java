@@ -16,13 +16,15 @@ import java.util.List;
 public abstract class Spell implements ISpell, Cloneable {
 
     // Hidden Attributes
+    double radius = .1;
+
     int id;
     String internalSpellName;
     String spellName;
     String description;
     static final int maxDescriptionLineLength = 30;
     int customModelData = 1;
-    final SpellType type;
+    SpellType type;
     static NamespacedKey spellKey = new NamespacedKey(CobaltMagick.getInstance(), "spell");
 
     boolean hasCast = false;
@@ -36,6 +38,9 @@ public abstract class Spell implements ISpell, Cloneable {
     double rechargeTime;
 
     List<DelayedSpell> delayedSpells = new ArrayList<>();
+
+    Player caster;
+    Wand wand;
 
     public Spell(int id, String internalSpellName, String spellName, SpellType type) {
         this.id = id;
@@ -65,6 +70,11 @@ public abstract class Spell implements ISpell, Cloneable {
         this.consumeOnUse = spell.getConsumeOnUse();
 
         this.count = spell.getCount();
+
+        this.radius = spell.getRadius();
+
+        this.caster = spell.getCaster();
+        this.wand = spell.getWand();
     }
 
     /**
@@ -76,6 +86,8 @@ public abstract class Spell implements ISpell, Cloneable {
 
     @Override
     public void castSpell(Wand wand, Player player) {
+        this.wand = wand;
+        this.caster = player;
     }
 
     // ----- GETTERS / SETTERS -----
@@ -189,6 +201,7 @@ public abstract class Spell implements ISpell, Cloneable {
         int id;
         String internalSpellName;
         String spellName;
+        SpellType overrideSpellType;
 
         /**
          * Creates a new spell builder with an internalized spell name. Automatically generates the display name
@@ -215,7 +228,6 @@ public abstract class Spell implements ISpell, Cloneable {
         protected abstract T createObj();
         protected abstract B getThis();
 
-        // TODO: Replace with regex
         private void generateSpellName(){
             String[] strings = internalSpellName.split("_");
             spellName = "";
@@ -223,6 +235,22 @@ public abstract class Spell implements ISpell, Cloneable {
                 spellName += Character.toUpperCase(s.charAt(0)) + s.substring(1) + " ";
             }
             spellName = spellName.substring(0, spellName.length()-1);
+        }
+
+        public B setRadius(double radius){
+            obj.setRadius(radius);
+            return getThis();
+        }
+
+        /**
+         * Overrides the type of this spell
+         *
+         * @param spellType type to override to
+         * @return the builder
+         */
+        public B overrideSpellType(SpellType spellType){
+            obj.setSpellType(spellType);
+            return getThis();
         }
 
         public B consumeOnUse(int defaultCount){
@@ -342,6 +370,26 @@ public abstract class Spell implements ISpell, Cloneable {
     public List<DelayedSpell> getDelayedSpells() { return new ArrayList<>(delayedSpells); }
 
     @Override
+    public double getRadius(){
+        return this.radius;
+    }
+
+    @Override
+    public void setRadius(double radius){
+        this.radius = radius;
+    }
+
+    @Override
+    public Wand getWand() {
+        return this.wand;
+    }
+
+    @Override
+    public Player getCaster() {
+        return this.caster;
+    }
+
+    @Override
     public int getTrueManaDrain(){
         int manaUsed = 0;
         for (Spell.DelayedSpell ds : delayedSpells){
@@ -381,7 +429,8 @@ public abstract class Spell implements ISpell, Cloneable {
         INSTANT,
         COLLISION,
         TIMER, // Executes after half of the lifetime // TODO: Change this (??)
-        EXPIRATION
+        EXPIRATION,
+        COLLISIONOREXPIRATION
     }
 
     public static class DelayedSpell{
@@ -417,5 +466,9 @@ public abstract class Spell implements ISpell, Cloneable {
         public List<ISpell> getSpellsToCast() { return spellsToCast; }
 
         public TriggerType getWhenToCast() { return whenToCast; }
+    }
+
+    public void setSpellType(SpellType spellType){
+        this.type = spellType;
     }
 }
