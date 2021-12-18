@@ -12,6 +12,19 @@ import java.util.Random;
 
 public class BlockUtil {
 
+    static int radius;
+    static boolean hollow;
+
+    static Location centerBlock;
+
+    List<Location> blockLocations;
+
+    public static void generateShape(GeometryUtil.Shape shape){
+        switch (shape){
+            case SPHERE -> generateSphere(centerBlock, radius, hollow);
+        }
+    }
+
     /**
      * Generates a sphere of block locations around the given center with a given radius.
      *
@@ -212,5 +225,14 @@ public class BlockUtil {
         if (dropItems) block.breakNaturally();
 
         block.setType(setBlock);
+    }
+
+    private static boolean canPlaceBlock(Location location, boolean replaceNonAir){
+        Block block = location.getBlock();
+
+        if (block.getType() != Material.AIR && !replaceNonAir) return false;
+
+
+        return true;
     }
 }
