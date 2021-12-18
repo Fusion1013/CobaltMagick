@@ -33,4 +33,9 @@ public class GeometryUtil {
 
         return new Vector(x, y, z);
     }
+
+    public enum Shape{
+        SPHERE,
+        CUBE
+    }
 }
