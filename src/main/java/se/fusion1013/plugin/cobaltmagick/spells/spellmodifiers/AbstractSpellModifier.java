@@ -20,4 +20,9 @@ public abstract class AbstractSpellModifier<B extends AbstractSpellModifier> imp
     public abstract AbstractSpellModifier<B> clone();
 
     protected abstract B getThis();
+
+    @Override
+    public List<String> getExtraLore() {
+        return new ArrayList<>();
+    }
 }
