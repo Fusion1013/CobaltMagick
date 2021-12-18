@@ -7,6 +7,9 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
+import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
+import se.fusion1013.plugin.cobaltmagick.spells.MovableSpell;
+import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
 import java.util.Random;
 
@@ -57,26 +60,26 @@ public class DamageModule extends AbstractSpellModule<DamageModule> implements S
     }
 
     @Override
-    public void executeOnCast(Player caster, Location location, Vector directionVector) { }
+    public void executeOnCast(Wand wand, Player caster, ISpell spell) { }
 
     @Override
-    public void executeOnTick(Player caster, Location location, Vector velocityVector) { }
+    public void executeOnTick(Wand wand, Player caster, ISpell spell) { }
 
     @Override
-    public void executeOnBlockHit(Player caster, Location location, Vector velocityVector, Block blockHit, BlockFace hitBlockFace) {
-        super.executeOnBlockHit(caster, location, velocityVector, blockHit, hitBlockFace);
+    public void executeOnBlockHit(Wand wand, Player caster, MovableSpell spell, Block blockHit, BlockFace hitBlockFace) {
+        super.executeOnBlockHit(wand, caster, spell, blockHit, hitBlockFace);
     }
 
     @Override
-    public void executeOnEntityHit(Player caster, Location location, Vector velocityVector, Entity entityHit) {
-        super.executeOnEntityHit(caster, location, velocityVector, entityHit);
+    public void executeOnEntityHit(Wand wand, Player caster, MovableSpell spell, Entity entityHit) {
+        super.executeOnEntityHit(wand, caster, spell, entityHit);
         if (!canRun) return;
 
         if (entityHit instanceof LivingEntity){
             LivingEntity entity = (LivingEntity)entityHit;
 
             if (setsFire) entity.setFireTicks(fireTicks);
-            if (knockback) entity.setVelocity(entity.getVelocity().add(velocityVector.clone().normalize().multiply(knockbackForce)));
+            if (knockback) entity.setVelocity(entity.getVelocity().add(spell.getVelocityVector().normalize().multiply(knockbackForce)));
 
             entity.damage(getDamageWithCrit());
         }
@@ -95,7 +98,7 @@ public class DamageModule extends AbstractSpellModule<DamageModule> implements S
     }
 
     @Override
-    public void executeOnDeath(Player caster, Location location, Vector velocityVector) { }
+    public void executeOnDeath(Wand wand, Player caster, ISpell spell) { }
 
     @Override
     public boolean cancelsCast() {
@@ -108,4 +111,8 @@ public class DamageModule extends AbstractSpellModule<DamageModule> implements S
     }
 
     protected DamageModule getThis() { return this; }
+
+    public int getDamage() { return damage; }
+
+    public double getCriticalChance() { return criticalChance; }
 }
