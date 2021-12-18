@@ -1,39 +1,68 @@
 package se.fusion1013.plugin.cobaltmagick.spells.spellmodules;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Sound;
-import org.bukkit.SoundCategory;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
+import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
+import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
+import se.fusion1013.plugin.cobaltmagick.spells.MovableSpell;
+import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
 public class SoundSpellModule extends AbstractSpellModule<SoundSpellModule> implements SpellModule {
 
     // TODO: Add support to only play sound for specific player
-    Sound sound;
-    SoundCategory category;
     boolean cancelsCast;
 
     // Optional Variables
+    boolean playSound = false;
+    Sound sound;
+    String soundString;
+    SoundCategory category;
     float volume = 1;
     float pitch = 1;
+
+    boolean playInstrument = false;
+    Instrument instrument;
+    Note note;
+
+    public SoundSpellModule(String soundString, SoundCategory category, boolean cancelsCast){
+        this.soundString = soundString;
+        this.category = category;
+        this.cancelsCast = cancelsCast;
+        this.playSound = true;
+    }
 
     public SoundSpellModule(Sound sound, SoundCategory category, boolean cancelsCast){
         this.sound = sound;
         this.category = category;
         this.cancelsCast = cancelsCast;
+        this.playSound = true;
+    }
+
+    public SoundSpellModule(Instrument instrument, Note note, boolean cancelsCast){
+        this.instrument = instrument;
+        this.note = note;
+        this.cancelsCast = cancelsCast;
+        this.playInstrument = true;
     }
 
     public SoundSpellModule(SoundSpellModule target){
         this.sound = target.sound;
+        this.soundString = target.soundString;
         this.category = target.category;
         this.cancelsCast = target.cancelsCast;
 
         this.volume = target.volume;
         this.pitch = target.pitch;
+
+        this.note = target.note;
+        this.instrument = target.instrument;
+
+        this.playSound = target.playSound;
+        this.playInstrument = target.playInstrument;
     }
 
     public SoundSpellModule setVolume(float volume) {
@@ -47,41 +76,43 @@ public class SoundSpellModule extends AbstractSpellModule<SoundSpellModule> impl
     }
 
     @Override
-    public void executeOnCast(Player caster, Location location, Vector velocityVector) {
-        playSound(location);
+    public void executeOnCast(Wand wand, Player caster, ISpell spell) {
+        playSound(spell.getLocation());
     }
 
     @Override
-    public void executeOnEntityHit(Player caster, Location location, Vector velocityVector, Entity entityHit) {
-        super.executeOnEntityHit(caster, location, velocityVector, entityHit);
+    public void executeOnEntityHit(Wand wand, Player caster, MovableSpell spell, Entity entityHit) {
+        super.executeOnEntityHit(wand, caster, spell, entityHit);
         if (!canRun) return;
 
-        playSound(location);
+        playSound(spell.getLocation());
     }
 
     @Override
-    public void executeOnBlockHit(Player caster, Location location, Vector velocityVector, Block blockHit, BlockFace hitBlockFace) {
-        super.executeOnBlockHit(caster, location, velocityVector, blockHit, hitBlockFace);
+    public void executeOnBlockHit(Wand wand, Player caster, MovableSpell spell, Block blockHit, BlockFace hitBlockFace) {
+        super.executeOnBlockHit(wand, caster, spell, blockHit, hitBlockFace);
         if (!canRun) return;
 
-        playSound(location);
+        playSound(spell.getLocation());
     }
 
     @Override
-    public void executeOnTick(Player caster, Location location, Vector velocityVector) {
+    public void executeOnTick(Wand wand, Player caster, ISpell spell) {
         if (!canRun) return;
 
-        playSound(location);
+        playSound(spell.getLocation());
     }
 
     @Override
-    public void executeOnDeath(Player caster, Location location, Vector velocityVector) {
-        playSound(location);
+    public void executeOnDeath(Wand wand, Player caster, ISpell spell) {
+        playSound(spell.getLocation());
     }
 
     private void playSound(Location location){
         for (Player p : Bukkit.getOnlinePlayers()){
-            p.playSound(location, sound, category, volume, pitch);
+            if (playInstrument) p.playNote(location, instrument, note);
+            else if (playSound && sound != null) p.playSound(location, sound, category, volume, pitch);
+            else if (playSound) p.playSound(location, soundString, category, volume, pitch);
         }
     }
 
