@@ -12,6 +12,7 @@ import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.manager.SpellManager;
 import se.fusion1013.plugin.cobaltmagick.particle.ParticleGroup;
 import se.fusion1013.plugin.cobaltmagick.spells.spellmodules.AbstractSpellModule;
+import se.fusion1013.plugin.cobaltmagick.spells.spellmodules.DamageModule;
 import se.fusion1013.plugin.cobaltmagick.spells.spellmodules.SpellModule;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
@@ -21,7 +22,6 @@ import java.util.Random;
 
 public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable {
 
-    double radius;
     double spread;
     double velocity;
     double lifetime;
@@ -39,9 +39,6 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
     private BukkitTask projectileTask;
 
     List<TriggerType> triggerTypes = new ArrayList<>();
-
-    Wand wand;
-    Player caster;
 
     /**
      * Creates a new <code>ProjectileSpell</code> with an id, internalSpellName and a spellName
@@ -61,7 +58,6 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
      */
     public ProjectileSpell(ProjectileSpell projectileSpell){
         super(projectileSpell);
-        this.radius = projectileSpell.getRadius();
         this.spread = projectileSpell.getSpread();
         this.velocity = projectileSpell.getVelocity();
         this.lifetime = projectileSpell.getLifetime();
@@ -76,8 +72,6 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
         this.executeOnBlockCollision = projectileSpell.getExecuteOnBlockCollision();
         this.executeOnEntityCollision = projectileSpell.getExecuteOnEntityCollision();
         this.executeOnDeath = projectileSpell.getExecuteOnDeath();
-
-        this.caster = projectileSpell.getCaster();
     }
 
     @Override
@@ -105,7 +99,7 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
 
         // Offset from casting center
         Vector offsetFromPlayer = new Vector(0, 0, 0);
-        offsetFromPlayer.add(velocityVector.clone().multiply(radius * 1.2));
+        offsetFromPlayer.add(velocityVector.clone().normalize().multiply(Math.max(1, radius)));
 
         currentLocation.add(offsetFromPlayer);
 
@@ -124,7 +118,6 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
         this.velocityVector = direction;
         this.currentLocation = location;
         this.currentLifetime = lifetime;
-        this.caster = caster;
 
         // Apply spread
         double actualSpread = wand.getSpread() + spread;
@@ -150,7 +143,7 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
 
         // Special Things Here
         for (SpellModule module : executeOnCast){
-            module.executeOnCast(caster, currentLocation, velocityVector.clone());
+            module.executeOnCast(wand, caster, this);
         }
 
         // Start projectile tick
@@ -163,20 +156,22 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
 
     @Override
     public void run() {
-        if (currentLifetime <= 0) onProjectileDeath();
+        if (currentLifetime <= 0 || movementStopped) {
+            onProjectileDeath();
+            return;
+        }
         currentLifetime -= .05;
 
+        display();
         move();
         display();
 
         // Special Things Here
         for (SpellModule module : executeOnTick){
-            module.executeOnTick(caster, currentLocation, velocityVector.clone());
+            module.executeOnTick(wand, caster, this);
         }
         // Particle After Movement Handle
         if (currentLifetime * 2 <= lifetime) executeTrigger(TriggerType.TIMER);
-
-        if (movementStopped) killParticle();
 
         updateModules();
     }
@@ -194,9 +189,10 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
      */
     public void onProjectileDeath(){
         for (SpellModule module : executeOnDeath){
-            module.executeOnDeath(caster, currentLocation, velocityVector);
+            module.executeOnDeath(wand, caster, this);
         }
         executeTrigger(TriggerType.EXPIRATION);
+        executeTrigger(TriggerType.COLLISIONOREXPIRATION);
 
         killParticle();
     }
@@ -211,7 +207,7 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
         super.onEntityCollide(hitEntity);
 
         for (SpellModule module : executeOnEntityCollision){
-            module.executeOnEntityHit(caster, currentLocation, velocityVector, hitEntity);
+            module.executeOnEntityHit(wand, caster, this, hitEntity);
 
             if (module.cancelsCast()) killParticle();
         }
@@ -230,11 +226,12 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
         super.onBlockCollide(hitBlock, hitBlockFace);
 
         for (SpellModule module : executeOnBlockCollision){
-            module.executeOnBlockHit(caster, currentLocation, velocityVector, hitBlock, hitBlockFace);
+            module.executeOnBlockHit(wand, caster, this, hitBlock, hitBlockFace);
 
             if (module.cancelsCast()) killParticle();
         }
         executeTrigger(TriggerType.COLLISION);
+        executeTrigger(TriggerType.COLLISIONOREXPIRATION);
     }
 
     private void killParticle(){
@@ -274,11 +271,23 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
     public List<String> getLore() {
         List<String> lore = super.getLore();
 
-        // TODO: Make lore search SpellModules for values
         if (spread != 0) lore.add(colorizeValue("Spread: ", spread, ""));
         if (velocity != 0) lore.add(colorizeValue("Velocity: ", velocity, ""));
-        // if (damage != 0) lore.add(colorizeValue("Damage: ", damage, "♥"));
-        // if (criticalChance != 0) lore.add(colorizeValue("Critical Chance: ", criticalChance, "%"));
+
+        double damage = 0;
+        double criticalChance = 0;
+
+        for (SpellModule m : executeOnEntityCollision){
+            if (m instanceof DamageModule module){
+                damage += module.getDamage();
+                criticalChance +=  module.getCriticalChance();
+            }
+        }
+
+        damage = damage / 2.0;
+
+        if (damage != 0) lore.add(colorizeValue("Damage: ", damage, "♥"));
+        if (criticalChance != 0) lore.add(colorizeValue("Critical Chance: ", criticalChance, "%"));
 
         return lore;
     }
@@ -293,7 +302,6 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
      */
     public static class ProjectileSpellBuilder extends MovableSpellBuilder<ProjectileSpell, ProjectileSpellBuilder> {
 
-        double radius = 0.1;
         double spread = 0;
         double velocity = 800;
         double lifetime = 50; // Measured in 1/50 seconds
@@ -336,7 +344,6 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
          */
         @Override
         public ProjectileSpell build(){
-            obj.setRadius(radius);
             obj.setSpread(spread);
             obj.setVelocity(velocity);
             obj.setLifetime(lifetime);
@@ -430,17 +437,6 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
             return getThis();
         }
 
-        /**
-         * Sets the radius of the projectile
-         *
-         * @param radius the radius of the projectile in blocks
-         * @return the builder
-         */
-        public ProjectileSpellBuilder setRadius(double radius){
-            this.radius = radius;
-            return getThis();
-        }
-
         public ProjectileSpellBuilder setSpread(double spread){
             this.spread = spread;
             return getThis();
@@ -452,8 +448,7 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
         }
 
         public ProjectileSpellBuilder setLifetime(double lifetime){
-            Random r = new Random();
-            this.lifetime = lifetime + r.nextDouble() * .5;
+            this.lifetime = lifetime;
             return getThis();
         }
     }
@@ -463,10 +458,6 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
     // TODO: Clone all objects inside executeOn lists
 
     public void addDelayedSpell(DelayedSpell delayedSpell) { this.delayedSpells.add(delayedSpell); }
-
-    public void setRadius(double radius){
-        this.radius = radius;
-    }
 
     public void setSpread(double spread){
         this.spread = spread;
@@ -511,10 +502,6 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
 
     public void addExecuteOnDeath(SpellModule executeThis) { this.executeOnDeath.add(executeThis); }
 
-    public double getRadius(){
-        return radius;
-    }
-
     public double getSpread(){
         return spread;
     }
@@ -527,7 +514,10 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
         return lifetime;
     }
 
-    public ParticleGroup getParticleGroup() { return particleGroup.clone(); }
+    public ParticleGroup getParticleGroup() { // TODO: Replace with on tick particles
+        if (particleGroup != null) return particleGroup.clone();
+        else return null;
+    }
 
     public List<TriggerType> getTriggerTypes() { return triggerTypes; }
 
@@ -542,6 +532,4 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
     public List<SpellModule> getExecuteOnEntityCollision() { return AbstractSpellModule.cloneList(executeOnEntityCollision); }
 
     public List<SpellModule> getExecuteOnDeath() { return AbstractSpellModule.cloneList(executeOnDeath); }
-
-    public Player getCaster() { return this.caster; }
 }
