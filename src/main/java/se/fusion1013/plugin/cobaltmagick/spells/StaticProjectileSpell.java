@@ -19,8 +19,6 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
 
     StaticProjectileShape staticProjectileShape;
 
-    double radius;
-
     double lifetime;
     ParticleGroup particleGroup;
 
@@ -29,7 +27,6 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
     List<SpellModule> executeOnDeath = new ArrayList<>();
 
     private BukkitTask staticProjectileTask;
-    Player caster;
 
     /**
      * Creates a new <code>StaticProjectileSpell</code> with an id, internalSpellName and a spellName
@@ -53,12 +50,9 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
         this.lifetime = spell.getLifetime();
         this.particleGroup = spell.getParticleGroup();
 
-        this.radius = spell.getRadius();
-
         this.executeOnCast = spell.getExecuteOnCast();
         this.executeOnTick = spell.getExecuteOnTick();
         this.executeOnDeath = spell.getExecuteOnDeath();
-        this.caster = spell.getCaster();
     }
 
     @Override
@@ -71,11 +65,10 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
     public void castSpell(Wand wand, Player caster, Vector direction, Location location) {
         super.castSpell(wand, caster);
         this.currentLocation = location;
-        this.caster = caster;
 
         // Special Things Here
         for (SpellModule module : executeOnCast){
-            module.executeOnCast(caster, currentLocation, velocityVector.clone());
+            module.executeOnCast(wand, caster, this);
         }
 
         Bukkit.getScheduler().runTaskLater(CobaltMagick.getInstance(), () -> {
@@ -94,7 +87,7 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
 
         // Special Things Here
         for (SpellModule module : executeOnTick){
-            module.executeOnTick(this.caster, currentLocation, velocityVector.clone());
+            module.executeOnTick(wand, caster, this);
         }
 
         if (movementStopped) killParticle();
@@ -126,7 +119,7 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
     private void onProjectileDeath(){
         // Special Things Here
         for (SpellModule module : executeOnDeath){
-            module.executeOnDeath(this.caster, currentLocation, velocityVector.clone());
+            module.executeOnDeath(wand, caster, this);
         }
         killParticle();
     }
@@ -138,8 +131,6 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
 
     public static class StaticProjectileSpellBuilder extends MovableSpellBuilder<StaticProjectileSpell, StaticProjectileSpellBuilder> {
         StaticProjectileShape staticProjectileShape;
-
-        private double radius = 0;
 
         double lifetime;
         ParticleGroup particleGroup;
@@ -172,8 +163,6 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
             obj.setStaticProjectileShape(staticProjectileShape);
             obj.setParticleGroup(particleGroup);
 
-            obj.setRadius(radius);
-
             obj.setExecuteOnCast(executeOnCast);
             obj.setExecuteOnTick(executeOnTick);
             obj.setExecuteOnDeath(executeOnDeath);
@@ -204,19 +193,14 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
         }
 
         /**
-         * Sets the lifetime of the spell and applies a small random value
+         * Sets the lifetime of the spell
          *
          * @param lifetime lifetime of the spell measured in seconds
          * @return
          */
         public StaticProjectileSpellBuilder setLifetime(double lifetime){
             Random r = new Random();
-            this.lifetime = lifetime + r.nextDouble() * .5;
-            return getThis();
-        }
-
-        public StaticProjectileSpellBuilder setRadius(double radius){
-            this.radius = radius;
+            this.lifetime = lifetime;
             return getThis();
         }
 
@@ -236,8 +220,6 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
 
     public void setStaticProjectileShape(StaticProjectileShape shape) { this.staticProjectileShape = shape; }
 
-    public void setRadius(double radius) { this.radius = radius; }
-
     public void setLifetime(double lifetime) { this.lifetime = lifetime; }
 
     public void setExecuteOnCast(List<SpellModule> executeThis) { this.executeOnCast = new ArrayList<>(executeThis); }
@@ -256,8 +238,6 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
 
     public StaticProjectileShape getStaticProjectileShape() { return staticProjectileShape; }
 
-    public double getRadius() { return radius; }
-
     public double getLifetime() { return lifetime; }
 
     public List<SpellModule> getExecuteOnCast() {
@@ -268,7 +248,8 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
 
     public List<SpellModule> getExecuteOnDeath() { return AbstractSpellModule.cloneList(executeOnDeath); }
 
-    public ParticleGroup getParticleGroup() { return particleGroup.clone(); }
-
-    public Player getCaster() { return this.caster; }
+    public ParticleGroup getParticleGroup() {
+        if (particleGroup != null) return particleGroup.clone();
+        else return null;
+    }
 }
