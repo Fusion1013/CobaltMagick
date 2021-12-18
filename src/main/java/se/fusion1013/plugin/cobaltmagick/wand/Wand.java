@@ -96,6 +96,9 @@ public class Wand extends AbstractWand implements Runnable { // TODO: Move thing
         // Check if all spells in the wand has been cast. If they have, start recharge cooldown
         if (allSpellsCast()) recharge();
 
+        // Set visual cooldown on item
+        p.setCooldown(getWandItem().getType(), (int)Math.ceil(Math.max(rechargeCooldown, castCooldown) * 20));
+
         return CastResult.SUCCESS;
     }
 
