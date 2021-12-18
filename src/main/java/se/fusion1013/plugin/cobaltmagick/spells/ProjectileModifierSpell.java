@@ -44,19 +44,18 @@ public class ProjectileModifierSpell extends Spell implements Cloneable {
             return spellToModify;
         }
 
-        MovableSpell movableSpell = null;
-        ProjectileSpell projectileSpell = null;
-        StaticProjectileSpell staticProjectileSpell = null;
-
-        if (spellToModify instanceof MovableSpell) movableSpell = (MovableSpell)spellToModify;
-        if (spellToModify instanceof ProjectileSpell) projectileSpell = (ProjectileSpell)spellToModify;
-        if (spellToModify instanceof StaticProjectileSpell) staticProjectileSpell = (StaticProjectileSpell)spellToModify;
-
-        for (SpellModifier sm : spellModifiers){
-            if (movableSpell != null) sm.modifyMovableSpell(movableSpell);
-            if (projectileSpell != null) sm.modifyProjectileSpell(projectileSpell);
-            if (staticProjectileSpell != null) sm.modifyStaticProjectileSpell(staticProjectileSpell);
+        if (spellToModify instanceof MovableSpell movableSpell) {
+            for (SpellModifier sm : spellModifiers) sm.modifyMovableSpell(movableSpell);
         }
+
+        if (spellToModify instanceof ProjectileSpell projectileSpell) {
+            for (SpellModifier sm : spellModifiers) sm.modifyProjectileSpell(projectileSpell);
+        }
+
+        if (spellToModify instanceof StaticProjectileSpell staticProjectileSpell) {
+            for (SpellModifier sm : spellModifiers) sm.modifyStaticProjectileSpell(staticProjectileSpell);
+        }
+
         return spellToModify;
     }
 
@@ -70,6 +69,17 @@ public class ProjectileModifierSpell extends Spell implements Cloneable {
 
     @Override
     public void cancelTask() { }
+
+    @Override
+    public List<String> getLore() {
+        List<String> lore = super.getLore();
+
+        for (SpellModifier modifier : spellModifiers){
+            lore.addAll(modifier.getExtraLore());
+        }
+
+        return lore;
+    }
 
     @Override
     public Spell clone() {
@@ -117,4 +127,9 @@ public class ProjectileModifierSpell extends Spell implements Cloneable {
     public void setSpellModifiers(List<SpellModifier> spellModifiers) { this.spellModifiers = new ArrayList<>(spellModifiers); }
 
     public List<SpellModifier> getSpellModifiers() { return this.spellModifiers; }
+
+    @Override
+    public Location getLocation() {
+        return caster.getLocation().clone();
+    }
 }
