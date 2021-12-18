@@ -40,19 +40,18 @@ public class MulticastSpell extends Spell implements Cloneable, Runnable {
             spellsToCast = new CastParser(wandSpells, numberSpellsToCast, spellPos+1).addModifiers(modifierSpells).prepareCast();
         } else {
             spellsToCast = new CastParser(wandSpells, formation.getDirectionModifiers().length, spellPos+1).addModifiers(modifierSpells).prepareCast();
-            for (int i = 0; i < spellsToCast.size(); i++){
-                ISpell spell = spellsToCast.get(i);
-                if (spell instanceof ProjectileSpell) {
-                    ProjectileSpell ps = (ProjectileSpell)spell;
-                    ps.setDirectionModifier(formation.getDirectionModifiers()[i]);
+            int pos = 0;
+            for (ISpell spell : spellsToCast) {
+                if (spell instanceof ProjectileSpell ps) {
+                    ps.setDirectionModifier(formation.getDirectionModifiers()[pos]);
+                    pos++;
                 }
             }
         }
 
         // Increase spread of spell
         for (ISpell spell : spellsToCast){
-            if (spell instanceof ProjectileSpell){
-                ProjectileSpell ps = (ProjectileSpell)spell;
+            if (spell instanceof ProjectileSpell ps){
                 ps.setSpread(ps.getSpread() + increaseSpread);
             }
         }
@@ -64,7 +63,8 @@ public class MulticastSpell extends Spell implements Cloneable, Runnable {
         Location currentLocation = caster.getEyeLocation();
 
         for (ISpell s : spellsToCast){
-            s.castSpell(wand, caster, direction.clone(), currentLocation.clone());
+            // s.castSpell(wand, caster, direction.clone(), currentLocation.clone());
+            s.castSpell(wand, caster);
         }
     }
 
@@ -159,6 +159,11 @@ public class MulticastSpell extends Spell implements Cloneable, Runnable {
     public double getIncreaseSpread() { return increaseSpread; }
 
     public Formation getFormation() { return this.formation; }
+
+    @Override
+    public Location getLocation() {
+        return caster.getLocation().clone();
+    }
 
     @Override
     public int getTrueManaDrain() {
