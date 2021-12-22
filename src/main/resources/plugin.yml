@@ -7,3 +7,5 @@ authors:
 description: The Cobalt Magick Plugin
 depend:
   - CommandAPI
+softdepend:
+  - WorldGuard

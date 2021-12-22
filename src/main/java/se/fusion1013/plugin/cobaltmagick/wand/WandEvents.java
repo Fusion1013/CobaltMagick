@@ -16,6 +16,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.gui.WandGUI;
+import se.fusion1013.plugin.cobaltmagick.manager.WorldGuardManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,6 +104,11 @@ public class WandEvents implements Listener {
 
     private void castSpells(Wand wand, Player p, Action action) {
 
+        if (!WorldGuardManager.getInstance().isCastingAllowed(p, p.getLocation())){
+            p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 1, 1); // TODO: Replace with something else (Soundmanager ???)
+            return;
+        }
+
         if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK){
             wand.castSpells(p);
             return;
@@ -127,7 +133,11 @@ public class WandEvents implements Listener {
      * @param p player to open the inventory for
      */
     private void openWandInventory(Wand wand, Player p) {
-        WandGUI gui = new WandGUI(wand, "Wand");
-        gui.open(p);
+        if (WorldGuardManager.getInstance().isWandEditingAllowed(p, p.getLocation())){
+            WandGUI gui = new WandGUI(wand, "Wand");
+            gui.open(p);
+        } else {
+            p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 1, 1); // TODO: Replace with something else (Soundmanager ???)
+        }
     }
 }

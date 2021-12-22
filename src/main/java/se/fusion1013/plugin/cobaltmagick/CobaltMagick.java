@@ -26,8 +26,13 @@ public final class CobaltMagick extends JavaPlugin implements CobaltMagickPlugin
     }
 
     @Override
+    public void onLoad(){
+        WorldGuardManager.initialize(); // Registers WorldGuard flags
+    }
+
+    @Override
     public void onEnable() {
-        registerCobaltPlugin();
+        onEnableRegistration();
     }
 
     @Override
@@ -93,14 +98,11 @@ public final class CobaltMagick extends JavaPlugin implements CobaltMagickPlugin
         this.getManager(ParticleStyleManager.class);
         this.getManager(LaserManager.class);
         this.getManager(SpellManager.class);
+        this.getManager(WorldGuardManager.class);
     }
 
-    /**
-     * Loads and registers the given <code>CobaltPlugin</code>.
-     *
-     * @return True if the plugin was successfully registered.
-     */
-    public boolean registerCobaltPlugin(){
+    public void onEnableRegistration(){
+
         // Instantiate Database
         getLogger().info("Instantiating Database...");
         db = new SQLite(this);
@@ -126,6 +128,5 @@ public final class CobaltMagick extends JavaPlugin implements CobaltMagickPlugin
         Wand.loadCacheFromDatabase();
 
         getLogger().info("Successfully registered " + getName() + ".");
-        return true;
     }
 }
