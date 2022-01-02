@@ -108,7 +108,9 @@ public final class CobaltMagick extends JavaPlugin implements CobaltMagickPlugin
         db = new SQLite(this);
         db.load();
 
-        // Register settings
+        // Reloads all managers
+        getLogger().info("Reloading Managers...");
+        this.reloadManagers();
 
         // Register Commands
         getLogger().info("Registering commands...");
@@ -118,10 +120,6 @@ public final class CobaltMagick extends JavaPlugin implements CobaltMagickPlugin
         getLogger().info("Registering Listeners...");
         getServer().getPluginManager().registerEvents(new AbstractGUIListener(), this);
         getServer().getPluginManager().registerEvents(new WandEvents(), this);
-
-        // Reloads all managers
-        getLogger().info("Reloading Managers...");
-        this.reloadManagers();
 
         // Load wand cache
         getLogger().info("Loading Wand Cache from Database...");
