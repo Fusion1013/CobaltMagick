@@ -14,6 +14,7 @@ import se.fusion1013.plugin.cobaltmagick.particle.ParticleGroup;
 import se.fusion1013.plugin.cobaltmagick.spells.spellmodules.AbstractSpellModule;
 import se.fusion1013.plugin.cobaltmagick.spells.spellmodules.DamageModule;
 import se.fusion1013.plugin.cobaltmagick.spells.spellmodules.SpellModule;
+import se.fusion1013.plugin.cobaltmagick.wand.CastParser;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
 import java.util.ArrayList;
