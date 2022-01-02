@@ -20,7 +20,16 @@ public class SQLite extends Database {
         dbname = plugin.getConfig().getString("SQLite.Filename", "cobalt");
     }
 
-    // TODO: ID is currently not implemented
+    public String SQLiteCreateStatuesTable = "CREATE TABLE IF NOT EXISTS statues (" +
+            "`world` varchar(32) NOT NULL," +
+            "`pos_x` real NOT NULL," +
+            "`pos_y` real NOT NULL," +
+            "`pos_z` real NOT NULL," +
+            "`radius` real NOT NULL," +
+            "`mana_recharge` int(11) NOT NULL," +
+            "`delay_between_charges` int(11) NOT NULL" +
+            ");";
+
     public String SQLiteCreateWarpsTable = "CREATE TABLE IF NOT EXISTS warps (" +
             "`id` INTEGER NOT NULL," +
             "`name` varchar(32) NOT NULL," +
