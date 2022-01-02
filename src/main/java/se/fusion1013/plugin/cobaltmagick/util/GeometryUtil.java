@@ -3,7 +3,42 @@ package se.fusion1013.plugin.cobaltmagick.util;
 
 import org.bukkit.util.Vector;
 
+import java.util.Random;
+
 public class GeometryUtil {
+
+    public static Vector getPointOnUnit(Shape shape){
+        return switch (shape) {
+            case SPHERE -> getPointOnSphere(1);
+            case CUBE -> getPointOnCube(1);
+        };
+
+    }
+
+    public static Vector getPointInUnit(Shape shape){
+        return switch (shape) {
+            case SPHERE -> getPointInSphere(1);
+            case CUBE -> getPointInCube(1);
+        };
+    }
+
+    public static Vector getPointOnCube(double radius){
+        float[] result = new float[3];
+
+        Random r = new Random();
+        int side = r.nextInt(0, 6);
+        int c = side%3;
+
+        result[c] = side > 2 ? 1f : 0f;
+        result[(c+1)%3] = (float)Math.random();
+        result[(c+2)%3] = (float)Math.random();
+
+        return new Vector(result[0]*radius, result[1]*radius, result[2]*radius);
+    }
+
+    public static Vector getPointInCube(double radius){
+        return new Vector(Math.random()*radius, Math.random()*radius, Math.random()*radius);
+    }
 
     public static Vector getPointOnSphere(double radius){
         double u = Math.random();
