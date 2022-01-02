@@ -19,7 +19,7 @@ public class EnglishLocale implements Locale {
         return new LinkedHashMap<String, String>(){
             {
                 this.put("#0", "Plugin Message Prefix");
-                this.put("prefix", "&7[<g:#00aaaa:#0066aa>Cobalt&7] ");
+                this.put("prefix", "&7[<g:#00aaaa:#0066aa>Magick&7] ");
 
                 this.put("#1", "General Command Stuff");
                 this.put("commands.error.incorrect_syntax", "&7Incorrect Syntax");
