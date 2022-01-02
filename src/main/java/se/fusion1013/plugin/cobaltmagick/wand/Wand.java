@@ -144,7 +144,9 @@ public class Wand extends AbstractWand implements Runnable { // TODO: Move thing
     @Override
     public void run() {
         // Increase mana
-        if (currentMana < manaMax) currentMana = Math.min(currentMana + ((double)manaChargeSpeed / 20.0), manaMax);
+        if (currentMana < manaMax && !Boolean.parseBoolean(ConfigManager.getInstance().getFromConfig("disable-wand-recharging"))) {
+            currentMana = Math.min(currentMana + ((double)manaChargeSpeed / 20.0), manaMax);
+        }
 
         // Decrease Cast Delay
         if (castCooldown > 0) castCooldown = Math.max(0, castCooldown - 0.05);
