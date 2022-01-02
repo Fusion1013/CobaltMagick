@@ -24,6 +24,7 @@ public class WorldGuardManager extends Manager {
     // ----- FLAGS -----
     public static StateFlag ALLOW_SPELLS_FLAG;
     public static StateFlag ALLOW_EDIT_WANDS_FLAG;
+    public static StateFlag ALLOW_MANA_RECHARGE;
 
     private static WorldGuardManager INSTANCE = null;
     /**
@@ -56,6 +57,9 @@ public class WorldGuardManager extends Manager {
 
         StateFlag allowEditWandsFlag = new StateFlag("allow-edit-wands", true);
         ALLOW_EDIT_WANDS_FLAG = (StateFlag) initFlag(allowEditWandsFlag);
+
+        StateFlag allowManaRecharge = new StateFlag("allow-mana-recharge", true);
+        ALLOW_MANA_RECHARGE = (StateFlag) initFlag(allowManaRecharge);
     }
 
     private static Flag<?> initFlag(Flag<?> flag){
@@ -104,6 +108,16 @@ public class WorldGuardManager extends Manager {
 
         LocalPlayer localPlayer = WorldGuardPlugin.inst().wrapPlayer(player);
         return checkSet.queryState(localPlayer, ALLOW_EDIT_WANDS_FLAG) != StateFlag.State.DENY;
+    }
+
+    public boolean isManaRechargeAllowed(Player player, Location location){
+        if (!enabled) return true;
+
+        ApplicableRegionSet checkSet = getRegionSet(location);
+        if (checkSet == null) return true;
+
+        LocalPlayer localPlayer = WorldGuardPlugin.inst().wrapPlayer(player);
+        return checkSet.queryState(localPlayer, ALLOW_MANA_RECHARGE) != StateFlag.State.DENY;
     }
 
     private ApplicableRegionSet getRegionSet(Location location){
