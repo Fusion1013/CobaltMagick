@@ -3,16 +3,16 @@ package se.fusion1013.plugin.cobaltmagick.wand;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.persistence.PersistentDataType;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
-import se.fusion1013.plugin.cobaltmagick.database.Database;
-import se.fusion1013.plugin.cobaltmagick.manager.LocaleManager;
-import se.fusion1013.plugin.cobaltmagick.spells.CastParser;
+import se.fusion1013.plugin.cobaltmagick.event.SpellCastEvent;
+import se.fusion1013.plugin.cobaltmagick.manager.ConfigManager;
+import se.fusion1013.plugin.cobaltmagick.manager.WorldGuardManager;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
 
 import java.util.ArrayList;
@@ -36,17 +36,15 @@ public class Wand extends AbstractWand implements Runnable { // TODO: Move thing
     public void castSpells(Player p){
         CastResult result = performSpellCast(p);
 
-        LocaleManager localeManager = LocaleManager.getInstance();
         switch (result){
             case CAST_DELAY:
+            case SUCCESS:
                 break;
             case RECHARGE_TIME:
                 p.playSound(p.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 1, 1);
                 break;
             case NO_MANA:
                 p.playSound(p.getLocation(), Sound.BLOCK_BEACON_DEACTIVATE, 1, 1);
-                break;
-            case SUCCESS:
                 break;
         }
     }
@@ -56,7 +54,6 @@ public class Wand extends AbstractWand implements Runnable { // TODO: Move thing
      * @return The result of the casting
      */
     private CastResult performSpellCast(Player p){
-        int spellsCast = 0;
 
         // Check if the wand is on cooldown
         if (castCooldown > 0) return CastResult.CAST_DELAY;
@@ -67,10 +64,12 @@ public class Wand extends AbstractWand implements Runnable { // TODO: Move thing
             s.castSpell(this, p);
         }
 
+        if (spells.size() == 0) return CastResult.SUCCESS;
+
         int manaUsed = 0;
         double castDelayInduced = castDelay;
         int startPos = 0;
-        // if (shuffle)  startPos = new Random().nextInt(0, spells.size()); // TODO: Low chance of early spells in wand to be cast
+        if (shuffle) startPos = getRandomStartPos();
 
         CastParser parser = new CastParser(spells, spellsPerCast, startPos);
         List<ISpell> spellsToCast = parser.prepareCast();
@@ -85,8 +84,14 @@ public class Wand extends AbstractWand implements Runnable { // TODO: Move thing
                 return CastResult.NO_MANA;
             }
 
-            s.castSpell(this, p);
-            castDelayInduced += s.getTrueCastDelay();
+            s.setCaster(p);
+            SpellCastEvent event = new SpellCastEvent(s);
+            Bukkit.getPluginManager().callEvent(event);
+
+            if (!event.isCancelled()) {
+                s.castSpell(this, p);
+                castDelayInduced += s.getTrueCastDelay();
+            }
         }
 
         currentMana = Math.max(0, currentMana - manaUsed);
@@ -120,7 +125,7 @@ public class Wand extends AbstractWand implements Runnable { // TODO: Move thing
      */
     private boolean allSpellsCast(){
         for (ISpell s : spells){
-            if (!s.getHasCast()) return false; // TODO: Check if the spell is a modifier
+            if (!s.getHasCast()) return false;
         }
         return true;
     }
