@@ -11,6 +11,7 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.particle.ParticleGroup;
+import se.fusion1013.plugin.cobaltmagick.particle.styles.ParticleStyleCube;
 import se.fusion1013.plugin.cobaltmagick.particle.styles.ParticleStylePoint;
 import se.fusion1013.plugin.cobaltmagick.particle.styles.ParticleStyleSphere;
 import se.fusion1013.plugin.cobaltmagick.spells.*;
@@ -567,6 +568,7 @@ public class SpellManager extends Manager {
                     .build(), false))
             .addDescription("Music for your ears!")
             .setCustomModel(46)
+            .addTag("note")
             .build());
 
     public static final Spell OCARINA_B = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(82, "ocarina_note_b")
@@ -578,6 +580,7 @@ public class SpellManager extends Manager {
                     .build(), false))
             .addDescription("Music for your ears!")
             .setCustomModel(47)
+            .addTag("note")
             .build());
 
     public static final Spell OCARINA_C = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(83, "ocarina_note_c")
@@ -589,6 +592,7 @@ public class SpellManager extends Manager {
                     .build(), false))
             .addDescription("Music for your ears!")
             .setCustomModel(48)
+            .addTag("note")
             .build());
 
     public static final Spell OCARINA_D = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(84, "ocarina_note_d")
@@ -600,6 +604,7 @@ public class SpellManager extends Manager {
                     .build(), false))
             .addDescription("Music for your ears!")
             .setCustomModel(49)
+            .addTag("note")
             .build());
 
     public static final Spell OCARINA_E = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(85, "ocarina_note_e")
@@ -611,6 +616,7 @@ public class SpellManager extends Manager {
                     .build(), false))
             .addDescription("Music for your ears!")
             .setCustomModel(50)
+            .addTag("note")
             .build());
 
     public static final Spell OCARINA_F = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(86, "ocarina_note_f")
@@ -622,6 +628,7 @@ public class SpellManager extends Manager {
                     .build(), false))
             .addDescription("Music for your ears!")
             .setCustomModel(51)
+            .addTag("note")
             .build());
 
     public static final Spell OCARINA_G_SHARP = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(87, "ocarina_note_g#")
@@ -633,6 +640,7 @@ public class SpellManager extends Manager {
                     .build(), false))
             .addDescription("Music for your ears!")
             .setCustomModel(52)
+            .addTag("note")
             .build());
 
     public static final Spell OCARINA_A_TWO = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(88, "ocarina_note_a2")
@@ -644,6 +652,7 @@ public class SpellManager extends Manager {
                     .build(), false))
             .addDescription("Music for your ears!")
             .setCustomModel(53)
+            .addTag("note")
             .build());
 
     public static final Spell KANTELE_A = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(89, "kantele_note_a")
@@ -655,6 +664,7 @@ public class SpellManager extends Manager {
                     .build(), false))
             .addDescription("Music for your ears!")
             .setCustomModel(54)
+            .addTag("note")
             .build());
 
     public static final Spell KANTELE_D = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(810, "kantele_note_d")
@@ -666,6 +676,7 @@ public class SpellManager extends Manager {
                     .build(), false))
             .addDescription("Music for your ears!")
             .setCustomModel(55)
+            .addTag("note")
             .build());
 
     public static final Spell KANTELE_D_SHARP = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(811, "kantele_note_d#")
@@ -677,6 +688,7 @@ public class SpellManager extends Manager {
                     .build(), false))
             .addDescription("Music for your ears!")
             .setCustomModel(56)
+            .addTag("note")
             .build());
 
     public static final Spell KANTELE_E = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(812, "kantele_note_e")
@@ -688,6 +700,7 @@ public class SpellManager extends Manager {
                     .build(), false))
             .addDescription("Music for your ears!")
             .setCustomModel(57)
+            .addTag("note")
             .build());
 
     public static final Spell KANTELE_G = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(813, "kantele_note_g")
@@ -699,6 +712,7 @@ public class SpellManager extends Manager {
                     .build(), false))
             .addDescription("Music for your ears!")
             .setCustomModel(58)
+            .addTag("note")
             .build());
 
     private static <T extends Spell> T register(final T spell){
