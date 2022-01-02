@@ -75,6 +75,8 @@ public class ParticleStyleCube extends ParticleStyle implements IParticleStyle {
                 VectorUtils.rotateAroundAxisY(v, angleY);
                 VectorUtils.rotateVector(v, xRotation, yRotation, zRotation);
                 pparticles.add(new PParticle(location.clone().add(v)));
+
+
             }
         }
 
@@ -104,5 +106,61 @@ public class ParticleStyleCube extends ParticleStyle implements IParticleStyle {
     @Override
     public Particle getParticle() {
         return this.particle;
+    }
+    public static class ParticleStyleCubeBuilder extends ParticleStyleBuilder<ParticleStyleCube, ParticleStyleCubeBuilder>{
+
+        double edgeLength;
+        double angularVelocityX;
+        double angularVelocityY;
+        double angularVelocityZ;
+        int particlesPerEdge;
+
+        @Override
+        public ParticleStyleCube build() {
+            obj.setDefaultSettings();
+
+            obj.setEdgeLength(edgeLength);
+            obj.setAngularVelocityX(angularVelocityX);
+            obj.setAngularVelocityY(angularVelocityY);
+            obj.setAngularVelocityZ(angularVelocityZ);
+            obj.setParticlesPerEdge(particlesPerEdge);
+
+            return super.build();
+        }
+
+        public ParticleStyleCubeBuilder setEdgeLength(double edgeLength){
+            this.edgeLength = edgeLength;
+            return getThis();
+        }
+
+        public ParticleStyleCubeBuilder setAngularVelocityX(double angularVelocityX){
+            this.angularVelocityX = angularVelocityX;
+            return getThis();
+        }
+
+        public ParticleStyleCubeBuilder setAngularVelocityY(double angularVelocityY) {
+            this.angularVelocityY = angularVelocityY;
+            return getThis();
+        }
+
+        public ParticleStyleCubeBuilder setAngularVelocityZ(double angularVelocityZ) {
+            this.angularVelocityZ = angularVelocityZ;
+            return getThis();
+        }
+
+        public ParticleStyleCubeBuilder setParticlesPerEdge(int particlesPerEdge) {
+            this.particlesPerEdge = particlesPerEdge;
+            return getThis();
+        }
+
+        @Override
+        protected ParticleStyleCube createObj() {
+            return new ParticleStyleCube(particle);
+        }
+
+        @Override
+        protected ParticleStyleCubeBuilder getThis() {
+            return this;
+        }
     }
 }
