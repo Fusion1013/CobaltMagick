@@ -5,10 +5,12 @@ import se.fusion1013.plugin.cobaltmagick.commands.CGiveCommand;
 import se.fusion1013.plugin.cobaltmagick.commands.*;
 import se.fusion1013.plugin.cobaltmagick.database.Database;
 import se.fusion1013.plugin.cobaltmagick.database.SQLite;
+import se.fusion1013.plugin.cobaltmagick.eyes.CrystalSong;
 import se.fusion1013.plugin.cobaltmagick.gui.AbstractGUIListener;
 import se.fusion1013.plugin.cobaltmagick.manager.*;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 import se.fusion1013.plugin.cobaltmagick.wand.WandEvents;
+import se.fusion1013.plugin.cobaltmagick.world.WorldEvents;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -83,6 +85,7 @@ public final class CobaltMagick extends JavaPlugin implements CobaltMagickPlugin
         GamemodeCommand.register();
         CGiveCommand.register();
         KillSpellsCommand.register();
+        MagickCommand.register();
     }
 
     /**
@@ -99,6 +102,8 @@ public final class CobaltMagick extends JavaPlugin implements CobaltMagickPlugin
         this.getManager(LaserManager.class);
         this.getManager(SpellManager.class);
         this.getManager(WorldGuardManager.class);
+        this.getManager(ConfigManager.class);
+        this.getManager(CustomItemManager.class);
     }
 
     public void onEnableRegistration(){
@@ -120,6 +125,8 @@ public final class CobaltMagick extends JavaPlugin implements CobaltMagickPlugin
         getLogger().info("Registering Listeners...");
         getServer().getPluginManager().registerEvents(new AbstractGUIListener(), this);
         getServer().getPluginManager().registerEvents(new WandEvents(), this);
+        getServer().getPluginManager().registerEvents(new CrystalSong(), this);
+        getServer().getPluginManager().registerEvents(new WorldEvents(), this);
 
         // Load wand cache
         getLogger().info("Loading Wand Cache from Database...");
