@@ -2,6 +2,7 @@ package se.fusion1013.plugin.cobaltmagick.util;
 
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
@@ -234,5 +235,35 @@ public class BlockUtil {
 
 
         return true;
+    }
+
+    public static Vector getAveragePosition(List<BlockState> blockStates){
+        Vector average = new Vector();
+
+        for (BlockState state : blockStates){
+            average.add(state.getLocation().toVector());
+        }
+
+        return average.multiply(1.0 / blockStates.size());
+    }
+
+    public static void setBlocks(List<BlockState> blockStates, Material setTo){
+        for (BlockState b : blockStates){
+            b.getLocation().getBlock().setType(setTo);
+        }
+    }
+
+    public static void createExplosion(Location location, World world, int explosionRadius, boolean dropItems, boolean fire, boolean destroyBlocks){
+        // Explode
+        setBlocksInSphere(location, Material.AIR, explosionRadius, dropItems, false, true, false, true);
+        int iterations = Math.max(1, explosionRadius * (explosionRadius / 4));
+        for (int i = 0; i < iterations; i++){
+            Vector pos = GeometryUtil.getPointOnSphere(explosionRadius).add(location.toVector());
+            if (world != null) world.createExplosion(new Location(world, pos.getX(), pos.getY(), pos.getZ()), (float)Math.min(7, explosionRadius), fire, destroyBlocks);
+        }
+        for (int i = 0; i < iterations; i++){
+            Vector pos = GeometryUtil.getPointInSphere(explosionRadius).add(location.toVector());
+            if (world != null) world.createExplosion(new Location(world, pos.getX(), pos.getY(), pos.getZ()), (float)Math.min(7, explosionRadius), fire, destroyBlocks);
+        }
     }
 }
