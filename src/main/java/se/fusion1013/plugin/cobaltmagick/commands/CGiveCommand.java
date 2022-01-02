@@ -2,13 +2,17 @@ package se.fusion1013.plugin.cobaltmagick.commands;
 
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.*;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
+import se.fusion1013.plugin.cobaltmagick.manager.CustomItemManager;
 import se.fusion1013.plugin.cobaltmagick.manager.LocaleManager;
 import se.fusion1013.plugin.cobaltmagick.manager.SpellManager;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
@@ -25,6 +29,13 @@ import java.util.List;
 public class CGiveCommand {
     public static void register(){
 
+        // Command for getting other Magick items
+        CommandAPICommand itemCommand = new CommandAPICommand("item")
+                .withPermission("cobalt.magick.commands.cgive")
+                .withArguments(new StringArgument("item name").replaceSuggestions(info -> CustomItemManager.getInstance().getItemNames()))
+                .executesPlayer(CGiveCommand::giveItem);
+
+        // Command for getting an existing wand from an id
         CommandAPICommand fromIdCommand = new CommandAPICommand("fromid")
                 .withPermission("cobalt.magick.commands.cgive")
                 .withArguments(new IntegerArgument("id"))
@@ -77,7 +88,20 @@ public class CGiveCommand {
                 .withPermission("cobalt.magick.command.cgive")
                 .withSubcommand(spellCommand)
                 .withSubcommand(wandCommand)
+                .withSubcommand(itemCommand)
                 .register();
+    }
+
+    private static List<Argument> getGiveItemArgument(){
+        List<Argument> arguments = new ArrayList<>();
+        arguments.add(new StringArgument("item").replaceSuggestions(info -> CustomItemManager.getInstance().getItemNames()));
+        return arguments;
+    }
+
+    private static void giveItem(Player player, Object[] args){
+        String itemName = (String)args[0];
+        ItemStack is = CustomItemManager.getInstance().getItem(itemName);
+        if (is != null) player.getInventory().addItem(is);
     }
 
     /**
@@ -133,6 +157,7 @@ public class CGiveCommand {
 
         ItemStack shulk = new ItemStack(Material.CYAN_SHULKER_BOX, 1);
         BlockStateMeta bsm = (BlockStateMeta)shulk.getItemMeta();
+        assert bsm != null;
         ShulkerBox box = (ShulkerBox)bsm.getBlockState();
         int counter = 0;
         int numSpells = 0;
@@ -150,6 +175,7 @@ public class CGiveCommand {
 
                 shulk = new ItemStack(Material.CYAN_SHULKER_BOX, 1);
                 bsm = (BlockStateMeta)shulk.getItemMeta();
+                assert bsm != null;
                 box = (ShulkerBox)bsm.getBlockState();
                 counter = 0;
             }
@@ -193,6 +219,7 @@ public class CGiveCommand {
     private static void giveShulker(Player player, ShulkerBox box, String name){
         ItemStack shulk = new ItemStack(Material.CYAN_SHULKER_BOX, 1);
         BlockStateMeta meta = ((BlockStateMeta)shulk.getItemMeta());
+        assert meta != null;
         meta.setDisplayName(name);
         meta.setBlockState(box);
         shulk.setItemMeta(meta);
