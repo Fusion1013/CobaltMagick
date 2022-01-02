@@ -1,0 +1,14 @@
+#
+# Modify this file to change the behavior of Magick
+#
+# Set this too true to disable wand editing
+disable-wand-editing: false
+#
+# Weather or not nether portals should explode upon creation
+unstable-nether-portals: false
+#
+# Weather or not end portals should work
+unstable-end-portals: false
+#
+# Disables wand mana recharging
+disable-wand-recharging: false
