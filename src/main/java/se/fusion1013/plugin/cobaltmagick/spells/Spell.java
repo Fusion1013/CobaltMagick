@@ -42,6 +42,8 @@ public abstract class Spell implements ISpell, Cloneable {
     Player caster;
     Wand wand;
 
+    List<String> tags = new ArrayList<>();
+
     public Spell(int id, String internalSpellName, String spellName, SpellType type) {
         this.id = id;
         this.internalSpellName = internalSpellName;
@@ -75,6 +77,8 @@ public abstract class Spell implements ISpell, Cloneable {
 
         this.caster = spell.getCaster();
         this.wand = spell.getWand();
+
+        this.tags = spell.getTags();
     }
 
     /**
@@ -235,6 +239,11 @@ public abstract class Spell implements ISpell, Cloneable {
                 spellName += Character.toUpperCase(s.charAt(0)) + s.substring(1) + " ";
             }
             spellName = spellName.substring(0, spellName.length()-1);
+        }
+
+        public B addTag(String tag){
+            obj.addTag(tag);
+            return getThis();
         }
 
         public B setRadius(double radius){
@@ -470,5 +479,17 @@ public abstract class Spell implements ISpell, Cloneable {
 
     public void setSpellType(SpellType spellType){
         this.type = spellType;
+    }
+
+    public void addTag(String tag){
+        tags.add(tag);
+    }
+
+    public List<String> getTags(){
+        return new ArrayList<>(tags);
+    }
+
+    public void setCaster(Player caster){
+        this.caster = caster;
     }
 }
