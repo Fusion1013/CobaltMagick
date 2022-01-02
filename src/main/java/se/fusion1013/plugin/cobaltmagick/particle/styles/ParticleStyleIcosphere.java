@@ -115,6 +115,75 @@ public class ParticleStyleIcosphere extends ParticleStyle implements IParticleSt
         return new ParticleStyleIcosphere(this);
     }
 
+    public static class ParticleStyleIcosphereBuilder extends ParticleStyleBuilder<ParticleStyleIcosphere, ParticleStyleIcosphereBuilder>{
+
+        double ticksPerSpawn;
+        double radius;
+        int particlesPerLine;
+        int divisions;
+        double angularVelocityX;
+        double angularVelocityY;
+        double angularVelocityZ;
+
+        @Override
+        public ParticleStyleIcosphere build() {
+            obj.ticksPerSpawn = ticksPerSpawn;
+            obj.radius = radius;
+            obj.particlesPerLine = particlesPerLine;
+            obj.divisions = divisions;
+            obj.angularVelocityX = angularVelocityX;
+            obj.angularVelocityY = angularVelocityY;
+            obj.angularVelocityZ = angularVelocityZ;
+
+            return super.build();
+        }
+
+        @Override
+        protected ParticleStyleIcosphere createObj() {
+            return new ParticleStyleIcosphere(particle);
+        }
+
+        @Override
+        protected ParticleStyleIcosphereBuilder getThis() {
+            return this;
+        }
+
+        public ParticleStyleIcosphereBuilder setTicksPerSpawn(double ticksPerSpawn){
+            this.ticksPerSpawn = ticksPerSpawn;
+            return getThis();
+        }
+
+        public ParticleStyleIcosphereBuilder setRadius(double radius) {
+            this.radius = radius;
+            return getThis();
+        }
+
+        public ParticleStyleIcosphereBuilder setParticlesPerLine(int particlesPerLine) {
+            this.particlesPerLine = particlesPerLine;
+            return getThis();
+        }
+
+        public ParticleStyleIcosphereBuilder setDivisions(int divisions) {
+            this.divisions = divisions;
+            return getThis();
+        }
+
+        public ParticleStyleIcosphereBuilder setAngularVelocityX(double angularVelocityX) {
+            this.angularVelocityX = angularVelocityX;
+            return getThis();
+        }
+
+        public ParticleStyleIcosphereBuilder setAngularVelocityY(double angularVelocityY) {
+            this.angularVelocityY = angularVelocityY;
+            return getThis();
+        }
+
+        public ParticleStyleIcosphereBuilder setAngularVelocityZ(double angularVelocityZ) {
+            this.angularVelocityZ = angularVelocityZ;
+            return getThis();
+        }
+    }
+
     /**
      * Largely taken from https://www.javatips.net/api/vintagecraft-master/src/main/java/at/tyron/vintagecraft/Client/Render/Math/Icosahedron.java
      */
