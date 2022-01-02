@@ -107,6 +107,17 @@ public class Wand extends AbstractWand implements Runnable { // TODO: Move thing
         return CastResult.SUCCESS;
     }
 
+    private int getRandomStartPos(){
+        List<Integer> randomPoses = new ArrayList<>();
+
+        for (int i = 0; i < spells.size(); i++){
+            if (!spells.get(i).getHasCast()) randomPoses.add(i);
+        }
+
+        Random r = new Random();
+        return randomPoses.get(r.nextInt(0, randomPoses.size()));
+    }
+
     /**
      * Sets the wand into its recharge state
      */
