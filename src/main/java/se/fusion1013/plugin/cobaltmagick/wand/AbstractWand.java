@@ -4,6 +4,7 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
@@ -139,9 +140,11 @@ public abstract class AbstractWand {
             if (r.nextInt(0, 101) < 50){
                 int newActionsPerRound = wandStructure.deckCapacity;
                 for (int i = 0; i < 6; i++){
-                    int tempActionsPerRound = r.nextInt(wandStructure.actionsPerRound, wandStructure.deckCapacity+1);
-                    if (tempActionsPerRound < newActionsPerRound){
-                        newActionsPerRound = tempActionsPerRound;
+                    if (wandStructure.actionsPerRound < wandStructure.deckCapacity+1){
+                        int tempActionsPerRound = r.nextInt(wandStructure.actionsPerRound, wandStructure.deckCapacity+1);
+                        if (tempActionsPerRound < newActionsPerRound){
+                            newActionsPerRound = tempActionsPerRound;
+                        }
                     }
                 }
                 wandStructure.actionsPerRound = newActionsPerRound;
@@ -185,24 +188,29 @@ public abstract class AbstractWand {
         return t;
     }
 
-    // TODO: Replace this
     double randReloadTimeMin = .5;
     double randReloadTimeMax = 6.0;
+    double randReloadTimeMean = 30;
 
     double randFireRateWaitMin = .1;
     double randFireRateWaitMax = 3.0;
+    double randFireRateMean = 5;
 
     double randSpreadDegreesMin = -5;
     double randSpreadDegreesMax = 30;
+    double randSpreadDegreesMean = 0;
 
     double randSpeedMultiplierMin = .8;
     double randSpeedMultiplierMax = 1.2;
+    double randSpeedMultiplierMean = 1;
 
     double randDeckCapacityMin = 3;
     double randDeckCapacityMax = 10;
+    double randDeckCapacityMean = 6;
 
     double randActionsPerRoundMin = 1;
     double randActionsPerRoundMax = 3;
+    double randActionsPerRoundMean = 1;
 
     private void applyRandomVariable(WandStructure wandStructure, String variable){
         Random r = new Random();
@@ -214,26 +222,26 @@ public abstract class AbstractWand {
                 double min = clamp(1, 60-(cost*5), 240);
                 double max = 1024;
 
-                wandStructure.reloadTime = clamp(min, r.nextDouble(randReloadTimeMin, randReloadTimeMax), max);
+                wandStructure.reloadTime = clamp(min, randDistr(randReloadTimeMin, randReloadTimeMax, randReloadTimeMean), max);
                 wandStructure.cost = wandStructure.cost - ((60 - wandStructure.reloadTime) / 5);
                 break;
 
             case "fire_rate_wait":
                 min = clamp(-50, 16-cost, 50);
                 max = 50;
-                wandStructure.fireRateWait = clamp(min, r.nextDouble(randFireRateWaitMin, randFireRateWaitMax), max);
+                wandStructure.fireRateWait = clamp(min, randDistr(randFireRateWaitMin, randFireRateWaitMax, randFireRateMean), max);
                 wandStructure.cost = wandStructure.cost - (16 - wandStructure.fireRateWait);
                 break;
 
             case "spread_degrees":
                 min = clamp(-35, cost / -1.5, 35);
                 max = 35;
-                wandStructure.spreadDegrees = clamp(min, r.nextDouble(randSpreadDegreesMin, randSpreadDegreesMax), max);
+                wandStructure.spreadDegrees = clamp(min, randDistr(randSpreadDegreesMin, randSpreadDegreesMax, randSpreadDegreesMean), max);
                 wandStructure.cost = wandStructure.cost - (16 - wandStructure.spreadDegrees);
                 break;
 
             case "speed_multiplier":
-                wandStructure.speedMultiplier = r.nextDouble(randSpeedMultiplierMin, randSpeedMultiplierMax);
+                wandStructure.speedMultiplier = randDistr(randSpeedMultiplierMin, randSpeedMultiplierMax, randSpeedMultiplierMean);
                 break;
 
             case "deck_capacity":
@@ -247,7 +255,7 @@ public abstract class AbstractWand {
                 }
 
                 max = clamp(1, max, 20);
-                wandStructure.deckCapacity = (int)clamp(min, r.nextDouble(randDeckCapacityMin, randDeckCapacityMax), max);
+                wandStructure.deckCapacity = (int)clamp(min, randDistr(randDeckCapacityMin, randDeckCapacityMax, randDeckCapacityMean), max);
                 wandStructure.cost = wandStructure.cost - ((wandStructure.deckCapacity-6)*5);
                 break;
 
@@ -257,6 +265,7 @@ public abstract class AbstractWand {
                     random = 1;
                     if (cost < (15+wandStructure.deckCapacity*5)){
                         // This should not happen
+                        CobaltMagick.getInstance().getLogger().info("Something went wrong when generating random wand");
                     }
                 }
 
@@ -280,18 +289,26 @@ public abstract class AbstractWand {
                 }
                 max = clamp(1, wandStructure.deckCapacity, max);
 
-                wandStructure.actionsPerRound = (int)Math.floor(clamp(min, r.nextDouble(randActionsPerRoundMin, randActionsPerRoundMax), max));
+                wandStructure.actionsPerRound = (int)Math.floor(clamp(min, randDistr(randActionsPerRoundMin, randActionsPerRoundMax, randActionsPerRoundMean), max));
                 double tempCost = actionCosts[(int)clamp(1, wandStructure.actionsPerRound, actionCosts.length)];
                 wandStructure.cost = wandStructure.cost - tempCost;
                 break;
         }
     }
 
+    private double randDistr(double min, double max, double mean){
+        Random r = new Random();
+        double gauss = r.nextGaussian();
+        double diff = Math.max(max - mean, min - mean);
+        double gs = clamp(min, (gauss * diff) + mean, max);
+        return gs;
+    }
+
     private double clamp(double min, double v, double max){
         return Math.max(min, Math.min(max, v));
     }
 
-    private class WandStructure{
+    private static class WandStructure{
         public double cost;
         public int deckCapacity = 0;
         public int actionsPerRound = 0;
@@ -313,8 +330,6 @@ public abstract class AbstractWand {
             this.manaMax = manaMax;
         }
     }
-
-
 
     // ----- WAND CACHE -----
 
@@ -364,8 +379,6 @@ public abstract class AbstractWand {
      */
     public static NamespacedKey getWandKey() { return wandKey; }
 
-
-
     // ----- Getters / Setters -----
 
     /**
@@ -411,16 +424,18 @@ public abstract class AbstractWand {
      * @return model id for this wand
      */
     public int getWandModelData(){
-        int data = 111;
+        int data = 1110;
 
-        if (shuffle) data += 100;
+        if (shuffle) data += 1000;
 
-        if (capacity > 14) data += 20;
-        else if (capacity > 4) data += 10;
+        if (capacity > 14) data += 200;
+        else if (capacity > 4) data += 100;
 
-        if (spellsPerCast >= 3) data += 2;
-        else if (spellsPerCast >= 2) data += 1;
+        if (spellsPerCast >= 3) data += 20;
+        else if (spellsPerCast >= 2) data += 10;
 
+        Random r = new Random();
+        data += r.nextInt(0, 10);
         return data;
     }
 
@@ -501,6 +516,16 @@ public abstract class AbstractWand {
 
     public int getWandId() {
         return wandId;
+    }
+
+    /**
+     * Increases the mana of the wand by the given amount. Caps at 0 and <code>manaMax</code>.
+     * Negative values will decrease the mana of the wand.
+     *
+     * @param manaIncrease the amount to increase the mana by
+     */
+    public void increaseMana(int manaIncrease){
+        currentMana = Math.max(0, Math.min(currentMana+manaIncrease, manaMax));
     }
 
 
