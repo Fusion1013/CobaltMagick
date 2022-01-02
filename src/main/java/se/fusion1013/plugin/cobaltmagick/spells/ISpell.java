@@ -49,6 +49,8 @@ public interface ISpell {
     Wand getWand();
     Player getCaster();
     Location getLocation();
+    List<String> getTags();
+    void setCaster(Player caster);
 
     /**
      * Performs operations that need to be done before a spell can be cast
