@@ -101,6 +101,10 @@ public class ExplodeModule extends AbstractSpellModule<ExplodeModule> implements
         if (velocityVector != null) if (velocityVector.length() < executeOnlyIfVelocityExceeds) return;
 
         // Explode
+        BlockUtil.createExplosion(location, world, (int)explosionRadius, false, fire, destroyBlocks);
+
+        /*
+        // Explode
         BlockUtil.setBlocksInSphere(location, Material.AIR, (int)explosionRadius, false, false, true, false, true);
         int iterations = (int)Math.max(1, explosionRadius * Math.floor(explosionRadius / 4));
         for (int i = 0; i < iterations; i++){
@@ -111,6 +115,8 @@ public class ExplodeModule extends AbstractSpellModule<ExplodeModule> implements
             Vector pos = GeometryUtil.getPointInSphere(explosionRadius).add(location.toVector());
             if (world != null) world.createExplosion(new Location(world, pos.getX(), pos.getY(), pos.getZ()), (float)Math.min(7, explosionRadius), fire, destroyBlocks);
         }
+
+         */
 
         executed = true;
     }
