@@ -3,6 +3,7 @@ package se.fusion1013.plugin.cobaltmagick.spells;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
+import se.fusion1013.plugin.cobaltmagick.wand.CastParser;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
 import java.util.ArrayList;
