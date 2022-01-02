@@ -36,7 +36,7 @@ public class ParticleStyleSphere extends ParticleStyle implements IParticleStyle
         // setDefaults();
     }
 
-    public void setDefaults(){
+    public void setDefaultSettings(){
         density = 150;
         currentRadius = 5;
     }
@@ -98,7 +98,7 @@ public class ParticleStyleSphere extends ParticleStyle implements IParticleStyle
         return new ParticleStyleSphere(this);
     }
 
-    public static class ParticleStyleSphereBuilder extends ParticleStyleBuilder<ParticleStyleSphere, ParticleStyleSphere.ParticleStyleSphereBuilder> {
+    public static class ParticleStyleSphereBuilder extends ParticleStyleBuilder<ParticleStyleSphere, ParticleStyleSphereBuilder> {
 
         double targetRadius = 1;
         double startRadius = 0;
@@ -110,6 +110,8 @@ public class ParticleStyleSphere extends ParticleStyle implements IParticleStyle
 
         @Override
         public ParticleStyleSphere build(){
+            obj.setDefaultSettings();
+
             obj.setRadius(targetRadius);
 
             if (animateRadius) obj.setStartRadius(startRadius);
