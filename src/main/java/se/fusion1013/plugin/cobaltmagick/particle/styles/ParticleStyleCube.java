@@ -107,6 +107,47 @@ public class ParticleStyleCube extends ParticleStyle implements IParticleStyle {
     public Particle getParticle() {
         return this.particle;
     }
+
+    public double getEdgeLength() {
+        return edgeLength;
+    }
+
+    public double getAngularVelocityX() {
+        return angularVelocityX;
+    }
+
+    public double getAngularVelocityY() {
+        return angularVelocityY;
+    }
+
+    public double getAngularVelocityZ() {
+        return angularVelocityZ;
+    }
+
+    public int getParticlesPerEdge() {
+        return particlesPerEdge;
+    }
+
+    public void setEdgeLength(double edgeLength) {
+        this.edgeLength = edgeLength;
+    }
+
+    public void setAngularVelocityX(double angularVelocityX) {
+        this.angularVelocityX = angularVelocityX;
+    }
+
+    public void setAngularVelocityY(double angularVelocityY) {
+        this.angularVelocityY = angularVelocityY;
+    }
+
+    public void setAngularVelocityZ(double angularVelocityZ) {
+        this.angularVelocityZ = angularVelocityZ;
+    }
+
+    public void setParticlesPerEdge(int particlesPerEdge) {
+        this.particlesPerEdge = particlesPerEdge;
+    }
+
     public static class ParticleStyleCubeBuilder extends ParticleStyleBuilder<ParticleStyleCube, ParticleStyleCubeBuilder>{
 
         double edgeLength;
