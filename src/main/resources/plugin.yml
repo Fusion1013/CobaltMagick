@@ -1,4 +1,4 @@
-name: Cobalt
+name: CobaltMagick
 version: ${project.version}
 main: se.fusion1013.plugin.cobaltmagick.CobaltMagick
 api-version: 1.18
