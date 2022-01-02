@@ -348,6 +348,15 @@ public class SpellManager extends Manager {
             .setCustomModel(39)
             .build());
 
+    public static final Spell TEST_SPELL = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(26, "test_spell")
+            .addManaDrain(10).addCastDelay(.2).setRadius(1).setLifetime(30)
+            .addParticle(new ParticleGroup.ParticleGroupBuilder()
+                    .addStyle(new ParticleStyleCube.ParticleStyleCubeBuilder().setParticle(Particle.FLAME).setEdgeLength(5).setParticlesPerEdge(10).setAngularVelocityY(.005).setAngularVelocityX(.0015).build())
+                    .addStyle(new ParticleStyleCube.ParticleStyleCubeBuilder().setParticle(Particle.FLAME).setEdgeLength(7).setParticlesPerEdge(12).setAngularVelocityY(-.005).setAngularVelocityX(.002).build())
+                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.FLAME).setRadius(1.5).setDensity(40).build())
+                    .build())
+            .build());
+
     // ----- PASSIVE SPELLS ----- ID: 3+XXX
 
     // ----- UTILITY SPELLS ----- ID: 4+XXX
