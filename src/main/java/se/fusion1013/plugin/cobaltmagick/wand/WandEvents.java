@@ -16,6 +16,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.gui.WandGUI;
+import se.fusion1013.plugin.cobaltmagick.manager.ConfigManager;
 import se.fusion1013.plugin.cobaltmagick.manager.WorldGuardManager;
 
 import java.util.ArrayList;
@@ -48,11 +49,7 @@ public class WandEvents implements Listener {
     public void onInventoryClickEvent(InventoryClickEvent event){
         if (event.getSlot() == -999) {
             uuidList.add(event.getWhoClicked().getUniqueId());
-            CobaltMagick.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(CobaltMagick.getInstance(), new Runnable() {
-                public void run() {
-                    uuidList.remove(event.getWhoClicked().getUniqueId());
-                }
-            }, 1);
+            CobaltMagick.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(CobaltMagick.getInstance(), () -> uuidList.remove(event.getWhoClicked().getUniqueId()), 1);
         }
     }
 
@@ -66,14 +63,11 @@ public class WandEvents implements Listener {
         Wand wand = Wand.getWand(is);
         if (wand == null || uuidList.contains(p.getUniqueId())) return;
 
-        Block b = null;
-        switch (p.getGameMode()){
-            case CREATIVE:
-                b = p.getTargetBlockExact(5);
-                break;
-            default:
-                b = p.getTargetBlockExact(4);
-                break;
+        Block b;
+        if (p.getGameMode() == GameMode.CREATIVE) {
+            b = p.getTargetBlockExact(5);
+        } else {
+            b = p.getTargetBlockExact(4);
         }
 
         if (b == null) uuidList.add(p.getUniqueId());
@@ -83,7 +77,7 @@ public class WandEvents implements Listener {
 
     /**
      * Handles casting of a wand
-     * @param event
+     * @param event PlayerInteractEvent
      */
     @EventHandler
     public void onPlayerUse(PlayerInteractEvent event){
@@ -104,7 +98,7 @@ public class WandEvents implements Listener {
 
     private void castSpells(Wand wand, Player p, Action action) {
 
-        if (!WorldGuardManager.getInstance().isCastingAllowed(p, p.getLocation())){
+        if (!allowCast(p)) {
             p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 1, 1); // TODO: Replace with something else (Soundmanager ???)
             return;
         }
@@ -126,6 +120,13 @@ public class WandEvents implements Listener {
         }.runTaskTimer(CobaltMagick.getInstance(), 0, 1);
     }
 
+    private boolean allowCast(Player p){
+        if (!WorldGuardManager.getInstance().isCastingAllowed(p, p.getLocation())){
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Opens a new wand inventory for the given player with the given wand capacity and spells
      *
@@ -133,11 +134,19 @@ public class WandEvents implements Listener {
      * @param p player to open the inventory for
      */
     private void openWandInventory(Wand wand, Player p) {
-        if (WorldGuardManager.getInstance().isWandEditingAllowed(p, p.getLocation())){
-            WandGUI gui = new WandGUI(wand, "Wand");
-            gui.open(p);
-        } else {
+        if (!allowWandEdit(p)) {
             p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 1, 1); // TODO: Replace with something else (Soundmanager ???)
+            return;
         }
+
+        WandGUI gui = new WandGUI(wand, "Wand");
+        gui.open(p);
+    }
+
+    private boolean allowWandEdit(Player p){
+        if (!WorldGuardManager.getInstance().isWandEditingAllowed(p, p.getLocation())) return false;
+        if (ConfigManager.getInstance().getCustomConfig().getBoolean("disable-wand-editing")) return false;
+
+        return true;
     }
 }
