@@ -64,6 +64,10 @@ public class EnglishLocale implements Locale {
                 this.put("#6", "killspells");
                 this.put("commands.killspells.killall.success", "&7Killed &3%killed_spells% &7spells");
 
+                this.put("#7", "magick");
+                this.put("commands.magick.config.edit", "&7Changed value of &3%key% &7to &3%value%");
+                this.put("commands.magick.config.get", "&7Key &3%key% &7has value &3%value%");
+
                 this.put("#10", "Misc");
                 this.put("command-not-implemented", "&7Command not yet implemented");
                 this.put("command-unknown", "&7Unknown command");
