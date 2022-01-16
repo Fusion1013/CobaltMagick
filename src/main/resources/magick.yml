@@ -12,3 +12,6 @@ unstable-end-portals: false
 #
 # Disables wand mana recharging
 disable-wand-recharging: false
+#
+# Disables auto-updating
+disable-auto-update: false
