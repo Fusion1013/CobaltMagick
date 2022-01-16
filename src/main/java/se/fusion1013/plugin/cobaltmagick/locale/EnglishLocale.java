@@ -64,9 +64,27 @@ public class EnglishLocale implements Locale {
                 this.put("#6", "killspells");
                 this.put("commands.killspells.killall.success", "&7Killed &3%killed_spells% &7spells");
 
+                // ----- MAGICK COMMAND -----
+
                 this.put("#7", "magick");
                 this.put("commands.magick.config.edit", "&7Changed value of &3%key% &7to &3%value%");
                 this.put("commands.magick.config.get", "&7Key &3%key% &7has value &3%value%");
+
+                this.put("commands.magick.colors.header", "&lColor Codes");
+                this.put("commands.magick.colors.color_codes_description", "Usage: <#HEXCODE>, #HEXCODE, &&7FORMAT_CODE, followed by the message");
+                this.put("commands.magick.colors.color_codes", "Formatting Codes: &0&&00 &1&&11 &2&&22 &3&&33 &4&&44 &5&&55 &6&&66 &7&&77 &8&&88 &9&&99 &a&&aa &b&&bb &c&&cc &d&&dd &e&&ee &f&&ff");
+
+                this.put("commands.magick.version.version", "&3%plugin_name% &7v&3%version%");
+                this.put("commands.magick.version.author", "&7Author: &3Fusion1013");
+                this.put("commands.magick.version.github_issues", "&7Issues: &3%github_issues_link%");
+
+                this.put("commands.magick.update.result", "&7%update_result%");
+                this.put("commands.magick.update.remote_version", "&7Remote Version: &3%remote_version%");
+                this.put("commands.magick.update.current_version", "&7Current Version: &3%current_version%");
+                this.put("commands.magick.update.updater_disabled", "&7Auto updates are disabled. Check config file");
+                this.put("commands.magick.update.updater_already_checking", "&7Already checking for an update");
+
+                // ----- MISC -----
 
                 this.put("#10", "Misc");
                 this.put("command-not-implemented", "&7Command not yet implemented");
