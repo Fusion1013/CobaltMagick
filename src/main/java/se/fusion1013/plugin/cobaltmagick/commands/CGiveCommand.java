@@ -32,7 +32,7 @@ public class CGiveCommand {
         // Command for getting other Magick items
         CommandAPICommand itemCommand = new CommandAPICommand("item")
                 .withPermission("cobalt.magick.commands.cgive")
-                .withArguments(new StringArgument("item name").replaceSuggestions(info -> CustomItemManager.getInstance().getItemNames()))
+                .withArguments(new StringArgument("item name").replaceSuggestions(info -> CustomItemManager.getItemNames()))
                 .executesPlayer(CGiveCommand::giveItem);
 
         // Command for getting an existing wand from an id
