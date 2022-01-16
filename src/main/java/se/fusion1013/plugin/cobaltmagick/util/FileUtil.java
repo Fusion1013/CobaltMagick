@@ -46,4 +46,25 @@ public class FileUtil {
 
         return filenames;
     }
+
+    public static boolean classExists(String className) {
+        try {
+            Class.forName(className);
+            return true;
+        } catch (ClassNotFoundException ex) {
+            return false;
+        }
+    }
+
+    private static final boolean spigot = classExists("org.spigotmc.SpigotConfig");
+
+    /**
+     * Whether or not this server is running Spigot or a Spigot fork. This works by checking
+     * if the SpigotConfig exists, which should be true of all forks.
+     * @return True if it is, false if not.
+     */
+    public static boolean isUsingSpigot() {
+        return false;
+        // return spigot;
+    }
 }
