@@ -14,6 +14,8 @@ import se.fusion1013.plugin.cobaltmagick.world.WorldEvents;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Filter;
+import java.util.logging.LogRecord;
 
 public final class CobaltMagick extends JavaPlugin implements CobaltMagickPlugin {
 
@@ -21,6 +23,8 @@ public final class CobaltMagick extends JavaPlugin implements CobaltMagickPlugin
     private static Database db;
 
     private final Map<Class<?>, Manager> managers;
+
+    static final int BUKKIT_DEV_ID = 313786;
 
     public CobaltMagick(){
         INSTANCE = this;
@@ -52,7 +56,7 @@ public final class CobaltMagick extends JavaPlugin implements CobaltMagickPlugin
      *
      * @return the databse
      */
-    public Database getRDatabase() { return this.db; }
+    public Database getRDatabase() { return db; }
 
     /**
      * Gets a manager instance
@@ -96,14 +100,15 @@ public final class CobaltMagick extends JavaPlugin implements CobaltMagickPlugin
 
         this.managers.values().forEach(Manager::reload);
 
-        this.getManager(CommandManager.class);
         this.getManager(ParticleManager.class);
         this.getManager(ParticleStyleManager.class);
         this.getManager(LaserManager.class);
         this.getManager(SpellManager.class);
-        this.getManager(WorldGuardManager.class);
+        if (WorldGuardManager.isEnabled()) this.getManager(WorldGuardManager.class); // TODO: Add isEnabled method to all managers and move check to registration
         this.getManager(ConfigManager.class);
         this.getManager(CustomItemManager.class);
+        this.getManager(DreamManager.class);
+        this.getManager(ChatManager.class);
     }
 
     public void onEnableRegistration(){
