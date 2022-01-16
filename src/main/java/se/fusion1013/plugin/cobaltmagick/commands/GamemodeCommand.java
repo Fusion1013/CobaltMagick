@@ -15,6 +15,7 @@ public class GamemodeCommand {
         LocaleManager localeManager = LocaleManager.getInstance();
 
         new CommandAPICommand("gamemode")
+                .withPermission("cobalt.magick.commands.gamemode")
                 .withArguments(new StringArgument("gamemode"))
                 .withAliases("gm")
                 .withHelp("Changes your gamemode", "Changes your gamemode to the specified value")
