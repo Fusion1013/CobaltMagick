@@ -379,7 +379,7 @@ public class SpellManager extends Manager {
 
     public static final Spell ALL_SEEING_EYE = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(43, "all-seeing_eye")
             .addManaDrain(100).consumeOnUse(10).setLifetime(1)
-            .addExecuteOnCast(new EffectModule(false).setPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 20*4*60, 0)))
+            .addExecuteOnCast(new EffectModule(false).setTargetSelf().setPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 20*4*60, 0)))
             .addExecuteOnTick(new ParticleModule(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setRadius(20).animateRadius(0, 20).setDensity(200).setInSphere().setExtra(new Particle.DustTransition(Color.PURPLE, Color.fromRGB(255,192,203), 1)).build())
                     .build(), false))
@@ -722,6 +722,83 @@ public class SpellManager extends Manager {
             .addDescription("Music for your ears!")
             .setCustomModel(58)
             .addTag("note")
+            .build());
+
+    // ----- CUSTOM SPELLS ----- ID: 9+XXX // TODO: Make a spell type and make it not appear in cgive list
+
+    private static final Spell alchemist_dark_spell = register(new ProjectileSpell.ProjectileSpellBuilder(90, "alchemist_dark_spell")
+            .addManaDrain(1).setRadius(.2).setSpread(2).setVelocity(20).setLifetime(1.3)
+            .addExecuteOnEntityCollision(new DamageModule(4, true))
+            .setIsBouncy(true)
+            .setParticle(new ParticleGroup.ParticleGroupBuilder()
+                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.SOUL).setCount(10).setSpeed(.04).build())
+                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.SOUL_FIRE_FLAME).setCount(2).setSpeed(0).build())
+                    .build())
+            .addExecuteOnCast(new SoundSpellModule("minecraft:magic.zap", SoundCategory.HOSTILE, false))
+            .addExecuteOnEntityCollision(new SoundSpellModule("minecraft:magic.hit", SoundCategory.HOSTILE, false))
+            .addDescription("This spell is intended for use by the Alchemist boss, not for gameplay!")
+            .build());
+
+    private static final Spell alchemist_glowing_spell = register(new ProjectileSpell.ProjectileSpellBuilder(91, "alchemist_glowing_spell")
+            .addManaDrain(1).setRadius(.2).setSpread(10).setVelocity(17).setLifetime(1.6)
+            .addExecuteOnEntityCollision(new DamageModule(4, true))
+            .setParticle(new ParticleGroup.ParticleGroupBuilder()
+                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.END_ROD).setCount(3).setOffset(new Vector(.1, .1, .1)).build())
+                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setExtra(new Particle.DustTransition(Color.WHITE, Color.YELLOW, 1)).setOffset(new Vector(.2, .2, .2)).build())
+                    .build())
+            .addExecuteOnCast(new SoundSpellModule("minecraft:magic.zap", SoundCategory.HOSTILE, false))
+            .addExecuteOnCast(new SoundSpellModule("minecraft:block.beacon.deactivate", SoundCategory.HOSTILE, false))
+            .addExecuteOnEntityCollision(new SoundSpellModule("minecraft:magic.hit", SoundCategory.HOSTILE, false))
+            .addDescription("This spell is intended for use by the Alchemist boss, not for gameplay!")
+            .setCollidesWithBlocks(false)
+            .build());
+
+    private static final Spell alchemist_volatile_spell = register(new ProjectileSpell.ProjectileSpellBuilder(92, "alchemist_volatile_spell")
+            .addManaDrain(1).setRadius(.4).setSpread(0).setVelocity(14).setLifetime(2)
+            .addExecuteOnEntityCollision(new DamageModule(10, true))
+            .addExecuteOnCollision(new ExplodeModule(true).overrideRadius(2))
+            .setParticle(new ParticleGroup.ParticleGroupBuilder()
+                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.LAVA).setCount(7).setOffset(new Vector(.25, .25, .25)).build())
+                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.FLAME).setRadius(.35).setDensity(10).build())
+                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.SMOKE_NORMAL).setRadius(.25).setDensity(5).build())
+                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.SMOKE_LARGE).setCount(2).setOffset(new Vector(.05, .05, .05)).build())
+                    .build())
+            .addExecuteOnCast(new SoundSpellModule("minecraft:magic.zap", SoundCategory.HOSTILE, false))
+            .addExecuteOnCast(new SoundSpellModule("minecraft:item.firecharge.use", SoundCategory.HOSTILE, false))
+            .addExecuteOnEntityCollision(new SoundSpellModule("minecraft:magic.hit", SoundCategory.HOSTILE, false))
+            .addDescription("This spell is intended for use by the Alchemist boss, not for gameplay!")
+            .build());
+
+    private static final Spell alchemist_thunder_spell = register(new ProjectileSpell.ProjectileSpellBuilder(93, "alchemist_thunder_spell")
+            .addManaDrain(1).setRadius(.4).setSpread(0).setVelocity(17).setLifetime(1.6)
+            .addExecuteOnEntityCollision(new DamageModule(15, true))
+            .addExecuteOnEntityCollision(new EntitySpellModule(EntityType.LIGHTNING, true))
+            .addExecuteOnEntityCollision(new EffectModule(true).setPotionEffect(new PotionEffect(PotionEffectType.SLOW, 10, 1, true, false)))
+            .setParticle(new ParticleGroup.ParticleGroupBuilder()
+                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.END_ROD).setCount(2).setOffset(new Vector(.1, .1, .1)).build())
+                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setExtra(new Particle.DustTransition(Color.BLUE, Color.SILVER, 1)).setCount(4).setOffset(new Vector(.2, .2, .2)).build())
+                    .build())
+            .addExecuteOnCast(new SoundSpellModule("minecraft:magic.zap", SoundCategory.HOSTILE, false))
+            .addExecuteOnCast(new SoundSpellModule("minecraft:block.beacon.deactivate", SoundCategory.HOSTILE, false))
+            .addExecuteOnEntityCollision(new SoundSpellModule("minecraft:magic.hit", SoundCategory.HOSTILE, false))
+            .addExecuteOnEntityCollision(new SoundSpellModule("minecraft:item.trident.thunder", SoundCategory.HOSTILE, false))
+            .addExecuteOnCollision(new ParticleModule(new ParticleGroup.ParticleGroupBuilder()
+                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.ELECTRIC_SPARK).setCount(10).setOffset(new Vector(1, 1, 1)).build())
+                    .build(), false))
+            .addDescription("This spell is intended for use by the Alchemist boss, not for gameplay!")
+            .build());
+
+    private static final Spell alchemist_main_spell = register(new ProjectileSpell.ProjectileSpellBuilder(94, "alchemist_main_spell")
+            .addManaDrain(1).setRadius(.2).setSpread(2).setVelocity(10).setLifetime(4)
+            .addExecuteOnEntityCollision(new DamageModule(4, true))
+            .setIsBouncy(true)
+            .setParticle(new ParticleGroup.ParticleGroupBuilder()
+                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setExtra(new Particle.DustTransition(Color.PURPLE, Color.MAROON, 1)).setCount(10).setSpeed(.04).build())
+                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setExtra(new Particle.DustTransition(Color.BLUE, Color.WHITE, 2)).setCount(2).setSpeed(0).build())
+                    .build())
+            .addExecuteOnCast(new SoundSpellModule("minecraft:magic.zap", SoundCategory.HOSTILE, false))
+            .addExecuteOnEntityCollision(new SoundSpellModule("minecraft:magic.hit", SoundCategory.HOSTILE, false))
+            .addDescription("This spell is intended for use by the Alchemist boss, not for gameplay!")
             .build());
 
     private static <T extends Spell> T register(final T spell){
