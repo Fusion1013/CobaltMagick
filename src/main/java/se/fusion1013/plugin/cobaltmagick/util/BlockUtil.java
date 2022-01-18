@@ -255,7 +255,7 @@ public class BlockUtil {
 
     public static void createExplosion(Location location, World world, int explosionRadius, boolean dropItems, boolean fire, boolean destroyBlocks){
         // Explode
-        setBlocksInSphere(location, Material.AIR, explosionRadius, dropItems, false, true, false, true);
+        if (destroyBlocks) setBlocksInSphere(location, Material.AIR, explosionRadius, dropItems, false, true, false, true);
         int iterations = Math.max(1, explosionRadius * (explosionRadius / 4));
         for (int i = 0; i < iterations; i++){
             Vector pos = GeometryUtil.getPointOnSphere(explosionRadius).add(location.toVector());
