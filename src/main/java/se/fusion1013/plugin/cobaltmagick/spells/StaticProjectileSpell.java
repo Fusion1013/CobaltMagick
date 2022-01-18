@@ -1,6 +1,9 @@
 package se.fusion1013.plugin.cobaltmagick.spells;
 
 import org.bukkit.*;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
@@ -56,13 +59,13 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
     }
 
     @Override
-    public void castSpell(Wand wand, Player caster) {
+    public void castSpell(Wand wand, LivingEntity caster) {
         Location currentLocation = caster.getEyeLocation();
         castSpell(wand, caster, new Vector(0, 0, 0), currentLocation);
     }
 
     @Override
-    public void castSpell(Wand wand, Player caster, Vector direction, Location location) {
+    public void castSpell(Wand wand, LivingEntity caster, Vector direction, Location location) {
         super.castSpell(wand, caster);
         this.currentLocation = location;
 

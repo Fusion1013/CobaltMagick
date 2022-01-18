@@ -1,6 +1,7 @@
 package se.fusion1013.plugin.cobaltmagick.spells;
 
 import org.bukkit.Location;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltmagick.spells.spellmodifiers.AbstractSpellModifier;
@@ -65,7 +66,7 @@ public class ProjectileModifierSpell extends Spell implements Cloneable {
     }
 
     @Override
-    public void castSpell(Wand wand, Player caster, Vector direction, Location location) { super.castSpell(wand, caster); }
+    public void castSpell(Wand wand, LivingEntity caster, Vector direction, Location location) { super.castSpell(wand, caster); }
 
     @Override
     public void cancelTask() { }

@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
@@ -103,13 +104,13 @@ public abstract class AbstractSpellModule<B extends AbstractSpellModule> impleme
     }
 
     @Override
-    public void executeOnEntityHit(Wand wand, Player caster, MovableSpell spell, Entity entityHit) {
+    public void executeOnEntityHit(Wand wand, LivingEntity caster, MovableSpell spell, Entity entityHit) {
         currentIterations++;
         canRun = currentIterations <= maxIterationsPerTick && canRun;
     }
 
     @Override
-    public void executeOnBlockHit(Wand wand, Player caster, MovableSpell spell, Block blockHit, BlockFace hitBlockFace) {
+    public void executeOnBlockHit(Wand wand, LivingEntity caster, MovableSpell spell, Block blockHit, BlockFace hitBlockFace) {
         currentIterations++;
         canRun = currentIterations <= maxIterationsPerTick && canRun;
     }

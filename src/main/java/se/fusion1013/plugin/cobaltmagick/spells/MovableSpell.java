@@ -6,6 +6,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
@@ -89,8 +90,8 @@ public abstract class MovableSpell extends Spell implements Cloneable {
     }
 
     @Override
-    public void castSpell(Wand wand, Player player) {
-        super.castSpell(wand, player);
+    public void castSpell(Wand wand, LivingEntity caster) {
+        super.castSpell(wand, caster);
     }
 
     /**

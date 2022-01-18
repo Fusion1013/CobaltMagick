@@ -4,6 +4,7 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
@@ -94,7 +95,7 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
      * @param caster the caster that cast the spell
      */
     @Override
-    public void castSpell(Wand wand, Player caster) {
+    public void castSpell(Wand wand, LivingEntity caster) {
         Vector velocityVector = caster.getEyeLocation().getDirection();
         Location currentLocation = caster.getEyeLocation();
 
@@ -113,7 +114,7 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
     }
 
     @Override
-    public void castSpell(Wand wand, Player caster, Vector direction, Location location){
+    public void castSpell(Wand wand, LivingEntity caster, Vector direction, Location location){
         super.castSpell(wand, caster);
         this.wand = wand;
         this.velocityVector = direction;

@@ -60,18 +60,18 @@ public class DamageModule extends AbstractSpellModule<DamageModule> implements S
     }
 
     @Override
-    public void executeOnCast(Wand wand, Player caster, ISpell spell) { }
+    public void executeOnCast(Wand wand, LivingEntity caster, ISpell spell) { }
 
     @Override
-    public void executeOnTick(Wand wand, Player caster, ISpell spell) { }
+    public void executeOnTick(Wand wand, LivingEntity caster, ISpell spell) { }
 
     @Override
-    public void executeOnBlockHit(Wand wand, Player caster, MovableSpell spell, Block blockHit, BlockFace hitBlockFace) {
+    public void executeOnBlockHit(Wand wand, LivingEntity caster, MovableSpell spell, Block blockHit, BlockFace hitBlockFace) {
         super.executeOnBlockHit(wand, caster, spell, blockHit, hitBlockFace);
     }
 
     @Override
-    public void executeOnEntityHit(Wand wand, Player caster, MovableSpell spell, Entity entityHit) {
+    public void executeOnEntityHit(Wand wand, LivingEntity caster, MovableSpell spell, Entity entityHit) {
         super.executeOnEntityHit(wand, caster, spell, entityHit);
         if (!canRun) return;
 
@@ -98,7 +98,7 @@ public class DamageModule extends AbstractSpellModule<DamageModule> implements S
     }
 
     @Override
-    public void executeOnDeath(Wand wand, Player caster, ISpell spell) { }
+    public void executeOnDeath(Wand wand, LivingEntity caster, ISpell spell) { }
 
     @Override
     public boolean cancelsCast() {

@@ -3,6 +3,8 @@ package se.fusion1013.plugin.cobaltmagick.spells;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -39,7 +41,7 @@ public abstract class Spell implements ISpell, Cloneable {
 
     List<DelayedSpell> delayedSpells = new ArrayList<>();
 
-    Player caster;
+    LivingEntity caster;
     Wand wand;
 
     List<String> tags = new ArrayList<>();
@@ -89,9 +91,9 @@ public abstract class Spell implements ISpell, Cloneable {
     }
 
     @Override
-    public void castSpell(Wand wand, Player player) {
+    public void castSpell(Wand wand, LivingEntity caster) {
         this.wand = wand;
-        this.caster = player;
+        this.caster = caster;
     }
 
     // ----- GETTERS / SETTERS -----
@@ -394,7 +396,7 @@ public abstract class Spell implements ISpell, Cloneable {
     }
 
     @Override
-    public Player getCaster() {
+    public LivingEntity getCaster() {
         return this.caster;
     }
 
@@ -489,7 +491,7 @@ public abstract class Spell implements ISpell, Cloneable {
         return new ArrayList<>(tags);
     }
 
-    public void setCaster(Player caster){
+    public void setCaster(LivingEntity caster){
         this.caster = caster;
     }
 }

@@ -4,6 +4,7 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
@@ -76,12 +77,12 @@ public class SoundSpellModule extends AbstractSpellModule<SoundSpellModule> impl
     }
 
     @Override
-    public void executeOnCast(Wand wand, Player caster, ISpell spell) {
+    public void executeOnCast(Wand wand, LivingEntity caster, ISpell spell) {
         playSound(spell.getLocation());
     }
 
     @Override
-    public void executeOnEntityHit(Wand wand, Player caster, MovableSpell spell, Entity entityHit) {
+    public void executeOnEntityHit(Wand wand, LivingEntity caster, MovableSpell spell, Entity entityHit) {
         super.executeOnEntityHit(wand, caster, spell, entityHit);
         if (!canRun) return;
 
@@ -89,7 +90,7 @@ public class SoundSpellModule extends AbstractSpellModule<SoundSpellModule> impl
     }
 
     @Override
-    public void executeOnBlockHit(Wand wand, Player caster, MovableSpell spell, Block blockHit, BlockFace hitBlockFace) {
+    public void executeOnBlockHit(Wand wand, LivingEntity caster, MovableSpell spell, Block blockHit, BlockFace hitBlockFace) {
         super.executeOnBlockHit(wand, caster, spell, blockHit, hitBlockFace);
         if (!canRun) return;
 
@@ -97,14 +98,14 @@ public class SoundSpellModule extends AbstractSpellModule<SoundSpellModule> impl
     }
 
     @Override
-    public void executeOnTick(Wand wand, Player caster, ISpell spell) {
+    public void executeOnTick(Wand wand, LivingEntity caster, ISpell spell) {
         if (!canRun) return;
 
         playSound(spell.getLocation());
     }
 
     @Override
-    public void executeOnDeath(Wand wand, Player caster, ISpell spell) {
+    public void executeOnDeath(Wand wand, LivingEntity caster, ISpell spell) {
         playSound(spell.getLocation());
     }
 

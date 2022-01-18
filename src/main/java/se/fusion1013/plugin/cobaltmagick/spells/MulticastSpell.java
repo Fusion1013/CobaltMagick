@@ -1,6 +1,7 @@
 package se.fusion1013.plugin.cobaltmagick.spells;
 
 import org.bukkit.Location;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltmagick.wand.CastParser;
@@ -59,7 +60,7 @@ public class MulticastSpell extends Spell implements Cloneable, Runnable {
     }
 
     @Override
-    public void castSpell(Wand wand, Player caster) {
+    public void castSpell(Wand wand, LivingEntity caster) {
         Vector direction = caster.getEyeLocation().getDirection();
         Location currentLocation = caster.getEyeLocation();
 
@@ -70,7 +71,7 @@ public class MulticastSpell extends Spell implements Cloneable, Runnable {
     }
 
     @Override
-    public void castSpell(Wand wand, Player caster, Vector direction, Location location) {
+    public void castSpell(Wand wand, LivingEntity caster, Vector direction, Location location) {
         super.castSpell(wand, caster);
         for (ISpell s : spellsToCast){
             s.castSpell(wand, caster, direction.clone(), location.clone());

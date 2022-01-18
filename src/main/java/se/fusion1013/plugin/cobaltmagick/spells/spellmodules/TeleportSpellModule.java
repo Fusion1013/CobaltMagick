@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
@@ -47,40 +48,40 @@ public class TeleportSpellModule extends AbstractSpellModule<TeleportSpellModule
     }
 
     @Override
-    public void executeOnCast(Wand wand, Player caster, ISpell spell) {
+    public void executeOnCast(Wand wand, LivingEntity caster, ISpell spell) {
         teleport(caster, spell.getLocation(), null);
     }
 
     @Override
-    public void executeOnTick(Wand wand, Player caster, ISpell spell) {
+    public void executeOnTick(Wand wand, LivingEntity caster, ISpell spell) {
         if (!canRun) return;
         teleport(caster, spell.getLocation(), null);
     }
 
     @Override
-    public void executeOnBlockHit(Wand wand, Player caster, MovableSpell spell, Block blockHit, BlockFace hitBlockFace) {
+    public void executeOnBlockHit(Wand wand, LivingEntity caster, MovableSpell spell, Block blockHit, BlockFace hitBlockFace) {
         if (!canRun) return;
         teleport(caster, spell.getLocation(), null);
     }
 
     @Override
-    public void executeOnEntityHit(Wand wand, Player caster, MovableSpell spell, Entity entityHit) {
+    public void executeOnEntityHit(Wand wand, LivingEntity caster, MovableSpell spell, Entity entityHit) {
         if (!canRun) return;
         teleport(caster, spell.getLocation(), entityHit);
     }
 
     @Override
-    public void executeOnDeath(Wand wand, Player caster, ISpell spell) {
+    public void executeOnDeath(Wand wand, LivingEntity caster, ISpell spell) {
         if (!canRun) return;
         teleport(caster, spell.getLocation(), null);
     }
 
-    private void teleport(Player caster, Location location, Entity entityHit){
+    private void teleport(LivingEntity caster, Location location, Entity entityHit){
         if (teleportPlayer) teleportPlayer(caster, location);
         if (swapWithHit && entityHit != null) swapTeleport(caster, entityHit);
     }
 
-    private void swapTeleport(Player caster, Entity entityHit){
+    private void swapTeleport(LivingEntity caster, Entity entityHit){
         Location e1 = caster.getLocation().clone();
         Location e2 = entityHit.getLocation().clone();
 
@@ -89,7 +90,7 @@ public class TeleportSpellModule extends AbstractSpellModule<TeleportSpellModule
         caster.setFallDistance(0);
     }
 
-    private void teleportPlayer(Player caster, Location location){
+    private void teleportPlayer(LivingEntity caster, Location location){
         CobaltMagick.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(CobaltMagick.getInstance(), () -> {
             caster.teleport(location);
             caster.setFallDistance(0);
