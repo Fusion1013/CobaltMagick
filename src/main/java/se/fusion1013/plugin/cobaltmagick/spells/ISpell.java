@@ -1,6 +1,8 @@
 package se.fusion1013.plugin.cobaltmagick.spells;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
@@ -9,8 +11,8 @@ import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 import java.util.List;
 
 public interface ISpell {
-    void castSpell(Wand wand, Player caster);
-    void castSpell(Wand wand, Player caster, Vector direction, Location location);
+    void castSpell(Wand wand, LivingEntity caster);
+    void castSpell(Wand wand, LivingEntity caster, Vector direction, Location location);
 
     List<String> getLore();
     int getId();
@@ -47,10 +49,10 @@ public interface ISpell {
     double getRadius();
     void setRadius(double radius);
     Wand getWand();
-    Player getCaster();
+    LivingEntity getCaster();
     Location getLocation();
     List<String> getTags();
-    void setCaster(Player caster);
+    void setCaster(LivingEntity caster);
 
     /**
      * Performs operations that need to be done before a spell can be cast
