@@ -4,22 +4,25 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.event.SpellCastEvent;
 import se.fusion1013.plugin.cobaltmagick.manager.ConfigManager;
-import se.fusion1013.plugin.cobaltmagick.manager.WorldGuardManager;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Wand extends AbstractWand implements Runnable { // TODO: Move things to abstract class and extend it
+public class Wand extends AbstractWand implements Runnable {
 
     public Wand(boolean shuffle, int spellsPerCast, double castDelay, double rechargeTime, int manaMax, int manaChargeSpeed, int capacity, double spread, List<ISpell> alwaysCast, int wandTier){
         super(shuffle, spellsPerCast, castDelay, rechargeTime, manaMax, manaChargeSpeed, capacity, spread, alwaysCast, wandTier);
@@ -29,6 +32,12 @@ public class Wand extends AbstractWand implements Runnable { // TODO: Move thing
 
     public Wand(int cost, int level, boolean forceUnshuffle){
         super(cost, level, forceUnshuffle);
+
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(CobaltMagick.getInstance(), this, 0, 1);
+    }
+
+    public Wand(Wand target) {
+        super(target);
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(CobaltMagick.getInstance(), this, 0, 1);
     }
@@ -49,11 +58,19 @@ public class Wand extends AbstractWand implements Runnable { // TODO: Move thing
         }
     }
 
+    public void castSpells(LivingEntity e, Vector direction, Location location) {
+        CastResult result = performSpellCast(e, direction, location);
+    }
+
+    private CastResult performSpellCast(LivingEntity e) {
+        return performSpellCast(e, null, null);
+    }
+
     /**
      * Cast the next spells in the wand
      * @return The result of the casting
      */
-    private CastResult performSpellCast(Player p){
+    private CastResult performSpellCast(LivingEntity e, Vector direction, Location location){
 
         // Check if the wand is on cooldown
         if (castCooldown > 0) return CastResult.CAST_DELAY;
@@ -61,7 +78,8 @@ public class Wand extends AbstractWand implements Runnable { // TODO: Move thing
 
         // Cast all the always cast spells. These spells get cast for free
         for (ISpell s : alwaysCast){
-            s.castSpell(this, p);
+            if (direction == null) s.castSpell(this, e);
+            else s.castSpell(this, e, direction, location);
         }
 
         if (spells.size() == 0) return CastResult.SUCCESS;
@@ -84,12 +102,13 @@ public class Wand extends AbstractWand implements Runnable { // TODO: Move thing
                 return CastResult.NO_MANA;
             }
 
-            s.setCaster(p);
+            s.setCaster(e);
             SpellCastEvent event = new SpellCastEvent(s);
             Bukkit.getPluginManager().callEvent(event);
 
             if (!event.isCancelled()) {
-                s.castSpell(this, p);
+                if (direction == null) s.castSpell(this, e);
+                else s.castSpell(this, e, direction, location);
                 castDelayInduced += s.getTrueCastDelay();
             }
         }
@@ -101,8 +120,7 @@ public class Wand extends AbstractWand implements Runnable { // TODO: Move thing
         // Check if all spells in the wand has been cast. If they have, start recharge cooldown
         if (allSpellsCast()) recharge();
 
-        // Set visual cooldown on item
-        p.setCooldown(getWandItem().getType(), (int)Math.ceil(Math.max(rechargeCooldown, castCooldown) * 20));
+        if (e instanceof Player p) p.setCooldown(getWandItem().getType(), (int)Math.ceil(Math.max(rechargeCooldown, castCooldown) * 20));
 
         return CastResult.SUCCESS;
     }
@@ -141,10 +159,17 @@ public class Wand extends AbstractWand implements Runnable { // TODO: Move thing
         return true;
     }
 
+    private boolean manaRechargeAllowed() {
+        if (Boolean.parseBoolean(ConfigManager.getInstance().getFromConfig("disable-wand-recharging"))) return false;
+        if (!regionAllowsManaRecharge) return false;
+
+        return true;
+    }
+
     @Override
     public void run() {
         // Increase mana
-        if (currentMana < manaMax && !Boolean.parseBoolean(ConfigManager.getInstance().getFromConfig("disable-wand-recharging"))) {
+        if (currentMana < manaMax && manaRechargeAllowed()) {
             currentMana = Math.min(currentMana + ((double)manaChargeSpeed / 20.0), manaMax);
         }
 
