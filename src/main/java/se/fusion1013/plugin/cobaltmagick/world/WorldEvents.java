@@ -3,14 +3,14 @@ package se.fusion1013.plugin.cobaltmagick.world;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
-import org.bukkit.entity.EnderSignal;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.world.PortalCreateEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -23,6 +23,21 @@ import se.fusion1013.plugin.cobaltmagick.util.BlockUtil;
 import java.util.List;
 
 public class WorldEvents implements Listener {
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event) {
+        ItemStack heldItem = event.getPlayer().getInventory().getItemInMainHand();
+
+        // Drops Budded Amethyst if Player is using Silk Touch Netherite Pickaxe to break it
+        if (event.getBlock().getType() == Material.BUDDING_AMETHYST && heldItem.containsEnchantment(Enchantment.SILK_TOUCH) && heldItem.getType() == Material.NETHERITE_PICKAXE) {
+            Location blockLocation = event.getBlock().getLocation().add(new Vector(.5, .5, .5));
+            World world = blockLocation.getWorld();
+            if (world != null) {
+                Item item = (Item)world.spawnEntity(blockLocation, EntityType.DROPPED_ITEM);
+                item.setItemStack(new ItemStack(Material.BUDDING_AMETHYST, 1));
+            }
+        }
+    }
 
     @EventHandler
     public void onPortalCreation(PortalCreateEvent event){
