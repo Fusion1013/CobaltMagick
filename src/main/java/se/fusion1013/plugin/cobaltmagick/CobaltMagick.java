@@ -109,6 +109,8 @@ public final class CobaltMagick extends JavaPlugin implements CobaltMagickPlugin
         this.getManager(CustomItemManager.class);
         this.getManager(DreamManager.class);
         this.getManager(ChatManager.class);
+        this.getManager(EntityManager.class);
+        this.getManager(WandManager.class);
     }
 
     public void onEnableRegistration(){
