@@ -42,6 +42,9 @@ public abstract class AbstractWand {
     // Stored Spells
     List<ISpell> spells = new ArrayList<>();
 
+    // Protection
+    boolean regionAllowsManaRecharge = true;
+
     public AbstractWand(boolean shuffle, int spellsPerCast, double castDelay, double rechargeTime, int manaMax, int manaChargeSpeed, int capacity, double spread, List<ISpell> alwaysCast, int wandTier){
         this.shuffle = shuffle;
         this.spellsPerCast = spellsPerCast;
@@ -516,6 +519,14 @@ public abstract class AbstractWand {
 
     public int getWandId() {
         return wandId;
+    }
+
+    public void setRegionAllowsManaRecharge(boolean isAllowed) {
+        regionAllowsManaRecharge = isAllowed;
+    }
+
+    public void setRechargeCooldown(double rechargeCooldown) {
+        this.rechargeCooldown = rechargeCooldown;
     }
 
     /**
