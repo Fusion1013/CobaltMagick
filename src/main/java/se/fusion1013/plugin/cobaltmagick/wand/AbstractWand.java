@@ -63,6 +63,23 @@ public abstract class AbstractWand {
         generateRandomWand(cost, level, forceUnshuffle);
     }
 
+    public AbstractWand(AbstractWand target) {
+        this.shuffle = target.shuffle;
+        this.spellsPerCast = target.spellsPerCast;
+        this.castDelay = target.castDelay;
+        this.rechargeTime = target.rechargeTime;
+        this.manaMax = target.manaMax;
+        this.manaChargeSpeed = target.manaChargeSpeed;
+        this.capacity = target.capacity;
+        this.spread = target.spread;
+        this.alwaysCast = target.alwaysCast;
+        this.wandTier = target.wandTier;
+        this.currentMana = target.manaMax;
+
+        this.spells = new ArrayList<>(target.getSpells());
+        this.alwaysCast = new ArrayList<>(target.getAlwaysCast());
+    }
+
     private void generateRandomWand(int cost, int level, boolean forceUnshuffle){
         Random r = new Random();
 
