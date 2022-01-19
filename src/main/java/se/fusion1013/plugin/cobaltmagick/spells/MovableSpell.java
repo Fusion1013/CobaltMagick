@@ -11,7 +11,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
+import se.fusion1013.plugin.cobaltmagick.spells.movementmodifier.HomingMovementModifier;
+import se.fusion1013.plugin.cobaltmagick.spells.movementmodifier.IMovementModifier;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class MovableSpell extends Spell implements Cloneable {
 
@@ -43,6 +48,9 @@ public abstract class MovableSpell extends Spell implements Cloneable {
     boolean isBouncy;
     Vector bounceFriction; // Values should be between 0 & 1
 
+    // Movement Modifiers
+    List<IMovementModifier> movementModifiers = new ArrayList<>();
+
     public MovableSpell(int id, String internalSpellName, String spellName, SpellType type) {
         super(id, internalSpellName, spellName, type);
     }
@@ -55,6 +63,7 @@ public abstract class MovableSpell extends Spell implements Cloneable {
     public MovableSpell(MovableSpell movableSpell) {
         super(movableSpell);
         this.movementStopped = movableSpell.movementStopped;
+        this.ticksToIgnoreCollisions = movableSpell.ticksToIgnoreCollisions;
 
         this.moves = movableSpell.getMoves();
         this.velocityVector = movableSpell.getVelocityVector();
@@ -72,6 +81,8 @@ public abstract class MovableSpell extends Spell implements Cloneable {
 
         this.isBouncy = movableSpell.isBouncy();
         this.bounceFriction = movableSpell.getBounceFriction();
+
+        this.movementModifiers = new ArrayList<>(movableSpell.movementModifiers);
     }
 
     /**
@@ -81,6 +92,11 @@ public abstract class MovableSpell extends Spell implements Cloneable {
         if (!moves) return;
 
         // PERFORM DIRECTION CHANGING OPERATIONS
+        for (IMovementModifier movMod : movementModifiers) {
+            if (movMod instanceof HomingMovementModifier homing) velocityVector = homing.modifyVelocityVector(velocityVector, currentLocation, caster);
+            else velocityVector = movMod.modifyVelocityVector(velocityVector);
+        }
+
         if (affectedByGravity) applyGravity();
         if (affectedByAirResistance) applyAirResistance();
 
@@ -223,6 +239,9 @@ public abstract class MovableSpell extends Spell implements Cloneable {
         boolean isBouncy = false;
         Vector bounceFriction = new Vector(.99, .75, .99); // Values should be between 0 & 1
 
+        // Movement modifiers
+        List<IMovementModifier> movementModifiers = new ArrayList<>();
+
         /**
          * Creates a new spell builder with an internalized spell name. Automatically generates the display name
          * of the spell. The internal name should follow the format: "spark_bolt".
@@ -255,7 +274,14 @@ public abstract class MovableSpell extends Spell implements Cloneable {
             obj.setIsBouncy(isBouncy);
             obj.setBounceFriction(bounceFriction);
 
+            obj.movementModifiers = movementModifiers;
+
             return super.build();
+        }
+
+        public B addMovementModifier(IMovementModifier modifier) {
+            movementModifiers.add(modifier);
+            return getThis();
         }
 
         /**
