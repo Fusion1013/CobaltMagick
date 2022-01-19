@@ -2,10 +2,9 @@ package se.fusion1013.plugin.cobaltmagick.spells;
 
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltmagick.spells.spellmodifiers.AbstractSpellModifier;
-import se.fusion1013.plugin.cobaltmagick.spells.spellmodifiers.SpellModifier;
+import se.fusion1013.plugin.cobaltmagick.spells.spellmodifiers.ISpellModifier;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
 import java.util.ArrayList;
@@ -13,7 +12,7 @@ import java.util.List;
 
 public class ProjectileModifierSpell extends Spell implements Cloneable {
 
-    List<SpellModifier> spellModifiers = new ArrayList<>();
+    List<ISpellModifier> spellModifiers = new ArrayList<>();
 
     /**
      * Creates a new <code>ProjectileModifierSpell</code> with an id, internalSpellname and a spellName
@@ -46,15 +45,15 @@ public class ProjectileModifierSpell extends Spell implements Cloneable {
         }
 
         if (spellToModify instanceof MovableSpell movableSpell) {
-            for (SpellModifier sm : spellModifiers) sm.modifyMovableSpell(movableSpell);
+            for (ISpellModifier sm : spellModifiers) sm.modifyMovableSpell(movableSpell);
         }
 
         if (spellToModify instanceof ProjectileSpell projectileSpell) {
-            for (SpellModifier sm : spellModifiers) sm.modifyProjectileSpell(projectileSpell);
+            for (ISpellModifier sm : spellModifiers) sm.modifyProjectileSpell(projectileSpell);
         }
 
         if (spellToModify instanceof StaticProjectileSpell staticProjectileSpell) {
-            for (SpellModifier sm : spellModifiers) sm.modifyStaticProjectileSpell(staticProjectileSpell);
+            for (ISpellModifier sm : spellModifiers) sm.modifyStaticProjectileSpell(staticProjectileSpell);
         }
 
         return spellToModify;
@@ -75,7 +74,7 @@ public class ProjectileModifierSpell extends Spell implements Cloneable {
     public List<String> getLore() {
         List<String> lore = super.getLore();
 
-        for (SpellModifier modifier : spellModifiers){
+        for (ISpellModifier modifier : spellModifiers){
             lore.addAll(modifier.getExtraLore());
         }
 
@@ -89,7 +88,7 @@ public class ProjectileModifierSpell extends Spell implements Cloneable {
 
     public static class ProjectileModifierSpellBuilder extends SpellBuilder<ProjectileModifierSpell, ProjectileModifierSpellBuilder> {
 
-        List<SpellModifier> spellModifiers = new ArrayList<>();
+        List<ISpellModifier> spellModifiers = new ArrayList<>();
 
         /**
          * Creates a new spell builder with an internalized spell name. Automatically generates the display name
@@ -119,15 +118,15 @@ public class ProjectileModifierSpell extends Spell implements Cloneable {
             return super.build();
         }
 
-        public ProjectileModifierSpellBuilder addSpellModifier(SpellModifier modifier){
+        public ProjectileModifierSpellBuilder addSpellModifier(ISpellModifier modifier){
             this.spellModifiers.add(modifier);
             return getThis();
         }
     }
 
-    public void setSpellModifiers(List<SpellModifier> spellModifiers) { this.spellModifiers = new ArrayList<>(spellModifiers); }
+    public void setSpellModifiers(List<ISpellModifier> spellModifiers) { this.spellModifiers = new ArrayList<>(spellModifiers); }
 
-    public List<SpellModifier> getSpellModifiers() { return this.spellModifiers; }
+    public List<ISpellModifier> getSpellModifiers() { return this.spellModifiers; }
 
     @Override
     public Location getLocation() {
