@@ -15,6 +15,7 @@ import se.fusion1013.plugin.cobaltmagick.particle.styles.ParticleStyleCube;
 import se.fusion1013.plugin.cobaltmagick.particle.styles.ParticleStylePoint;
 import se.fusion1013.plugin.cobaltmagick.particle.styles.ParticleStyleSphere;
 import se.fusion1013.plugin.cobaltmagick.spells.*;
+import se.fusion1013.plugin.cobaltmagick.spells.movementmodifier.HomingMovementModifier;
 import se.fusion1013.plugin.cobaltmagick.spells.spellmodifiers.AddSpellModuleModifier;
 import se.fusion1013.plugin.cobaltmagick.spells.spellmodifiers.ValueSpellModifier;
 import se.fusion1013.plugin.cobaltmagick.spells.spellmodules.*;
@@ -799,6 +800,7 @@ public class SpellManager extends Manager {
             .addExecuteOnCast(new SoundSpellModule("minecraft:magic.zap", SoundCategory.HOSTILE, false))
             .addExecuteOnEntityCollision(new SoundSpellModule("minecraft:magic.hit", SoundCategory.HOSTILE, false))
             .addDescription("This spell is intended for use by the Alchemist boss, not for gameplay!")
+            .addMovementModifier(new HomingMovementModifier().setRotateTowards(20))
             .build());
 
     private static <T extends Spell> T register(final T spell){
