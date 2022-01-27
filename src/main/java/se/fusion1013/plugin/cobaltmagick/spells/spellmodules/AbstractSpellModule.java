@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
 import se.fusion1013.plugin.cobaltmagick.spells.MovableSpell;
+import se.fusion1013.plugin.cobaltmagick.spells.movementmodifier.IMovementModifier;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
 import java.util.ArrayList;
@@ -100,6 +101,12 @@ public abstract class AbstractSpellModule<B extends AbstractSpellModule> impleme
     public static List<SpellModule> cloneList(List<SpellModule> list) {
         List<SpellModule> clone = new ArrayList<SpellModule>(list.size());
         for (SpellModule item : list) clone.add(item.clone());
+        return clone;
+    }
+
+    public static List<IMovementModifier> cloneMovementList(List<IMovementModifier> list) {
+        List<IMovementModifier> clone = new ArrayList<IMovementModifier>(list.size());
+        for (IMovementModifier item : list) clone.add(item.clone());
         return clone;
     }
 
