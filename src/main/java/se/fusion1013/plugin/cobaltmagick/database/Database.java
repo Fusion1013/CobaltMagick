@@ -5,14 +5,14 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.manager.SpellManager;
+import se.fusion1013.plugin.cobaltmagick.manager.WorldManager;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
 import se.fusion1013.plugin.cobaltmagick.util.Warp;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
+import se.fusion1013.plugin.cobaltmagick.world.structures.MusicBox;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 
 /**
@@ -29,6 +29,81 @@ public abstract class Database {
     public abstract Connection getSQLConnection();
 
     public abstract void load();
+
+    // ----- MUSIC BOXES -----
+
+    public Map<String, MusicBox> getMusicBoxes() {
+        Map<String, MusicBox> boxMap = new HashMap<>();
+        try {
+            Connection conn = getSQLConnection();
+            PreparedStatement stBox = conn.prepareStatement("SELECT * FROM music_boxes");
+            ResultSet rsBox = stBox.executeQuery();
+
+            while (rsBox.next()) {
+                MusicBox box = getBoxFromResult(rsBox);
+                if (box != null) boxMap.put(WorldManager.getFormattedLocation(box.getLocation()), box);
+            }
+            plugin.getLogger().info("Loaded " + boxMap.size() + " music boxes from database");
+            stBox.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return boxMap;
+    }
+
+    private MusicBox getBoxFromResult(ResultSet boxSet) {
+        try {
+            double xPos = boxSet.getDouble("pos_x");
+            double yPos = boxSet.getDouble("pos_y");
+            double zPos = boxSet.getDouble("pos_z");
+            String world = boxSet.getString("world");
+            String sound = boxSet.getString("sound");
+            int id = boxSet.getInt("id");
+            MusicBox box = new MusicBox(new Location(Bukkit.getWorld(world), xPos, yPos, zPos), sound, id);
+
+            return box;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public void insertMusicBox(MusicBox musicBox){
+        Location location = musicBox.getLocation();
+        double xPos = location.getX();
+        double yPos = location.getY();
+        double zPos = location.getZ();
+        World world = location.getWorld();
+        if (world == null) return;
+        String worldName = world.getName();
+
+        String sound = musicBox.getSound();
+        int id = musicBox.getId();
+
+        try {
+            Connection conn = getSQLConnection();
+            PreparedStatement st = conn.prepareStatement("INSERT INTO music_boxes(world, pos_x, pos_y, pos_z, sound, id) VALUES(?,?,?,?,?,?)");
+
+            st.setString(1, worldName);
+            st.setDouble(2, xPos);
+            st.setDouble(3, yPos);
+            st.setDouble(4, zPos);
+            st.setString(5, sound);
+            st.setInt(6, id);
+
+            st.executeUpdate();
+            st.close();
+
+            return;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return;
+    }
 
     // ----- WANDS -----
 
