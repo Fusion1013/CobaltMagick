@@ -12,34 +12,37 @@ import org.bukkit.entity.*;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
+/**
+ * Holds most information about a Custom Entity
+ */
 public abstract class AbstractCustomEntity implements ICustomEntity, Cloneable {
 
-    // Bossbar
-    private BossBar bossbar;
+    // ----- VARIABLES -----
 
-    boolean hasBossbar = false;
-    String bossbarText;
-    double bossbarActivationRange;
-    BarColor bossbarColor;
-    BarStyle bossbarStyle;
+    // Bossbar
+    private BossBar bossbar; // Bossbar instance. Created on entity spawn if hasBossbar is set to true
+
+    boolean hasBossbar = false; // Whether an entity has a bossbar or not
+    String bossbarTitle; // The title of the bossbar
+    double bossbarActivationRange; // Defines how close to the entity a player has to be to see the bossbar
+    BarColor bossbarColor; // The color of the bossbar
+    BarStyle bossbarStyle; // The style of the bossbar
 
     // World Information
-    Location spawnLocation;
+    Location spawnLocation; // The location where the Custom Entity spawned
 
     // Lifespan
-    boolean hasLifespan = false;
-    int lifespan;
-    int currentLifeSpan = 0;
+    boolean hasLifespan = false; // Determines whether the entity has a lifespan
+    int lifespan; // The lifespan of the entity
+    int currentLifeSpan = 0; // The current lifespan of the entity. If this exceeds the max lifetime, the entity dies
 
     // Drops
     List<ItemStack> alwaysDropItems = new ArrayList<>(); // These items will always be dropped on death
     List<ItemStack> chooseOneDrop = new ArrayList<>(); // On death, one of these items will randomly chosen and dropped
-    int xpAmountTotal = 0;
-    int xpSplit = 1;
+    int xpAmountTotal = 0; // The amount of xp that will be dropped on death
+    int xpSplit = 1; // The number of orbs the xp will be split into
 
     // Entity Information
     EntityType baseEntityType;
@@ -47,61 +50,98 @@ public abstract class AbstractCustomEntity implements ICustomEntity, Cloneable {
     int maxHealth = 20;
     boolean scaleHealth = false;
     double scaleFactor = 1;
+    int scaledHealth = 20;
 
     // Internals
     String inbuiltName;
+
+    // ----- CONSTRUCTORS -----
 
     public AbstractCustomEntity(EntityType baseEntity, String inbuiltName) {
         this.baseEntityType = baseEntity;
         this.inbuiltName = inbuiltName;
     }
 
+    // ----- EVENTS -----
+
     /**
-     * Clone constructor
+     * Called when the entity is spawned.
      *
-     * @param target the target object to clone
+     * @param location the location where the entity spawned.
      */
-    public AbstractCustomEntity(AbstractCustomEntity target) {
-        // Copy Bossbar
-        this.bossbar = target.bossbar;
-        this.hasBossbar = target.hasBossbar;
-        this.bossbarText = target.bossbarText;
-        this.bossbarActivationRange = target.bossbarActivationRange;
-        this.bossbarColor = target.bossbarColor;
-        this.bossbarStyle = target.bossbarStyle;
+    @Override
+    public void spawn(Location location) {
 
-        // Copy World Information
-        this.spawnLocation = target.spawnLocation;
+        // Store Location and Summon Entity
+        this.spawnLocation = location;
+        World spawnWorld = location.getWorld();
+        if (spawnWorld == null) return;
+        summonedEntity = spawnWorld.spawnEntity(location, baseEntityType);
 
-        // Copy Lifespan
-        this.hasLifespan = target.hasLifespan;
-        this.lifespan = target.lifespan;
-        this.currentLifeSpan = target.currentLifeSpan;
+        // Set Entity Stats
+        summonedEntity.setPersistent(true);
 
-        // Copy Drops
-        this.alwaysDropItems = target.alwaysDropItems;
-        this.chooseOneDrop = target.chooseOneDrop;
-        this.xpAmountTotal = target.xpAmountTotal;
-        this.xpSplit = target.xpSplit;
+        if (summonedEntity instanceof LivingEntity living) {
+            setEntityStats(living);
+        }
 
-        // Copy Entity Information
-        this.baseEntityType = target.baseEntityType;
-        this.summonedEntity = target.summonedEntity;
-        this.maxHealth = target.maxHealth;
-        this.scaleHealth = target.scaleHealth;
-        this.scaleFactor = target.scaleFactor;
-
-        // Copy Internals
-        this.inbuiltName = target.inbuiltName;
+        // Create Bossbar
+        if (hasBossbar) bossbar = Bukkit.createBossBar(bossbarTitle, bossbarColor, bossbarStyle);
     }
 
+    /**
+     * Sets the statistics of the entity.
+     *
+     * @param entity entity to set the statistics of.
+     */
+    private void setEntityStats(LivingEntity entity) {
+        // Set Health
+        AttributeInstance maxHealthAttribute = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+
+        int scaledHealth = maxHealth;
+        if (scaleHealth) {
+            for (int i = 0; i < Bukkit.getOnlinePlayers().size()-1; i++) {
+                scaledHealth = (int)Math.round((double)scaledHealth * scaleFactor);
+            }
+        }
+        this.scaledHealth = scaledHealth;
+
+        if (maxHealthAttribute != null) maxHealthAttribute.setBaseValue(scaledHealth);
+        entity.setHealth(scaledHealth);
+
+        // Lock Equipment Slots
+        EntityEquipment eq = entity.getEquipment();
+        if (eq != null) {
+            eq.setHelmetDropChance(0);
+            eq.setChestplateDropChance(0);
+            eq.setLeggingsDropChance(0);
+            eq.setBootsDropChance(0);
+            eq.setItemInMainHandDropChance(0);
+            eq.setItemInOffHandDropChance(0);
+        }
+    }
+
+    /**
+     * Called every tick that the entity is alive
+     */
     @Override
     public void tick() {
         if (hasBossbar) handleBossbar();
         if (hasLifespan) currentLifeSpan++;
 
         // Death Check
-        if (!isAlive()) kill();
+        if (!isAlive()) onDeath();
+    }
+
+    /**
+     * Called when the entity dies
+     */
+    @Override
+    public void onDeath() {
+        createDrops();
+
+        if (bossbar != null) bossbar.removeAll();
+        if (summonedEntity != null) summonedEntity.remove();
     }
 
     /**
@@ -124,46 +164,9 @@ public abstract class AbstractCustomEntity implements ICustomEntity, Cloneable {
     }
 
     @Override
-    public void spawn(Location location) {
-        this.spawnLocation = location;
-        World spawnWorld = location.getWorld();
-        if (spawnWorld == null) return;
-        summonedEntity = spawnWorld.spawnEntity(location, baseEntityType);
-
-        // Set Entity Stats
-        summonedEntity.setPersistent(true);
-
-        if (summonedEntity instanceof LivingEntity living) {
-            // Set Health
-            AttributeInstance maxHealthAttribute = living.getAttribute(Attribute.GENERIC_MAX_HEALTH);
-
-            int scaledHealth = (int)Math.round(Bukkit.getOnlinePlayers().size() * scaleFactor * maxHealth);
-
-            if (maxHealthAttribute != null) maxHealthAttribute.setBaseValue(scaledHealth);
-            living.setHealth(scaledHealth);
-
-            // Lock Equipment Slots
-            EntityEquipment eq = living.getEquipment();
-            if (eq != null) {
-                eq.setHelmetDropChance(0);
-                eq.setChestplateDropChance(0);
-                eq.setLeggingsDropChance(0);
-                eq.setBootsDropChance(0);
-                eq.setItemInMainHandDropChance(0);
-                eq.setItemInOffHandDropChance(0);
-            }
-        }
-
-        // Create Bossbar
-        if (hasBossbar) bossbar = Bukkit.createBossBar(bossbarText, bossbarColor, bossbarStyle);
-    }
-
-    @Override
-    public void kill() {
-        createDrops();
-
-        if (bossbar != null) bossbar.removeAll();
-        if (summonedEntity != null) summonedEntity.remove();
+    public void switchBossbarColor(BarColor color) {
+        bossbar.removeAll();
+        if (hasBossbar) bossbar = Bukkit.createBossBar(bossbarTitle, color, bossbarStyle);
     }
 
     /**
@@ -200,7 +203,13 @@ public abstract class AbstractCustomEntity implements ICustomEntity, Cloneable {
         }
     }
 
-    // ----- Settings -----
+    @Override
+    public boolean isAlive() {
+        if (currentLifeSpan > lifespan && hasLifespan) return false;
+        return summonedEntity.isValid();
+    }
+
+    // ----- GETTERS / SETTERS -----
 
     public void scaleHealth(double scaleFactor) {
         this.scaleHealth = true;
@@ -211,15 +220,6 @@ public abstract class AbstractCustomEntity implements ICustomEntity, Cloneable {
         this.hasLifespan = true;
 
         this.lifespan = lifespan;
-    }
-
-    public void addBossbar(String text, double activationRange, BarColor color, BarStyle style) {
-        this.hasBossbar = true;
-
-        this.bossbarText = text;
-        this.bossbarActivationRange = activationRange;
-        this.bossbarColor = color;
-        this.bossbarStyle = style;
     }
 
     /**
@@ -262,15 +262,13 @@ public abstract class AbstractCustomEntity implements ICustomEntity, Cloneable {
         this.xpSplit = split;
     }
 
-    @Override
-    public String getInbuiltName() {
-        return inbuiltName;
+    public Location getSpawnLocation() {
+        return spawnLocation;
     }
 
     @Override
-    public boolean isAlive() {
-        if (currentLifeSpan > lifespan) return false;
-        return summonedEntity.isValid();
+    public String getInbuiltName() {
+        return inbuiltName;
     }
 
     @Override
@@ -279,15 +277,31 @@ public abstract class AbstractCustomEntity implements ICustomEntity, Cloneable {
     }
 
     @Override
-    public abstract AbstractCustomEntity clone();
+    public LivingEntity getEntity() {
+        return (LivingEntity)summonedEntity;
+    }
 
+    @Override
+    public double getMaxHealth() {
+        return scaledHealth;
+    }
 
-    // TODO: Create a builder and use that instead of separate classes
+    @Override
+    public double getCurrentHealth() {
+        return ((LivingEntity)summonedEntity).getHealth();
+    }
+
+    // ----- BUILDER -----
+
     protected static abstract class AbstractCustomEntityBuilder<T extends AbstractCustomEntity, B extends AbstractCustomEntityBuilder> {
 
         T obj;
 
         // ----- Custom Entity Attributes -----
+
+        // Entity Base
+        EntityType baseEntity;
+        String inbuiltName;
 
         // Bossbar
         boolean hasBossbar = false;
@@ -307,21 +321,20 @@ public abstract class AbstractCustomEntity implements ICustomEntity, Cloneable {
         int xpSplit = 1;
 
         // Entity Stats
-        int maxHealth;
-        boolean scalesHealth;
-        double healthScaleFactor;
+        int maxHealth = 20;
+        boolean scalesHealth = false;
+        double healthScaleFactor = 1;
 
-        // Potion effects
+        public AbstractCustomEntityBuilder(EntityType baseEntity, String inbuiltName) {
+            this.baseEntity = baseEntity;
+            this.inbuiltName = inbuiltName;
 
-        // Entity Appearance
-
-        public AbstractCustomEntityBuilder() {
             obj = createObj();
         }
 
         public T build() {
             obj.hasBossbar = hasBossbar;
-            obj.bossbarText = bossbarText;
+            obj.bossbarTitle = bossbarText;
             obj.bossbarActivationRange = bossbarActivationRange;
             obj.bossbarColor = bossbarColor;
             obj.bossbarStyle = bossbarStyle;
@@ -391,4 +404,49 @@ public abstract class AbstractCustomEntity implements ICustomEntity, Cloneable {
             return getThis();
         }
     }
+
+    // ----- CLONE CONSTRUCTOR & METHOD -----
+
+    /**
+     * Clone constructor
+     *
+     * @param target the target object to clone
+     */
+    public AbstractCustomEntity(AbstractCustomEntity target) {
+        // Copy Bossbar
+        this.bossbar = target.bossbar;
+        this.hasBossbar = target.hasBossbar;
+        this.bossbarTitle = target.bossbarTitle;
+        this.bossbarActivationRange = target.bossbarActivationRange;
+        this.bossbarColor = target.bossbarColor;
+        this.bossbarStyle = target.bossbarStyle;
+
+        // Copy World Information
+        this.spawnLocation = target.spawnLocation;
+
+        // Copy Lifespan
+        this.hasLifespan = target.hasLifespan;
+        this.lifespan = target.lifespan;
+        this.currentLifeSpan = target.currentLifeSpan;
+
+        // Copy Drops
+        this.alwaysDropItems = target.alwaysDropItems;
+        this.chooseOneDrop = target.chooseOneDrop;
+        this.xpAmountTotal = target.xpAmountTotal;
+        this.xpSplit = target.xpSplit;
+
+        // Copy Entity Information
+        this.baseEntityType = target.baseEntityType;
+        this.summonedEntity = target.summonedEntity;
+        this.maxHealth = target.maxHealth;
+        this.scaleHealth = target.scaleHealth;
+        this.scaleFactor = target.scaleFactor;
+        this.scaledHealth = target.scaledHealth;
+
+        // Copy Internals
+        this.inbuiltName = target.inbuiltName;
+    }
+
+    @Override
+    public abstract AbstractCustomEntity clone();
 }
