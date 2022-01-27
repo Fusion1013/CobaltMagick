@@ -1,5 +1,6 @@
 package se.fusion1013.plugin.cobaltmagick.spells.movementmodifier;
 
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
 
 /**
@@ -12,5 +13,7 @@ public interface IMovementModifier {
      * @param currentVelocity the current velocity of the spell
      * @return new vector
      */
-    Vector modifyVelocityVector(Vector currentVelocity);
+    Vector modifyVelocityVector(LivingEntity caster, Vector currentVelocity);
+
+    IMovementModifier clone();
 }
