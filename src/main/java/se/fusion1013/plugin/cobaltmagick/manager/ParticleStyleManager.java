@@ -10,7 +10,7 @@ public class ParticleStyleManager extends Manager {
 
     private static ParticleStyleManager INSTANCE = null;
     /**
-     * Returns the object representing this <code>CommandManager</code>.
+     * Returns the object representing this <code>ParticleStyleManager</code>.
      *
      * @return The object of this class
      */
