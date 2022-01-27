@@ -119,6 +119,7 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
         this.wand = wand;
         this.velocityVector = direction;
         this.currentLocation = location;
+        this.lastLocation = location.clone();
         this.currentLifetime = lifetime;
 
         // Apply spread
@@ -164,7 +165,6 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
         }
         currentLifetime -= .05;
 
-        display();
         move();
         display();
 
@@ -261,7 +261,10 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
     }
 
     private void display(){
-        if (particleGroup != null) particleGroup.display(currentLocation);
+        if (particleGroup != null) {
+            particleGroup.display(currentLocation.clone());
+            particleGroup.display(lastLocation.clone(), currentLocation.clone());
+        }
     }
 
     @Override
