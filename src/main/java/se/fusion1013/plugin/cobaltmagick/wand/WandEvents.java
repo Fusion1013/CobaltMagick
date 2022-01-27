@@ -3,10 +3,12 @@ package se.fusion1013.plugin.cobaltmagick.wand;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -24,6 +26,13 @@ import java.util.List;
 import java.util.UUID;
 
 public class WandEvents implements Listener {
+
+    @EventHandler
+    public void onItemPickup(EntityPickupItemEvent event) {
+        ItemStack item = event.getItem().getItemStack();
+        Wand wand = Wand.getWand(item);
+        if (wand != null) wand.forceRecharge();
+    }
 
     @EventHandler
     public void onItemSpawn(ItemSpawnEvent event){
