@@ -93,7 +93,7 @@ public class WandEvents implements Listener {
         Player p = event.getPlayer();
 
         ItemStack is = p.getInventory().getItemInMainHand();
-        if (is.getType() == Material.AIR) return;
+        if (is.getType() == Material.AIR || event.getAction() == Action.PHYSICAL) return;
 
         Wand wand = Wand.getWand(is);
         if (wand == null) return;
