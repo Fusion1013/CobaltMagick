@@ -65,6 +65,7 @@ public class WandEvents implements Listener {
     @EventHandler
     public void onPlayerDrop(PlayerDropItemEvent event){
         Player p = event.getPlayer();
+        if (p.isSneaking()) return;
 
         ItemStack is = event.getItemDrop().getItemStack();
         if (is.getType() == Material.AIR) return;
