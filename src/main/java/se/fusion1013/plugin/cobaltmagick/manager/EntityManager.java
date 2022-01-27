@@ -65,15 +65,16 @@ public class EntityManager extends Manager implements Runnable {
     }
 
     /**
-     * Returns a list of all custom entity names
+     * Returns an array of all custom entity names
      *
-     * @return
+     * @return an array of all custom entity names
      */
-    public List<String> getCustomEntityNames() {
-        List<String> names = new ArrayList<>();
-        for (ICustomEntity entity : inbuiltCustomEntities) {
-            names.add(entity.getInbuiltName());
+    public String[] getCustomEntityNames() {
+        String[] names = new String[inbuiltCustomEntities.size()];
+        for (int i = 0; i < inbuiltCustomEntities.size(); i++) {
+            names[i] = inbuiltCustomEntities.get(i).getInbuiltName();
         }
+
         return names;
     }
 
