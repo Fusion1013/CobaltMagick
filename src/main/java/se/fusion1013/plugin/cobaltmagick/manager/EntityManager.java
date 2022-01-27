@@ -112,7 +112,7 @@ public class EntityManager extends Manager implements Runnable {
     @Override
     public void disable() {
         for (ICustomEntity customEntity : summonedCustomEntities) {
-            customEntity.kill();
+            customEntity.onDeath();
         }
     }
 
