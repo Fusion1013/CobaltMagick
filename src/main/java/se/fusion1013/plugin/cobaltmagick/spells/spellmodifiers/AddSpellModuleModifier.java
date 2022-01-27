@@ -1,6 +1,7 @@
 package se.fusion1013.plugin.cobaltmagick.spells.spellmodifiers;
 
 import se.fusion1013.plugin.cobaltmagick.spells.*;
+import se.fusion1013.plugin.cobaltmagick.spells.movementmodifier.IMovementModifier;
 import se.fusion1013.plugin.cobaltmagick.spells.spellmodules.AbstractSpellModule;
 import se.fusion1013.plugin.cobaltmagick.spells.spellmodules.SpellModule;
 
@@ -15,6 +16,8 @@ public class AddSpellModuleModifier extends AbstractSpellModifier<AddSpellModule
     List<SpellModule> onBlockCollision = new ArrayList<>();
     List<SpellModule> onDeath = new ArrayList<>();
 
+    List<IMovementModifier> movementModifiers = new ArrayList<>();
+
     public AddSpellModuleModifier(){ }
 
     public AddSpellModuleModifier(AddSpellModuleModifier target) {
@@ -25,6 +28,13 @@ public class AddSpellModuleModifier extends AbstractSpellModifier<AddSpellModule
         this.onEntityCollision = AbstractSpellModule.cloneList(target.onEntityCollision);
         this.onBlockCollision = AbstractSpellModule.cloneList(target.onBlockCollision);
         this.onDeath = AbstractSpellModule.cloneList(target.onDeath);
+
+        this.movementModifiers = AbstractSpellModule.cloneMovementList(target.movementModifiers);
+    }
+
+    public AddSpellModuleModifier addMovementModifier(IMovementModifier modifier) {
+        this.movementModifiers.add(modifier);
+        return getThis();
     }
 
     public AddSpellModuleModifier addOnCollisionDeath(SpellModule onCollisionDeath){
@@ -77,7 +87,9 @@ public class AddSpellModuleModifier extends AbstractSpellModifier<AddSpellModule
     }
 
     @Override
-    public void modifyMovableSpell(MovableSpell spellToModify) { }
+    public void modifyMovableSpell(MovableSpell spellToModify) {
+        movementModifiers.forEach(spellToModify::addMovementModifier);
+    }
 
     @Override
     public AddSpellModuleModifier clone() {
