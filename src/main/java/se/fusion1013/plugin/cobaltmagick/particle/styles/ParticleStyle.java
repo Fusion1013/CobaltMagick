@@ -5,6 +5,7 @@ import org.bukkit.Particle;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltmagick.particle.PParticle;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class ParticleStyle implements IParticleStyle, Cloneable {
@@ -67,14 +68,15 @@ public abstract class ParticleStyle implements IParticleStyle, Cloneable {
 
     @Override
     public List<PParticle> getParticles(Location location) {
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
-    public List<PParticle> getParticles(Location startLocation, Location endLocation) { return null; }
+    public List<PParticle> getParticles(Location startLocation, Location endLocation) { return new ArrayList<>(); }
 
     public Vector getOffset() {
-        return offset.clone();
+        if (offset != null) return offset.clone();
+        return null;
     }
 
     public int getCount() {
