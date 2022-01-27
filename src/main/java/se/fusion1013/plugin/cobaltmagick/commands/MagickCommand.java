@@ -4,8 +4,11 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.*;
+import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -13,18 +16,23 @@ import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginDescriptionFile;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
-import se.fusion1013.plugin.cobaltmagick.manager.ConfigManager;
-import se.fusion1013.plugin.cobaltmagick.manager.DreamManager;
-import se.fusion1013.plugin.cobaltmagick.manager.EntityManager;
-import se.fusion1013.plugin.cobaltmagick.manager.LocaleManager;
+import se.fusion1013.plugin.cobaltmagick.manager.*;
 import se.fusion1013.plugin.cobaltmagick.util.HexUtils;
 import se.fusion1013.plugin.cobaltmagick.util.SchematicUtil;
 import se.fusion1013.plugin.cobaltmagick.util.StringPlaceholders;
+import se.fusion1013.plugin.cobaltmagick.world.structures.MusicBox;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MagickCommand {
+
+    // ----- REGISTER -----
+
     public static void register(){
 
         // Main magick command
@@ -36,12 +44,45 @@ public class MagickCommand {
                 .withSubcommand(createDreamCommand())
                 .withSubcommand(createConfigCommand())
                 .withSubcommand(createSummonCommand())
+                .withSubcommand(createSummonRelativeCommand())
+                .withSubcommand(createStructureCommand())
+                .withSubcommand(createUpdateCommand())
                 .register();
     }
 
+    // ----- CREATE COMMANDS -----
+
+    private static CommandAPICommand createUpdateCommand() {
+        return new CommandAPICommand("update")
+                .withPermission("commands.magick.update")
+                .withArguments(new StringArgument("file name"))
+                .withArguments(new GreedyStringArgument("url"))
+                .executes(((sender, args) -> {
+                    try {
+                        File file1 = new File("plugins", (String)args[0]); // TODO: Replace path getting
+                        FileUtils.copyURLToFile(new URL((String)args[1]), file1);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }));
+    }
+
+    private static CommandAPICommand createStructureCommand() {
+        return new CommandAPICommand("structure")
+                .withPermission("commands.magick.structure")
+                .withSubcommand(new CommandAPICommand("music_box")
+                        .executesPlayer(MagickCommand::placeMusicBox)
+                        .withArguments(new GreedyStringArgument("sound")));
+    } // TODO: Replace sound suggestions
+
+    private static void placeMusicBox(Player p, Object[] args) {
+        Location location = p.getLocation();
+        String sound = (String)args[0];
+        WorldManager.registerMusicBox(location, sound);
+    }
+
     private static CommandAPICommand createSummonCommand() {
-        List<String> keys = EntityManager.getInstance().getCustomEntityNames();
-        String[] entityKeys = keys.toArray(new String[0]);
+        String[] entityKeys = EntityManager.getInstance().getCustomEntityNames();
 
         return new CommandAPICommand("summon")
                 .withPermission("commands.magick.summon")
@@ -54,6 +95,24 @@ public class MagickCommand {
                 }))
                 .executesEntity(((sender, args) -> {
                     EntityManager.getInstance().spawnCustomEntity((String)args[0], sender.getLocation());
+                }));
+    }
+
+    private static CommandAPICommand createSummonRelativeCommand() {
+        String[] entityKeys = EntityManager.getInstance().getCustomEntityNames();
+
+        return new CommandAPICommand("summon")
+                .withPermission("commands.magick.summon")
+                .withArguments(new StringArgument("entity").replaceSuggestions(info -> entityKeys))
+                .withArguments(new LocationArgument("location"))
+                .executesPlayer((sender, args) -> {
+                    EntityManager.getInstance().spawnCustomEntity((String)args[0], (Location)args[1]);
+                })
+                .executesCommandBlock(((sender, args) -> {
+                    EntityManager.getInstance().spawnCustomEntity((String)args[0], (Location)args[1]);
+                }))
+                .executesEntity(((sender, args) -> {
+                    EntityManager.getInstance().spawnCustomEntity((String)args[0], (Location)args[1]);
                 }));
     }
 
