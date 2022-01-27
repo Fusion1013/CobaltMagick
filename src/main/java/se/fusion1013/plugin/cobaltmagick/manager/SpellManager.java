@@ -4,6 +4,7 @@ import org.bukkit.*;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -12,6 +13,7 @@ import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.particle.ParticleGroup;
 import se.fusion1013.plugin.cobaltmagick.particle.styles.ParticleStyleCube;
+import se.fusion1013.plugin.cobaltmagick.particle.styles.ParticleStyleLine;
 import se.fusion1013.plugin.cobaltmagick.particle.styles.ParticleStylePoint;
 import se.fusion1013.plugin.cobaltmagick.particle.styles.ParticleStyleSphere;
 import se.fusion1013.plugin.cobaltmagick.spells.*;
@@ -25,50 +27,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Manages all spells.
+ */
 public class SpellManager extends Manager {
+
+    // ----- VARIABLES -----
 
     public static final Map<Integer, Spell> INBUILT_SPELLS = new HashMap<>();
     static NamespacedKey spellKey = new NamespacedKey(CobaltMagick.getInstance(), "spell");
 
-    private Map<Integer, Spell> activeSpells = new HashMap<>();
-    private Map<Integer, BukkitTask> activeSpellTasks = new HashMap<>();
-    public void addActiveSpell(Spell spell, BukkitTask task, int hashCode){
-        activeSpells.put(hashCode, spell);
-        activeSpellTasks.put(hashCode, task);
-    }
-    public void removeActiveSpell(int hashCode){
-        activeSpells.remove(hashCode);
-        activeSpellTasks.remove(hashCode);
-    }
-
-    /**
-     * Kills all active spells. Returns the number of spells killed
-     *
-     * @return number of spells killed
-     */
-    public int killAllSpells(){
-        int nSpells = activeSpellTasks.size();
-        for (BukkitTask s : activeSpellTasks.values()){
-            s.cancel();
-        }
-        activeSpells.clear();
-        activeSpellTasks.clear();
-        return nSpells;
-    }
-
-
-    private static SpellManager INSTANCE = null;
-    /**
-     * Returns the object representing this <code>CommandManager</code>.
-     *
-     * @return The object of this class
-     */
-    public static SpellManager getInstance(){
-        if (INSTANCE == null){
-            INSTANCE = new SpellManager(CobaltMagick.getInstance());
-        }
-        return INSTANCE;
-    }
+    private static final Map<Integer, Spell> activeSpells = new HashMap<>();
+    private static final Map<Integer, BukkitTask> activeSpellTasks = new HashMap<>();
 
     // ----- PROJECTILE SPELLS ----- ID: 1+XXX
 
@@ -76,9 +46,9 @@ public class SpellManager extends Manager {
             .addManaDrain(5).setRadius(.2).setVelocity(16).setLifetime(1.6).addCastDelay(0.05).setSpread(-1).setAffectedByAirResistance(false)
             .addExecuteOnEntityCollision(new DamageModule(2, true).setCriticalChance(5))
             .addDescription("A weak but enchanting sparkling projectile")
-            .setParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
-                    new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setExtra(new Particle.DustTransition(Color.PURPLE, Color.fromRGB(245, 66, 239), 1)).setCount(5).setOffset(new Vector(.1, .1, .1)).build()
-            ).build())
+            .setParticle(new ParticleGroup.ParticleGroupBuilder()
+                    .addStyle(new ParticleStyleLine.ParticleStyleLineBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setExtra(new Particle.DustTransition(Color.PURPLE, Color.fromRGB(245, 66, 239), 1)).setCount(5).setOffset(new Vector(.1, .1, .1)).setDensity(5).build())
+                    .build())
             .setCustomModel(2)
             .build());
 
@@ -242,9 +212,9 @@ public class SpellManager extends Manager {
             .addExecuteOnDeath(new SoundSpellModule(Sound.ENTITY_ILLUSIONER_MIRROR_MOVE, SoundCategory.PLAYERS, true))
             .addExecuteOnCast(new SoundSpellModule(Sound.ENTITY_ILLUSIONER_PREPARE_MIRROR, SoundCategory.PLAYERS, false).setPitch(2))
             .addDescription("A magical bolt that moves you wherever it ends up flying")
-            .setParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
-                    new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.END_ROD).setCount(5).setOffset(new Vector(.1, .1, .1)).build()
-            ).build())
+            .setParticle(new ParticleGroup.ParticleGroupBuilder()
+                    .addStyle(new ParticleStyleLine.ParticleStyleLineBuilder().setParticle(Particle.END_ROD).setCount(5).setOffset(new Vector(.1, .1, .1)).setDensity(5).build())
+                    .build())
             .setCustomModel(36)
             .build());
 
@@ -467,6 +437,8 @@ public class SpellManager extends Manager {
             .addDescription("Reduces the time between spellcasts")
             .setCustomModel(45)
             .build());
+
+    // TODO: public static final Spell ROTATE_TOWARDS = register()
 
     // ----- MATERIAL SPELLS ----- ID: 6+XXX
 
@@ -728,34 +700,34 @@ public class SpellManager extends Manager {
     // ----- CUSTOM SPELLS ----- ID: 9+XXX // TODO: Make a spell type and make it not appear in cgive list
 
     private static final Spell alchemist_dark_spell = register(new ProjectileSpell.ProjectileSpellBuilder(90, "alchemist_dark_spell")
-            .addManaDrain(1).setRadius(.2).setSpread(2).setVelocity(20).setLifetime(1.3)
+            .addManaDrain(1).setRadius(.2).setSpread(2).setVelocity(24).setLifetime(1.3)
             .addExecuteOnEntityCollision(new DamageModule(4, true))
             .setIsBouncy(true)
             .setParticle(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.SOUL).setCount(10).setSpeed(.04).build())
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.SOUL_FIRE_FLAME).setCount(2).setSpeed(0).build())
                     .build())
-            .addExecuteOnCast(new SoundSpellModule("minecraft:magic.zap", SoundCategory.HOSTILE, false))
-            .addExecuteOnEntityCollision(new SoundSpellModule("minecraft:magic.hit", SoundCategory.HOSTILE, false))
+            .addExecuteOnCast(new SoundSpellModule("minecraft:magic.zap", SoundCategory.HOSTILE, false).setVolume(.5f))
+            .addExecuteOnEntityCollision(new SoundSpellModule("minecraft:magic.hit", SoundCategory.HOSTILE, false).setVolume(.5f))
             .addDescription("This spell is intended for use by the Alchemist boss, not for gameplay!")
             .build());
 
     private static final Spell alchemist_glowing_spell = register(new ProjectileSpell.ProjectileSpellBuilder(91, "alchemist_glowing_spell")
-            .addManaDrain(1).setRadius(.2).setSpread(10).setVelocity(17).setLifetime(1.6)
+            .addManaDrain(1).setRadius(.2).setSpread(10).setVelocity(20).setLifetime(1.6)
             .addExecuteOnEntityCollision(new DamageModule(4, true))
             .setParticle(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.END_ROD).setCount(3).setOffset(new Vector(.1, .1, .1)).build())
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setExtra(new Particle.DustTransition(Color.WHITE, Color.YELLOW, 1)).setOffset(new Vector(.2, .2, .2)).build())
                     .build())
-            .addExecuteOnCast(new SoundSpellModule("minecraft:magic.zap", SoundCategory.HOSTILE, false))
-            .addExecuteOnCast(new SoundSpellModule("minecraft:block.beacon.deactivate", SoundCategory.HOSTILE, false))
-            .addExecuteOnEntityCollision(new SoundSpellModule("minecraft:magic.hit", SoundCategory.HOSTILE, false))
+            .addExecuteOnCast(new SoundSpellModule("minecraft:magic.zap", SoundCategory.HOSTILE, false).setVolume(.5f))
+            .addExecuteOnCast(new SoundSpellModule("minecraft:block.beacon.deactivate", SoundCategory.HOSTILE, false).setVolume(.5f))
+            .addExecuteOnEntityCollision(new SoundSpellModule("minecraft:magic.hit", SoundCategory.HOSTILE, false).setVolume(.5f))
             .addDescription("This spell is intended for use by the Alchemist boss, not for gameplay!")
             .setCollidesWithBlocks(false)
             .build());
 
     private static final Spell alchemist_volatile_spell = register(new ProjectileSpell.ProjectileSpellBuilder(92, "alchemist_volatile_spell")
-            .addManaDrain(1).setRadius(.4).setSpread(0).setVelocity(14).setLifetime(2)
+            .addManaDrain(1).setRadius(.4).setSpread(0).setVelocity(17).setLifetime(2)
             .addExecuteOnEntityCollision(new DamageModule(10, true))
             .addExecuteOnCollision(new ExplodeModule(true).overrideRadius(2))
             .setParticle(new ParticleGroup.ParticleGroupBuilder()
@@ -764,14 +736,14 @@ public class SpellManager extends Manager {
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.SMOKE_NORMAL).setRadius(.25).setDensity(5).build())
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.SMOKE_LARGE).setCount(2).setOffset(new Vector(.05, .05, .05)).build())
                     .build())
-            .addExecuteOnCast(new SoundSpellModule("minecraft:magic.zap", SoundCategory.HOSTILE, false))
-            .addExecuteOnCast(new SoundSpellModule("minecraft:item.firecharge.use", SoundCategory.HOSTILE, false))
-            .addExecuteOnEntityCollision(new SoundSpellModule("minecraft:magic.hit", SoundCategory.HOSTILE, false))
+            .addExecuteOnCast(new SoundSpellModule("minecraft:magic.zap", SoundCategory.HOSTILE, false).setVolume(.5f))
+            .addExecuteOnCast(new SoundSpellModule("minecraft:item.firecharge.use", SoundCategory.HOSTILE, false).setVolume(.5f))
+            .addExecuteOnEntityCollision(new SoundSpellModule("minecraft:magic.hit", SoundCategory.HOSTILE, false).setVolume(.5f))
             .addDescription("This spell is intended for use by the Alchemist boss, not for gameplay!")
             .build());
 
     private static final Spell alchemist_thunder_spell = register(new ProjectileSpell.ProjectileSpellBuilder(93, "alchemist_thunder_spell")
-            .addManaDrain(1).setRadius(.4).setSpread(0).setVelocity(17).setLifetime(1.6)
+            .addManaDrain(1).setRadius(.4).setSpread(0).setVelocity(20).setLifetime(1.6)
             .addExecuteOnEntityCollision(new DamageModule(15, true))
             .addExecuteOnEntityCollision(new EntitySpellModule(EntityType.LIGHTNING, true))
             .addExecuteOnEntityCollision(new EffectModule(true).setPotionEffect(new PotionEffect(PotionEffectType.SLOW, 10, 1, true, false)))
@@ -779,10 +751,10 @@ public class SpellManager extends Manager {
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.END_ROD).setCount(2).setOffset(new Vector(.1, .1, .1)).build())
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setExtra(new Particle.DustTransition(Color.BLUE, Color.SILVER, 1)).setCount(4).setOffset(new Vector(.2, .2, .2)).build())
                     .build())
-            .addExecuteOnCast(new SoundSpellModule("minecraft:magic.zap", SoundCategory.HOSTILE, false))
-            .addExecuteOnCast(new SoundSpellModule("minecraft:block.beacon.deactivate", SoundCategory.HOSTILE, false))
-            .addExecuteOnEntityCollision(new SoundSpellModule("minecraft:magic.hit", SoundCategory.HOSTILE, false))
-            .addExecuteOnEntityCollision(new SoundSpellModule("minecraft:item.trident.thunder", SoundCategory.HOSTILE, false))
+            .addExecuteOnCast(new SoundSpellModule("minecraft:magic.zap", SoundCategory.HOSTILE, false).setVolume(.5f))
+            .addExecuteOnCast(new SoundSpellModule("minecraft:block.beacon.deactivate", SoundCategory.HOSTILE, false).setVolume(.5f))
+            .addExecuteOnEntityCollision(new SoundSpellModule("minecraft:magic.hit", SoundCategory.HOSTILE, false).setVolume(.5f))
+            .addExecuteOnEntityCollision(new SoundSpellModule("minecraft:item.trident.thunder", SoundCategory.HOSTILE, false).setVolume(.5f))
             .addExecuteOnCollision(new ParticleModule(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.ELECTRIC_SPARK).setCount(10).setOffset(new Vector(1, 1, 1)).build())
                     .build(), false))
@@ -790,22 +762,122 @@ public class SpellManager extends Manager {
             .build());
 
     private static final Spell alchemist_main_spell = register(new ProjectileSpell.ProjectileSpellBuilder(94, "alchemist_main_spell")
-            .addManaDrain(1).setRadius(.2).setSpread(2).setVelocity(10).setLifetime(4)
-            .addExecuteOnEntityCollision(new DamageModule(4, true))
+            .addManaDrain(1).setRadius(.1).setSpread(2).setVelocity(8).setLifetime(6)
+            .addExecuteOnEntityCollision(new DamageModule(12, true))
             .setIsBouncy(true)
             .setParticle(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setExtra(new Particle.DustTransition(Color.PURPLE, Color.MAROON, 1)).setCount(10).setSpeed(.04).build())
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setExtra(new Particle.DustTransition(Color.BLUE, Color.WHITE, 2)).setCount(2).setSpeed(0).build())
                     .build())
-            .addExecuteOnCast(new SoundSpellModule("minecraft:magic.zap", SoundCategory.HOSTILE, false))
-            .addExecuteOnEntityCollision(new SoundSpellModule("minecraft:magic.hit", SoundCategory.HOSTILE, false))
+            .addExecuteOnCast(new SoundSpellModule("minecraft:magic.zap", SoundCategory.HOSTILE, false).setVolume(.5f))
+            .addExecuteOnEntityCollision(new SoundSpellModule("minecraft:magic.hit", SoundCategory.HOSTILE, false).setVolume(.5f))
+            .addExecuteOnEntityCollision(new ParticleModule(new ParticleGroup.ParticleGroupBuilder()
+                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.CRIT_MAGIC).setCount(10).setOffset(new Vector(.2, .2, .2)).build())
+                    .build(), false))
             .addDescription("This spell is intended for use by the Alchemist boss, not for gameplay!")
             .addMovementModifier(new HomingMovementModifier().setRotateTowards(20))
             .build());
 
+    /**
+     * Registers a spell.
+     *
+     * @param spell the spell to register
+     * @param <T> the spell type.
+     * @return the registered spell.
+     */
     private static <T extends Spell> T register(final T spell){
         INBUILT_SPELLS.put(spell.getId(), spell);
         return spell;
+    }
+
+    // ----- SPELL STORING -----
+
+    public void addActiveSpell(Spell spell, BukkitTask task, int hashCode){
+        activeSpells.put(hashCode, spell);
+        activeSpellTasks.put(hashCode, task);
+    }
+    public void removeActiveSpell(int hashCode){
+        activeSpells.remove(hashCode);
+        activeSpellTasks.remove(hashCode);
+    }
+
+    public void cancelSpell(int hashCode) {
+        activeSpells.remove(hashCode);
+        activeSpellTasks.get(hashCode).cancel();
+        activeSpellTasks.remove(hashCode);
+    }
+
+    /**
+     * Kills all active spells. Returns the number of spells killed
+     *
+     * @return number of spells killed
+     */
+    public int killAllSpells(){
+        int nSpells = activeSpellTasks.size();
+        for (BukkitTask s : activeSpellTasks.values()){
+            s.cancel();
+        }
+        activeSpells.clear();
+        activeSpellTasks.clear();
+        return nSpells;
+    }
+
+    /**
+     * Kills all active spells that are within the specified distance.
+     *
+     * @param location the center location from where to kill the spells from.
+     * @param distance the max distance to the spells.
+     * @return the number of spells killed.
+     */
+    public int killAllSpells(Location location, double distance) {
+        int nSpells = 0;
+        for (int hashCode : activeSpellTasks.keySet()) {
+            ISpell spell = activeSpells.get(hashCode);
+            if (spell.getLocation().distanceSquared(location) <= distance*distance) {
+                cancelSpell(hashCode);
+                nSpells++;
+            }
+        }
+        return nSpells;
+    }
+
+    // ----- GETTERS / SETTERS -----
+
+    public static ISpell[] getSpellsOfType(Spell.SpellType type) {
+        List<ISpell> spellsOfType = new ArrayList<>();
+        for (ISpell spell : INBUILT_SPELLS.values()) {
+            if (spell.getSpellType() == type) spellsOfType.add(spell.clone());
+        }
+        return spellsOfType.toArray(new ISpell[0]);
+    }
+
+    /**
+     * Gets a list of all spell type names.
+     *
+     * @return a list of all spell type names.
+     */
+    public static String[] getTypeNames() {
+        Spell.SpellType[] types = Spell.SpellType.values();
+        String[] typeNames = new String[types.length];
+        for (int i = 0; i < types.length; i++){
+            Spell.SpellType type = types[i];
+            typeNames[i] = type.toString().toLowerCase();
+        }
+        return typeNames;
+    }
+
+    /**
+     * Gets a list of all spell names.
+     *
+     * @return a list of spell names.
+     */
+    public static String[] getSpellNames() {
+        String[] names = new String[INBUILT_SPELLS.size()];
+        List<ISpell> spells = getAllSpells();
+        for (int i = 0; i < INBUILT_SPELLS.size(); i++) {
+            names[i] = spells.get(i).getInternalSpellName();
+        }
+        return names;
     }
 
     /**
@@ -853,21 +925,41 @@ public class SpellManager extends Manager {
 
         if (meta == null) return null;
 
-        if (meta.getPersistentDataContainer().has(spellKey, PersistentDataType.INTEGER)){
-            int spellId = meta.getPersistentDataContainer().get(spellKey, PersistentDataType.INTEGER);
-            ISpell spell = getSpell(spellId);
-            spell.setCount(stack.getAmount());
+        PersistentDataContainer container = meta.getPersistentDataContainer();
 
+        if (container.has(spellKey, PersistentDataType.INTEGER)){
+            int spellId = container.get(spellKey, PersistentDataType.INTEGER);
+            ISpell spell = getSpell(spellId);
+            if (spell != null) spell.setCount(stack.getAmount());
             return spell;
         } else {
             return null;
         }
     }
 
+    // ----- INSTANCE VARIABLE & METHOD -----
+
+    private static SpellManager INSTANCE = null;
+    /**
+     * Returns the object representing this <code>CommandManager</code>.
+     *
+     * @return The object of this class
+     */
+    public static SpellManager getInstance(){
+        if (INSTANCE == null){
+            INSTANCE = new SpellManager(CobaltMagick.getInstance());
+        }
+        return INSTANCE;
+    }
+
+    // ----- CONSTRUCTOR -----
+
     public SpellManager(CobaltMagick cobaltMagick) {
         super(cobaltMagick);
         INSTANCE = this;
     }
+
+    // ----- RELOADING / DISABLING -----
 
     @Override
     public void reload() {
