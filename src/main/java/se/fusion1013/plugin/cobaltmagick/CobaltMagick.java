@@ -43,8 +43,7 @@ public final class CobaltMagick extends JavaPlugin implements CobaltMagickPlugin
 
     @Override
     public void onDisable() {
-        getLogger().info("Saving wands...");
-        Wand.saveAllWandData();
+        this.managers.values().forEach(Manager::disable);
     }
 
     public static CobaltMagick getInstance(){
@@ -111,6 +110,7 @@ public final class CobaltMagick extends JavaPlugin implements CobaltMagickPlugin
         this.getManager(ChatManager.class);
         this.getManager(EntityManager.class);
         this.getManager(WandManager.class);
+        this.getManager(WorldManager.class);
     }
 
     public void onEnableRegistration(){
