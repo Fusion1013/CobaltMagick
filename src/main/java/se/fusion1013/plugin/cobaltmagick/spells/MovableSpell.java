@@ -29,6 +29,7 @@ public abstract class MovableSpell extends Spell implements Cloneable {
     boolean moves;
     Vector velocityVector = new Vector(0, 0, 0);
     Location currentLocation;
+    Location lastLocation;
 
     // Collision
     boolean collidesWithEntities = true;
@@ -68,6 +69,7 @@ public abstract class MovableSpell extends Spell implements Cloneable {
         this.moves = movableSpell.getMoves();
         this.velocityVector = movableSpell.getVelocityVector();
         this.currentLocation = movableSpell.getLocation();
+        this.lastLocation = movableSpell.getLastLocation();
 
         this.collidesWithEntities = movableSpell.getCollidesWithEntities();
         this.collidesWithBlocks = movableSpell.getCollidesWithBlocks();
@@ -93,8 +95,8 @@ public abstract class MovableSpell extends Spell implements Cloneable {
 
         // PERFORM DIRECTION CHANGING OPERATIONS
         for (IMovementModifier movMod : movementModifiers) {
-            if (movMod instanceof HomingMovementModifier homing) velocityVector = homing.modifyVelocityVector(velocityVector, currentLocation, caster);
-            else velocityVector = movMod.modifyVelocityVector(velocityVector);
+            if (movMod instanceof HomingMovementModifier homing) velocityVector = homing.modifyVelocityVector(caster, velocityVector, currentLocation, caster);
+            else velocityVector = movMod.modifyVelocityVector(caster, velocityVector);
         }
 
         if (affectedByGravity) applyGravity();
@@ -115,6 +117,8 @@ public abstract class MovableSpell extends Spell implements Cloneable {
      * Fires onEntityCollide and onBlockCollide
      */
     public void performMovementStep(){
+        lastLocation = currentLocation.clone(); // Update last location
+
         double distanceMoved = 0;
         double distanceToMove = velocityVector.length();
 
@@ -417,6 +421,10 @@ public abstract class MovableSpell extends Spell implements Cloneable {
         }
     }
 
+    public void addMovementModifier(IMovementModifier modifier) {
+        movementModifiers.add(modifier);
+    }
+
     public void setMoves(boolean moves){
         this.moves = moves;
     }
@@ -505,6 +513,11 @@ public abstract class MovableSpell extends Spell implements Cloneable {
     @Override
     public Location getLocation() {
         if (currentLocation != null) return currentLocation.clone();
+        return null;
+    }
+
+    public Location getLastLocation() {
+        if (lastLocation != null) return lastLocation.clone();
         return null;
     }
 }
