@@ -1,21 +1,16 @@
 package se.fusion1013.plugin.cobaltmagick.manager;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
-import org.bukkit.entity.EntityType;
+import org.bukkit.entity.*;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
-import se.fusion1013.plugin.cobaltmagick.entity.AlchemistEntity;
-import se.fusion1013.plugin.cobaltmagick.entity.ICustomEntity;
-import se.fusion1013.plugin.cobaltmagick.entity.WandEntity;
+import se.fusion1013.plugin.cobaltmagick.entity.*;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class EntityManager extends Manager implements Runnable {
 
@@ -50,17 +45,18 @@ public class EntityManager extends Manager implements Runnable {
         List<ISpell> wandEntitySpells = new ArrayList<>();
         wandEntitySpells.add(SpellManager.getSpell(10)); // Set default spell for wand entity
         wandEntityWand.setSpells(wandEntitySpells);
-        register(new WandEntity(wandEntityWand));
+        register(new SentientWand(wandEntityWand));
 
-        // ----- Alchemist Entity -----
+        // ----- HIGH ALCHEMIST ENTITY -----
 
-        register(new AlchemistEntity.AlchemistBuilder()
-                .setMaxHealth(300)
-                .addBossbar("High Alchemist", 50, BarColor.BLUE, BarStyle.SOLID)
+        ICustomEntity high_alchemist = register(new HighAlchemistEntity.HighAlchemistBuilder()
+                .setMaxHealth(500)
+                .addBossbar("High Alchemist", 50, BarColor.BLUE, BarStyle.SEGMENTED_10)
                 .addAlwaysDropItem(CustomItemManager.CRYSTAL_KEY.getItemStack())
                 .addXpDrop(6000, 10)
                 .scaleHealth(1.7)
                 .build());
+
     }
 
     private static ICustomEntity register(ICustomEntity entity) {
