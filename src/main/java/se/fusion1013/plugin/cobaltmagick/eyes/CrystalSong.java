@@ -1,19 +1,23 @@
 package se.fusion1013.plugin.cobaltmagick.eyes;
 
 import org.bukkit.*;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
+import se.fusion1013.plugin.cobaltmagick.event.MusicBoxEvent;
 import se.fusion1013.plugin.cobaltmagick.event.SpellCastEvent;
 import se.fusion1013.plugin.cobaltmagick.manager.CustomItemManager;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
+import se.fusion1013.plugin.cobaltmagick.world.structures.MusicBox;
 
 import java.util.*;
 
@@ -22,6 +26,8 @@ public class CrystalSong implements Listener {
     // public static final NamespacedKey crystalKey = new NamespacedKey(CobaltMagick.getInstance(), "crystal_key");
     public static final NamespacedKey darkSong1 = new NamespacedKey(CobaltMagick.getInstance(), "dark_song_part_1");
     public static final NamespacedKey darkSong2 = new NamespacedKey(CobaltMagick.getInstance(), "dark_song_part_2");
+
+    public static final NamespacedKey musicBoxCount = new NamespacedKey(CobaltMagick.getInstance(), "music_box_count");
 
     private final Map<UUID, List<String>> noteList = new HashMap<>();
 
@@ -55,11 +61,80 @@ public class CrystalSong implements Listener {
         }
     }
 
+    @EventHandler
+    public void onMusicBoxEvent(MusicBoxEvent event) {
+        int id = event.getId();
+
+        executeMusicBoxSong(event, new NamespacedKey(CobaltMagick.getInstance(), "music_box_song_part" + id));
+    }
+
     // KEY LORE FOR MUSIC BOXES::
     // 1 Box: The key remembers a song
     // 2 Boxes: The key remembers two songs
     // 3 Boxes: The key remembers three songs
     // 4 Boxes: The key is ready
+
+    private void executeMusicBoxSong(MusicBoxEvent event, NamespacedKey key) {
+        CobaltMagick.getInstance().getLogger().info("Executing Music Box Song");
+
+        Location location = event.getLocation();
+        World world = location.getWorld();
+
+        if (world == null) return;
+
+        List<Entity> nearbyEntities = new ArrayList<>(world.getNearbyEntities(location, 10, 10, 10));
+
+        for (Entity e : nearbyEntities) {
+            if (e instanceof Item item) {
+                ItemStack stack = item.getItemStack();
+                ItemMeta meta = stack.getItemMeta();
+
+                if (meta != null) {
+                    PersistentDataContainer cont = meta.getPersistentDataContainer();
+
+                    if (!cont.has(key, PersistentDataType.INTEGER) && cont.has(CustomItemManager.CRYSTAL_KEY.getNamespacedKey(), PersistentDataType.INTEGER)) {
+                        cont.set(key, PersistentDataType.INTEGER, 1);
+
+                        event.getPlayer().playSound(item.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1, 1);
+                        List<String> newLore = new ArrayList<>();
+
+                        int boxCount = 0;
+
+                        if (!cont.has(musicBoxCount, PersistentDataType.INTEGER)) {
+                            cont.set(musicBoxCount, PersistentDataType.INTEGER, 1);
+                            boxCount = 1;
+                        } else {
+                            boxCount = cont.get(musicBoxCount, PersistentDataType.INTEGER) + 1;
+                            cont.set(musicBoxCount, PersistentDataType.INTEGER, boxCount);
+                        }
+
+                        switch (boxCount) {
+                            case 1 -> {
+                                newLore.add(ChatColor.RESET + "" + ChatColor.WHITE + "The key remembers a song");
+                                event.getPlayer().sendTitle(ChatColor.GOLD + "The Key Takes in the Music", ChatColor.YELLOW + "Something is still missing...", 20, 70, 20);
+                            }
+                            case 2 -> {
+                                newLore.add(ChatColor.RESET + "" + ChatColor.WHITE + "The key remembers two songs");
+                                event.getPlayer().sendTitle(ChatColor.GOLD + "The Key Takes in the Music", ChatColor.YELLOW + "Something is still missing...", 20, 70, 20);
+                            }
+                            case 3 -> {
+                                newLore.add(ChatColor.RESET + "" + ChatColor.WHITE + "The key remembers three songs");
+                                event.getPlayer().sendTitle(ChatColor.GOLD + "The Key Takes in the Music", ChatColor.YELLOW + "Something is still missing...", 20, 70, 20);
+                            }
+                            case 4 -> {
+                                event.getPlayer().sendTitle(ChatColor.GOLD + "The Key Takes in the Music", ChatColor.YELLOW + "It is ready", 20, 70, 20);
+                                newLore.add(ChatColor.RESET + "" + ChatColor.WHITE + "The key is ready");
+                                meta.addEnchant(Enchantment.MENDING, 1, true);
+                                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                            }
+                        }
+                        meta.setLore(newLore);
+                        stack.setItemMeta(meta);
+                    }
+                }
+            }
+        }
+    }
 
     private void executeSongOfKeys(Player player, NamespacedKey key, NamespacedKey other){
         CobaltMagick.getInstance().getLogger().info("Executing song of keys: " + key.getKey());
@@ -83,6 +158,8 @@ public class CrystalSong implements Listener {
                         if (cont.has(other, PersistentDataType.INTEGER)) {
                             player.sendTitle(ChatColor.GOLD + "The Key Begins to Whisper!", ChatColor.YELLOW + "I can give you so much in exchange for...", 20, 70, 20);
                             newLore.add(ChatColor.RESET + "" + ChatColor.WHITE + "The key whispers secrets and promises; it is ready");
+                            meta.addEnchant(Enchantment.MENDING, 1, true);
+                            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                         }
                         else {
                             player.sendTitle(ChatColor.GOLD + "The Key Begins to Hum!", ChatColor.YELLOW + "Something is still missing...", 20, 70, 20);
