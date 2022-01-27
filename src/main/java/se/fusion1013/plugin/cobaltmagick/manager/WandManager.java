@@ -34,7 +34,8 @@ public class WandManager extends Manager implements Runnable {
     public void run() {
         for (Player p : Bukkit.getOnlinePlayers()) {
             List<Wand> wandList = findWandsInPlayerInventory(p);
-            boolean rechargeAllowed = CustomWorldGuardFlags.isManaRechargeAllowed(p, p.getLocation());
+            boolean rechargeAllowed = true;
+            if (WorldGuardManager.isEnabled()) rechargeAllowed = CustomWorldGuardFlags.isManaRechargeAllowed(p, p.getLocation());
 
             for (Wand wand : wandList) {
                 wand.setRegionAllowsManaRecharge(rechargeAllowed);
@@ -63,6 +64,7 @@ public class WandManager extends Manager implements Runnable {
 
     @Override
     public void disable() {
-
+        CobaltMagick.getInstance().getLogger().info("Saving wands...");
+        Wand.saveAllWandData();
     }
 }
