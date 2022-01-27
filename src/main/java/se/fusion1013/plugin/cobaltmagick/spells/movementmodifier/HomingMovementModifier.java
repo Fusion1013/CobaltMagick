@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -42,12 +43,12 @@ public class HomingMovementModifier implements IMovementModifier, Cloneable {
     // ----- MODIFY METHODS -----
 
     @Override
-    public Vector modifyVelocityVector(Vector currentVelocity) { return currentVelocity; }
+    public Vector modifyVelocityVector(LivingEntity caster, Vector currentVelocity) { return currentVelocity; }
 
-    public Vector modifyVelocityVector(Vector currentVelocity, Location currentLocation, LivingEntity... filter) {
+    public Vector modifyVelocityVector(LivingEntity caster, Vector currentVelocity, Location currentLocation, LivingEntity... filter) {
         switch (type) {
             case ROTATE_TOWARDS -> {
-                return rotateTowardsEnemy(currentVelocity, currentLocation, maxEnemyDistance, filter);
+                return rotateTowardsEnemy(caster, currentVelocity, currentLocation, maxEnemyDistance, filter);
             }
             case ACCELERATE_TOWARDS -> {
                 return accelerateTowardsEnemy(currentVelocity, maxEnemyDistance, filter);
@@ -59,8 +60,8 @@ public class HomingMovementModifier implements IMovementModifier, Cloneable {
 
     // ----- HOMING MODIFIER METHODS -----
 
-    private Vector rotateTowardsEnemy(Vector velocity, Location currentLocation, double maxEnemyDistance, LivingEntity... filter) {
-        LivingEntity targetEntity = findNearbyEntity(currentLocation, maxEnemyDistance, filter);
+    private Vector rotateTowardsEnemy(LivingEntity caster, Vector velocity, Location currentLocation, double maxEnemyDistance, LivingEntity... filter) {
+        LivingEntity targetEntity = findNearbyEntity(caster, currentLocation, maxEnemyDistance, filter);
         if (targetEntity == null) return velocity;
         Vector target = targetEntity.getLocation().toVector();
 
@@ -76,7 +77,7 @@ public class HomingMovementModifier implements IMovementModifier, Cloneable {
 
     // ----- FINDING NEARBY ENTITY METHODS ----- // TODO: Move this to util
 
-    private LivingEntity findNearbyEntity(Location location, double maxDistance, LivingEntity... filter) {
+    private LivingEntity findNearbyEntity(LivingEntity caster, Location location, double maxDistance, LivingEntity... filter) {
         World world = location.getWorld();
         if (world == null) return null;
 
@@ -88,7 +89,7 @@ public class HomingMovementModifier implements IMovementModifier, Cloneable {
             for (Entity e : nearbyEntities) {
                 if (e instanceof LivingEntity living) {
                     if (living.getLocation().distanceSquared(location) < distance && !contains(living, filter) && living.getLocation().distanceSquared(location) < maxDistance*maxDistance) {
-                        closest = living;
+                        if (caster instanceof Player || living instanceof Player) closest = living;
                     }
                 }
             }
