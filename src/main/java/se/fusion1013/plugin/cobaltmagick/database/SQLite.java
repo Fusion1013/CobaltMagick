@@ -20,6 +20,16 @@ public class SQLite extends Database {
         dbname = plugin.getConfig().getString("SQLite.Filename", "cobalt");
     }
 
+    public String SQLiteCreateMusicBoxTable = "CREATE TABLE IF NOT EXISTS music_boxes (" +
+            "`world` varchar(32) NOT NULL," +
+            "`pos_x` real NOT NULL," +
+            "`pos_y` real NOT NULL," +
+            "`pos_z` real NOT NULL," +
+            "`sound` varchar(32) NOT NULL," +
+            "`id` int(11) NOT NULL," +
+            "PRIMARY KEY (`id`)" +
+            ");";
+
     public String SQLiteCreateStatuesTable = "CREATE TABLE IF NOT EXISTS statues (" +
             "`world` varchar(32) NOT NULL," +
             "`pos_x` real NOT NULL," +
@@ -98,6 +108,7 @@ public class SQLite extends Database {
         executeString(SQLiteCreateWarpsTable);
         executeString(SQLiteCreateWandsTable);
         executeString(SQLiteCreateWandSpellsTable);
+        executeString(SQLiteCreateMusicBoxTable);
     }
 
     /**
