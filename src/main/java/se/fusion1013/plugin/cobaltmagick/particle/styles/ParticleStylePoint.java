@@ -2,6 +2,7 @@ package se.fusion1013.plugin.cobaltmagick.particle.styles;
 
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.particle.PParticle;
 
 import java.util.ArrayList;
