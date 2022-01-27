@@ -79,8 +79,9 @@ public class EntityManager extends Manager implements Runnable {
 
     public void spawnCustomEntity(ICustomEntity entity, Location location) {
         if (entity != null) {
-            entity.spawn(location);
-            summonedCustomEntities.add(entity);
+            ICustomEntity summoned = entity.clone();
+            summoned.spawn(location);
+            summonedCustomEntities.add(summoned);
         }
     }
 
