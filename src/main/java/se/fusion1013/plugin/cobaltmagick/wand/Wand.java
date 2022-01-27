@@ -136,6 +136,10 @@ public class Wand extends AbstractWand implements Runnable {
         return randomPoses.get(r.nextInt(0, randomPoses.size()));
     }
 
+    public void forceRecharge() {
+        recharge();
+    }
+
     /**
      * Sets the wand into its recharge state
      */
