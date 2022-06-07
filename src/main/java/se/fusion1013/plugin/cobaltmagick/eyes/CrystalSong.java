@@ -1,13 +1,11 @@
 package se.fusion1013.plugin.cobaltmagick.eyes;
 
 import org.bukkit.*;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -15,9 +13,8 @@ import org.bukkit.persistence.PersistentDataType;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.event.MusicBoxEvent;
 import se.fusion1013.plugin.cobaltmagick.event.SpellCastEvent;
-import se.fusion1013.plugin.cobaltmagick.manager.CustomItemManager;
+import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
-import se.fusion1013.plugin.cobaltmagick.world.structures.MusicBox;
 
 import java.util.*;
 
@@ -92,7 +89,7 @@ public class CrystalSong implements Listener {
                 if (meta != null) {
                     PersistentDataContainer cont = meta.getPersistentDataContainer();
 
-                    if (!cont.has(key, PersistentDataType.INTEGER) && cont.has(CustomItemManager.CRYSTAL_KEY.getNamespacedKey(), PersistentDataType.INTEGER)) {
+                    if (!cont.has(key, PersistentDataType.INTEGER) && cont.has(ItemManager.CRYSTAL_KEY.getNamespacedKey(), PersistentDataType.INTEGER)) {
                         cont.set(key, PersistentDataType.INTEGER, 1);
 
                         event.getPlayer().playSound(item.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1, 1);
@@ -123,9 +120,8 @@ public class CrystalSong implements Listener {
                             }
                             case 4 -> {
                                 event.getPlayer().sendTitle(ChatColor.GOLD + "The Key Takes in the Music", ChatColor.YELLOW + "It is ready", 20, 70, 20);
-                                newLore.add(ChatColor.RESET + "" + ChatColor.WHITE + "The key is ready");
-                                meta.addEnchant(Enchantment.MENDING, 1, true);
-                                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+
+                                item.setItemStack(ItemManager.CRYSTAL_KEY_LIGHT_ACTIVE.getItemStack());
                             }
                         }
                         meta.setLore(newLore);
@@ -150,16 +146,16 @@ public class CrystalSong implements Listener {
                 if (meta != null){
                     PersistentDataContainer cont = meta.getPersistentDataContainer();
 
-                    if (!cont.has(key, PersistentDataType.INTEGER) && cont.has(CustomItemManager.CRYSTAL_KEY.getNamespacedKey(), PersistentDataType.INTEGER)){
+                    if (!cont.has(key, PersistentDataType.INTEGER) && cont.has(ItemManager.CRYSTAL_KEY.getNamespacedKey(), PersistentDataType.INTEGER)){
                         cont.set(key, PersistentDataType.INTEGER, 1);
 
                         player.playSound(item.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1, 1);
                         List<String> newLore = new ArrayList<>();
                         if (cont.has(other, PersistentDataType.INTEGER)) {
+                            // Key Is Ready
                             player.sendTitle(ChatColor.GOLD + "The Key Begins to Whisper!", ChatColor.YELLOW + "I can give you so much in exchange for...", 20, 70, 20);
-                            newLore.add(ChatColor.RESET + "" + ChatColor.WHITE + "The key whispers secrets and promises; it is ready");
-                            meta.addEnchant(Enchantment.MENDING, 1, true);
-                            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                            item.setItemStack(ItemManager.CRYSTAL_KEY_DARK_ACTIVE.getItemStack());
+                            return;
                         }
                         else {
                             player.sendTitle(ChatColor.GOLD + "The Key Begins to Hum!", ChatColor.YELLOW + "Something is still missing...", 20, 70, 20);
