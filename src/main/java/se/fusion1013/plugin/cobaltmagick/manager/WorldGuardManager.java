@@ -3,6 +3,8 @@ package se.fusion1013.plugin.cobaltmagick.manager;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import se.fusion1013.plugin.cobaltcore.CobaltCore;
+import se.fusion1013.plugin.cobaltcore.manager.Manager;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.protection.CustomWorldGuardFlags;
 
@@ -16,7 +18,7 @@ public class WorldGuardManager extends Manager {
      */
     public static WorldGuardManager getInstance(){
         if (INSTANCE == null){
-            INSTANCE = new WorldGuardManager(CobaltMagick.getInstance());
+            INSTANCE = new WorldGuardManager(CobaltCore.getInstance());
         }
         return INSTANCE;
     }
@@ -37,8 +39,8 @@ public class WorldGuardManager extends Manager {
 
     private static boolean enabled = false; // TODO: Add to config file
 
-    public WorldGuardManager(CobaltMagick cobaltMagick) {
-        super(cobaltMagick);
+    public WorldGuardManager(CobaltCore cobaltCore) {
+        super(cobaltCore);
         INSTANCE = this;
     }
 
