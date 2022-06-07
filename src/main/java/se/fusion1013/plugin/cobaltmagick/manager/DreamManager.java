@@ -3,7 +3,6 @@ package se.fusion1013.plugin.cobaltmagick.manager;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -14,7 +13,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
+import se.fusion1013.plugin.cobaltcore.CobaltCore;
+import se.fusion1013.plugin.cobaltcore.manager.Manager;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
+import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
 
 import java.util.*;
 
@@ -28,7 +30,7 @@ public class DreamManager extends Manager implements Runnable, Listener {
      */
     public static DreamManager getInstance(){
         if (INSTANCE == null){
-            INSTANCE = new DreamManager(CobaltMagick.getInstance());
+            INSTANCE = new DreamManager(CobaltCore.getInstance());
         }
         return INSTANCE;
     }
@@ -42,10 +44,13 @@ public class DreamManager extends Manager implements Runnable, Listener {
 
     public void addDreamingPlayer(Player player){
         blindPlayersTick.put(player.getUniqueId(), 0);
+        Bukkit.getScheduler().runTaskLater(CobaltMagick.getInstance(), () -> {
+            player.playSound(player.getLocation(), "cobalt.eternal_halls", SoundCategory.MASTER, 1000000, 1);
+        }, 60);
     }
 
-    public DreamManager(CobaltMagick cobaltMagick) {
-        super(cobaltMagick);
+    public DreamManager(CobaltCore cobaltCore) {
+        super(cobaltCore);
         INSTANCE = this;
     }
 
@@ -62,7 +67,7 @@ public class DreamManager extends Manager implements Runnable, Listener {
                 ItemStack item = player.getInventory().getItemInMainHand();
 
                 LivingEntity detectionEntity = spyglassDetectionEntity.get(uuid);
-                if (CustomItemManager.isItem(item, CustomItemManager.DREAMGLASS)){
+                if (ItemManager.DREAMGLASS.compareTo(item)) {
 
                     if (detectionEntity != null){
 
@@ -116,7 +121,7 @@ public class DreamManager extends Manager implements Runnable, Listener {
             ItemStack is = p.getInventory().getItemInMainHand();
             if (is.getType() == Material.AIR) return;
 
-            if (CustomItemManager.isItem(is, CustomItemManager.DREAMGLASS)){
+            if (ItemManager.DREAMGLASS.compareTo(is)) {
 
                 if (blindPlayersTick.get(p.getUniqueId()) != null) {
                     blindPlayersTick.put(p.getUniqueId(), 1);
