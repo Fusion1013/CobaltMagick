@@ -4,13 +4,12 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.persistence.PersistentDataType;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
-import se.fusion1013.plugin.cobaltmagick.database.Database;
+import se.fusion1013.plugin.cobaltmagick.database.DatabaseHook;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
 
 import java.util.ArrayList;
@@ -380,7 +379,7 @@ public abstract class AbstractWand {
      * Gets all wands in the database and adds them to the cache for easy retrieval. Should be done on startup
      */
     public static void loadCacheFromDatabase() {
-        List<Wand> wandsToCache = CobaltMagick.getInstance().getRDatabase().getWands();
+        List<Wand> wandsToCache = DatabaseHook.getWands();
         wandCache = new ArrayList<>(wandsToCache);
     }
 
@@ -388,8 +387,7 @@ public abstract class AbstractWand {
      * Saves all wands that are currently in the wand cache to the database
      */
     public static void saveAllWandData() {
-        Database db = CobaltMagick.getInstance().getRDatabase();
-        db.updateWandSpells(wandCache);
+        DatabaseHook.updateWandSpells(wandCache);
     }
 
     /**
@@ -400,6 +398,10 @@ public abstract class AbstractWand {
     public static NamespacedKey getWandKey() { return wandKey; }
 
     // ----- Getters / Setters -----
+
+    public void setCurrentMana(double currentMana) {
+        this.currentMana = currentMana;
+    }
 
     /**
      * Retrieves a wand from the cache from the given ItemStack
@@ -507,6 +509,15 @@ public abstract class AbstractWand {
 
     public double getRechargeTime() {
         return rechargeTime;
+    }
+
+    /**
+     * Gets the current recharge cooldown.
+     *
+     * @return the recharge cooldown.
+     */
+    public double getRechargeCooldown() {
+        return rechargeCooldown;
     }
 
     public int getManaMax() {

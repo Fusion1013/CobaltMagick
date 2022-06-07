@@ -15,9 +15,9 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import se.fusion1013.plugin.cobaltcore.config.ConfigManager;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
-import se.fusion1013.plugin.cobaltmagick.manager.ConfigManager;
-import se.fusion1013.plugin.cobaltmagick.spells.spellmodules.ExplodeModule;
+import se.fusion1013.plugin.cobaltmagick.manager.MagickConfigManager;
 import se.fusion1013.plugin.cobaltmagick.util.BlockUtil;
 
 import java.util.List;
@@ -29,7 +29,7 @@ public class WorldEvents implements Listener {
         ItemStack heldItem = event.getPlayer().getInventory().getItemInMainHand();
 
         // Drops Budded Amethyst if Player is using Silk Touch Netherite Pickaxe to break it
-        if (event.getBlock().getType() == Material.BUDDING_AMETHYST && heldItem.containsEnchantment(Enchantment.SILK_TOUCH) && heldItem.getType() == Material.NETHERITE_PICKAXE) {
+        if (event.getBlock().getType() == Material.BUDDING_AMETHYST && heldItem.containsEnchantment(Enchantment.SILK_TOUCH) && heldItem.getType() == Material.NETHERITE_PICKAXE && (Boolean)ConfigManager.getInstance().getFromConfig(CobaltMagick.getInstance(), "magick.yml", "breakable-amethyst-buds")) {
             Location blockLocation = event.getBlock().getLocation().add(new Vector(.5, .5, .5));
             World world = blockLocation.getWorld();
             if (world != null) {
@@ -41,7 +41,7 @@ public class WorldEvents implements Listener {
 
     @EventHandler
     public void onPortalCreation(PortalCreateEvent event){
-        if (ConfigManager.getInstance().getCustomConfig().getBoolean("unstable-nether-portals") && event.getReason() == PortalCreateEvent.CreateReason.FIRE) unstableNetherPortalEvent(event);
+        if ((boolean) ConfigManager.getInstance().getFromConfig(CobaltMagick.getInstance(), "magick.yml", "unstable-nether-portals") && event.getReason() == PortalCreateEvent.CreateReason.FIRE) unstableNetherPortalEvent(event);
     }
 
     private void unstableNetherPortalEvent(PortalCreateEvent event){
@@ -61,7 +61,7 @@ public class WorldEvents implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event){
-        if (ConfigManager.getInstance().getCustomConfig().getBoolean("unstable-end-portals")) unstableEndPortalEvent(event);
+        if ((boolean)ConfigManager.getInstance().getFromConfig(CobaltMagick.getInstance(), "magick.yml", "unstable-end-portals")) unstableEndPortalEvent(event);
     }
 
     private void unstableEndPortalEvent(PlayerInteractEvent event){

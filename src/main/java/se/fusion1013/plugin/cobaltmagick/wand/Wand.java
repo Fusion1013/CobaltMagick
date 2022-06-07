@@ -1,21 +1,22 @@
 package se.fusion1013.plugin.cobaltmagick.wand;
 
+import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
+import se.fusion1013.plugin.cobaltcore.config.ConfigManager;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.event.SpellCastEvent;
-import se.fusion1013.plugin.cobaltmagick.manager.ConfigManager;
+import se.fusion1013.plugin.cobaltmagick.manager.MagickConfigManager;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
 
 import java.util.ArrayList;
@@ -164,7 +165,7 @@ public class Wand extends AbstractWand implements Runnable {
     }
 
     private boolean manaRechargeAllowed() {
-        if (Boolean.parseBoolean(ConfigManager.getInstance().getFromConfig("disable-wand-recharging"))) return false;
+        if ((Boolean) ConfigManager.getInstance().getFromConfig(CobaltMagick.getInstance(), "magick.yml", "disable-wand-recharging")) return false;
         if (!regionAllowsManaRecharge) return false;
 
         return true;
@@ -209,6 +210,8 @@ public class Wand extends AbstractWand implements Runnable {
         double recharge = Math.max(rechargeCooldown, castCooldown);
 
         String message = ChatColor.RED + "Recharge" + ChatColor.GRAY + ": " + ChatColor.RED + Math.round(recharge*10)/10.0 + ChatColor.GRAY + "s" + "          " + ChatColor.AQUA + "Mana" + ChatColor.GRAY + ": " + ChatColor.AQUA + Math.round(currentMana);
-        p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(message));
+        // p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(message));
+
+        p.sendActionBar(Component.text(message));
     }
 }

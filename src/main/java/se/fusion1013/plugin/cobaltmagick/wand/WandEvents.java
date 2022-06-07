@@ -3,7 +3,6 @@ package se.fusion1013.plugin.cobaltmagick.wand;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,9 +15,10 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import se.fusion1013.plugin.cobaltcore.config.ConfigManager;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.gui.WandGUI;
-import se.fusion1013.plugin.cobaltmagick.manager.ConfigManager;
+import se.fusion1013.plugin.cobaltmagick.manager.MagickConfigManager;
 import se.fusion1013.plugin.cobaltmagick.manager.WorldGuardManager;
 
 import java.util.ArrayList;
@@ -155,7 +155,7 @@ public class WandEvents implements Listener {
 
     private boolean allowWandEdit(Player p){
         if (!WorldGuardManager.getInstance().isWandEditingAllowed(p, p.getLocation())) return false;
-        if (ConfigManager.getInstance().getCustomConfig().getBoolean("disable-wand-editing")) return false;
+        if ((boolean) ConfigManager.getInstance().getFromConfig(CobaltMagick.getInstance(), "magick.yml", "disable-wand-editing")) return false;
 
         return true;
     }
