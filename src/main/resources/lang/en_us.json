@@ -1,0 +1,40 @@
+{
+  "prefix.magick": "&7[<g:#00aaaa:#0066aa>Magick&7] ",
+
+  "wand.spell.cast.no_mana": "&7Wand is out of mana",
+  "wand.spell.cast.cast_delay": "&7Cast delay",
+  "wand.spell.cast.recharge_time": "&7Wand is still recharging",
+
+  "commands.cgive.spell.error.spell_not_found": "&7Spell &3%spell_name% &7not found",
+  "commands.cgive.spell.success": "&7Gave Spell &3%spell_name% &7to &3%player_name%",
+  "commands.cgive.spell.all.success": "&7Gave &3%spell_count% &7Spells to &3%player_name%",
+  "commands.cgive.wand.success": "&7Gave new Wand to &3%player_name%",
+  "commands.cgive.spell.fromid.wand_not_found": "&7Could not find wand with id &3%wand_id%",
+  "commands.cgive.spell.fromid.success": "&7Gave wand with id &3%wand_id% &7to &3%player_name%",
+
+  "commands.killspells.killall.success": "&7Killed &3%killed_spells% &7spells",
+
+  "commands.magick.config.edit": "&7Changed value of &3%key% &7to &3%value%",
+  "commands.magick.config.get": "&7Key &3%key% &7has value &3%value%",
+
+  "commands.magick.colors.header": "&lColor Codes",
+  "commands.magick.colors.color_codes_description": "Usage: <#HEXCODE>, #HEXCODE, &&7FORMAT_CODE, followed by the message",
+  "commands.magick.colors.color_codes": "Formatting Codes: &0&&00 &1&&11 &2&&22 &3&&33 &4&&44 &5&&55 &6&&66 &7&&77 &8&&88 &9&&99 &a&&aa &b&&bb &c&&cc &d&&dd &e&&ee &f&&ff",
+
+  "commands.magick.version.version": "&3%plugin_name% &7v&3%version%",
+  "commands.magick.version.author": "&7Author: &3Fusion1013",
+  "commands.magick.version.github_issues": "&7Issues: &3%github_issues_link%",
+
+  "commands.magick.update.result": "&7%update_result%",
+  "commands.magick.update.remote_version": "&7Remote Version: &3%remote_version%",
+  "commands.magick.update.current_version": "&7Current Version: &3%current_version%",
+  "commands.magick.update.updater_disabled": "&7Auto updates are disabled. Check config file",
+  "commands.magick.update.updater_already_checking": "&7Already checking for an update",
+
+  "commands.magick.structure.music_box.info": "&7[&3%id%&7] Location: &b%x%&7, &b%y%&7, &b%z% &7in &3%world%&7. Plays song &3%song%&7.",
+
+  "commands.magick.structure.remove": "&7Removed &3%structure% &7at location %location%",
+  "commands.magick.structure.place": "&7Placed new &3%structure% &7at location %location%",
+  "commands.magick.structure.lock.info": "&7[&3%id%&7] Location: %location%. Key: &3%key%",
+  "commands.magick.structure.not_found": "&7Structure not found"
+}
