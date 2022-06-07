@@ -5,14 +5,15 @@ import dev.jorel.commandapi.arguments.*;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import se.fusion1013.plugin.cobaltcore.item.CustomItemManager;
+import se.fusion1013.plugin.cobaltcore.locale.LocaleManager;
+import se.fusion1013.plugin.cobaltcore.util.StringPlaceholders;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
-import se.fusion1013.plugin.cobaltmagick.manager.CustomItemManager;
-import se.fusion1013.plugin.cobaltmagick.manager.LocaleManager;
+import se.fusion1013.plugin.cobaltmagick.database.DatabaseHook;
 import se.fusion1013.plugin.cobaltmagick.manager.SpellManager;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
 import se.fusion1013.plugin.cobaltmagick.spells.Spell;
 import se.fusion1013.plugin.cobaltmagick.util.ItemUtil;
-import se.fusion1013.plugin.cobaltmagick.util.StringPlaceholders;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ public class CGiveCommand {
                 .register();
     }
 
-    // ----- SUBCOMMANDS -----
+    // ----- ITEM COMMAND -----
 
     /**
      * Creates the command for getting magick items.
@@ -49,9 +50,23 @@ public class CGiveCommand {
     private static CommandAPICommand createItemCommand() {
         return new CommandAPICommand("item")
                 .withPermission("cobalt.magick.commands.cgive")
-                .withArguments(new StringArgument("item name").replaceSuggestions(info -> CustomItemManager.getItemNames()))
+                .withArguments(new StringArgument("item name").replaceSuggestions(ArgumentSuggestions.strings(info -> CustomItemManager.getCustomItemNames())))
                 .executesPlayer(CGiveCommand::giveItem);
     }
+
+    /**
+     * Gives a specific magick item to the player.
+     *
+     * @param player the player to give the item to.
+     * @param args the item to give the player.
+     */
+    private static void giveItem(Player player, Object[] args){
+        String itemName = (String)args[0];
+        ItemStack is = CustomItemManager.getItemStack(itemName);
+        if (is != null) player.getInventory().addItem(is);
+    }
+
+    // ----- SPELL COMMAND -----
 
     /**
      * Creates the command for getting magick spells.
@@ -62,7 +77,7 @@ public class CGiveCommand {
         // Command for getting all spells of type
         CommandAPICommand ofTypeCommand = new CommandAPICommand("of_type")
                 .withPermission("cobalt.magick.commands.cgive")
-                .withArguments(new StringArgument("type").replaceSuggestions(info -> SpellManager.getTypeNames()))
+                .withArguments(new StringArgument("type").replaceSuggestions(ArgumentSuggestions.strings(info -> SpellManager.getTypeNames())))
                 .executesPlayer(CGiveCommand::giveAllSpells);
 
         // Command for getting all spells
@@ -73,7 +88,7 @@ public class CGiveCommand {
         // Command for getting a spell from a name
         CommandAPICommand spellFromNameCommand = new CommandAPICommand("from_name")
                 .withPermission("cobalt.magick.commands.cgive")
-                .withArguments(new StringArgument("name").replaceSuggestions(info -> SpellManager.getSpellNames()))
+                .withArguments(new StringArgument("name").replaceSuggestions(ArgumentSuggestions.strings(info -> SpellManager.getSpellNames())))
                 .executesPlayer(CGiveCommand::giveSpell);
 
         // Main Subcommand
@@ -83,6 +98,87 @@ public class CGiveCommand {
                 .withSubcommand(ofTypeCommand)
                 .withSubcommand(spellFromNameCommand);
     }
+
+    /**
+     * Gives all spells of a certain type to a player.
+     *
+     * @param player player to give the spells to.
+     * @param type the type of spell to give.
+     * @return the number of spells given to the player.
+     */
+    private static int giveSpellOfType(Player player, Spell.SpellType type){
+
+        ISpell[] spellsOfType = SpellManager.getSpellsOfType(type);
+        ItemStack[] itemStacks = new ItemStack[spellsOfType.length];
+        for (int i = 0; i < spellsOfType.length; i++) itemStacks[i] = spellsOfType[i].getSpellItem();
+
+        ItemUtil.giveShulkerBox(player, itemStacks, Material.CYAN_SHULKER_BOX, type.name());
+
+        return spellsOfType.length;
+    }
+
+    /**
+     * Gives all spells of type to the player, or all spells if no type was specified.
+     *
+     * @param player player to give the spells to.
+     * @param args the spell type. May be set to null.
+     */
+    private static void giveAllSpells(Player player, Object[] args){
+        LocaleManager localeManager = LocaleManager.getInstance();
+
+        int spellCount = 0;
+        Spell.SpellType type;
+
+        if (args.length > 0){
+            type = Spell.SpellType.valueOf(((String)args[0]).toUpperCase());
+            spellCount = giveSpellOfType(player, type);
+        } else {
+            for (Spell.SpellType s : Spell.SpellType.values()){
+                spellCount += giveSpellOfType(player, s);
+            }
+        }
+
+        StringPlaceholders spellPlaceholder = StringPlaceholders.builder()
+                .addPlaceholder("spell_count", spellCount)
+                .addPlaceholder("player_name", player.getName())
+                .build();
+
+        localeManager.sendMessage(CobaltMagick.getInstance(), player, "commands.cgive.spell.all.success", spellPlaceholder);
+    }
+
+    /**
+     * Gives the specified spell to the player.
+     *
+     * @param player player to give the spell to.
+     * @param args the spell to give to the player.
+     */
+    private static void giveSpell(Player player, Object[] args){
+        LocaleManager localeManager = LocaleManager.getInstance();
+
+        String spellName = (String)args[0];
+        StringPlaceholders namePlaceholder = StringPlaceholders.builder()
+                .addPlaceholder("spell_name", spellName)
+                .addPlaceholder("player_name", player.getName())
+                .build();
+        ISpell spell = SpellManager.getSpell(spellName);
+        if (spell == null) {
+            localeManager.sendMessage(CobaltMagick.getInstance(), player, "commands.cgive.spell.error.spell_not_found", namePlaceholder);
+            return;
+        }
+        ItemStack is = spell.getSpellItem();
+        if (is == null) {
+            localeManager.sendMessage(CobaltMagick.getInstance(), player, "commands.cgive.spell.error.spell_not_found", namePlaceholder);
+            return;
+        }
+        player.getInventory().addItem(is);
+        StringPlaceholders namePlaceholder2 = StringPlaceholders.builder()
+                .addPlaceholder("spell_name", spell.getSpellName())
+                .addPlaceholder("player_name", player.getName())
+                .build();
+        localeManager.sendMessage(CobaltMagick.getInstance(), player, "commands.cgive.spell.success", namePlaceholder2);
+    }
+
+    // ----- WAND COMMAND -----
 
     /**
      * Creates the command for getting magick wands.
@@ -117,102 +213,6 @@ public class CGiveCommand {
                 .withSubcommand(withStatsCommand);
     }
 
-    // ----- HELPER METHODS -----
-
-    // ITEM
-
-    /**
-     * Gives a specific magick item to the player.
-     *
-     * @param player the player to give the item to.
-     * @param args the item to give the player.
-     */
-    private static void giveItem(Player player, Object[] args){
-        String itemName = (String)args[0];
-        ItemStack is = CustomItemManager.getItem(itemName);
-        if (is != null) player.getInventory().addItem(is);
-    }
-
-    // SPELL
-
-    /**
-     * Gives all spells of a certain type to a player.
-     *
-     * @param player player to give the spells to.
-     * @param type the type of spell to give.
-     * @return the number of spells given to the player.
-     */
-    private static int giveSpellOfType(Player player, Spell.SpellType type){
-
-        ISpell[] spellsOfType = SpellManager.getSpellsOfType(type);
-        ItemStack[] itemStacks = new ItemStack[spellsOfType.length];
-        for (int i = 0; i < spellsOfType.length; i++) itemStacks[i] = spellsOfType[i].getSpellItem();
-        ItemUtil.giveShulkerBox(player, itemStacks, Material.CYAN_SHULKER_BOX, type.name());
-
-        return spellsOfType.length;
-    }
-
-    /**
-     * Gives all spells of type to the player, or all spells if no type was specified.
-     *
-     * @param player player to give the spells to.
-     * @param args the spell type. May be set to null.
-     */
-    private static void giveAllSpells(Player player, Object[] args){
-        LocaleManager localeManager = LocaleManager.getInstance();
-
-        int spellCount = 0;
-        Spell.SpellType type;
-
-        if (args.length > 0){
-            type = Spell.SpellType.valueOf(((String)args[0]).toUpperCase());
-            spellCount = giveSpellOfType(player, type);
-        } else {
-            for (Spell.SpellType s : Spell.SpellType.values()){
-                spellCount += giveSpellOfType(player, s);
-            }
-        }
-
-        StringPlaceholders spellPlaceholder = StringPlaceholders.builder()
-                .addPlaceholder("spell_count", spellCount)
-                .addPlaceholder("player_name", player.getName())
-                .build();
-
-        localeManager.sendMessage(player, "commands.cgive.spell.all.success", spellPlaceholder);
-    }
-
-    /**
-     * Gives the specified spell to the player.
-     *
-     * @param player player to give the spell to.
-     * @param args the spell to give to the player.
-     */
-    private static void giveSpell(Player player, Object[] args){
-        LocaleManager localeManager = LocaleManager.getInstance();
-
-        String spellName = (String)args[0];
-        StringPlaceholders namePlaceholder = StringPlaceholders.builder()
-                .addPlaceholder("spell_name", spellName)
-                .addPlaceholder("player_name", player.getName())
-                .build();
-        ISpell spell = SpellManager.getSpell(spellName);
-        if (spell == null) {
-            localeManager.sendMessage(player, "commands.cgive.spell.error.spell_not_found", namePlaceholder);
-            return;
-        }
-        ItemStack is = spell.getSpellItem();
-        if (is == null) {
-            localeManager.sendMessage(player, "commands.cgive.spell.error.spell_not_found", namePlaceholder);
-            return;
-        }
-        player.getInventory().addItem(is);
-        StringPlaceholders namePlaceholder2 = StringPlaceholders.builder()
-                .addPlaceholder("spell_name", spell.getSpellName())
-                .addPlaceholder("player_name", player.getName())
-                .build();
-        localeManager.sendMessage(player, "commands.cgive.spell.success", namePlaceholder2);
-    }
-
     // WAND
 
     /**
@@ -234,7 +234,7 @@ public class CGiveCommand {
         double spread = (Double)args[7];
 
         Wand wand = new Wand(shuffle, spellsPerCast, castDelay, rechargeTime, manaMax, manaChargeSpeed, capacity, spread, new ArrayList<>(), 0);
-        int id = CobaltMagick.getInstance().getRDatabase().insertWand(wand);
+        int id = DatabaseHook.insertWand(wand);
         wand.setId(id);
         Wand.addWandToCache(wand);
 
@@ -243,7 +243,7 @@ public class CGiveCommand {
         StringPlaceholders placeholders = StringPlaceholders.builder()
                 .addPlaceholder("player_name", player.getName())
                 .build();
-        localeManager.sendMessage(player, "commands.cgive.wand.success", placeholders);
+        localeManager.sendMessage(CobaltMagick.getInstance(), player, "commands.cgive.wand.success", placeholders);
     }
 
     /**
@@ -255,7 +255,7 @@ public class CGiveCommand {
         // Get arguments for wand with stats command
         List<Argument> wandArguments = new ArrayList<>();
         wandArguments.add(new BooleanArgument("shuffle"));
-        wandArguments.add(new IntegerArgument("spells/cast", 0).replaceWithSafeSuggestions(info -> new Integer[]{}));
+        wandArguments.add(new IntegerArgument("spells/cast", 0));
         wandArguments.add(new DoubleArgument("cast delay"));
         wandArguments.add(new DoubleArgument("recharge time"));
         wandArguments.add(new IntegerArgument("mana max", 0));
@@ -280,7 +280,7 @@ public class CGiveCommand {
         if (cost == 20) cost+=10;
 
         Wand wand = new Wand(cost, level, false);
-        int id = CobaltMagick.getInstance().getRDatabase().insertWand(wand);
+        int id = DatabaseHook.insertWand(wand);
         wand.setId(id);
         Wand.addWandToCache(wand);
 
@@ -289,7 +289,7 @@ public class CGiveCommand {
         StringPlaceholders placeholders = StringPlaceholders.builder()
                 .addPlaceholder("player_name", player.getName())
                 .build();
-        localeManager.sendMessage(player, "commands.cgive.wand.success", placeholders);
+        localeManager.sendMessage(CobaltMagick.getInstance(), player, "commands.cgive.wand.success", placeholders);
     }
 
     /**
@@ -310,13 +310,13 @@ public class CGiveCommand {
         Wand wand = Wand.getWandFromCache(id);
 
         if (wand == null) {
-            localeManager.sendMessage(player, "commands.cgive.spell.fromid.wand_not_found", spellPlaceholder);
+            localeManager.sendMessage(CobaltMagick.getInstance(), player, "commands.cgive.spell.fromid.wand_not_found", spellPlaceholder);
             return;
         }
 
         ItemStack stack = wand.getWandItem();
         player.getInventory().addItem(stack);
 
-        localeManager.sendMessage(player, "commands.cgive.spell.fromid.success", spellPlaceholder);
+        localeManager.sendMessage(CobaltMagick.getInstance(), player, "commands.cgive.spell.fromid.success", spellPlaceholder);
     }
 }
