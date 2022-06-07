@@ -11,7 +11,7 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.manager.SpellManager;
-import se.fusion1013.plugin.cobaltmagick.particle.ParticleGroup;
+import se.fusion1013.plugin.cobaltcore.particle.ParticleGroup;
 import se.fusion1013.plugin.cobaltmagick.spells.spellmodules.AbstractSpellModule;
 import se.fusion1013.plugin.cobaltmagick.spells.spellmodules.DamageModule;
 import se.fusion1013.plugin.cobaltmagick.spells.spellmodules.SpellModule;
@@ -123,7 +123,9 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
         this.currentLifetime = lifetime;
 
         // Apply spread
-        double actualSpread = wand.getSpread() + spread;
+        double actualSpread;
+        if (wand == null) actualSpread = spread;
+        else actualSpread = wand.getSpread() + spread;
 
         Random r = new Random();
 
