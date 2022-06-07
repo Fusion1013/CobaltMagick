@@ -2,6 +2,8 @@ package se.fusion1013.plugin.cobaltmagick.manager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
+import se.fusion1013.plugin.cobaltcore.CobaltCore;
+import se.fusion1013.plugin.cobaltcore.manager.Manager;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.laser.SimpleLaser;
 
@@ -18,7 +20,7 @@ public class LaserManager extends Manager implements Runnable {
      */
     public static LaserManager getInstance(){
         if (INSTANCE == null){
-            INSTANCE = new LaserManager(CobaltMagick.getInstance());
+            INSTANCE = new LaserManager(CobaltCore.getInstance());
         }
         return INSTANCE;
     }
@@ -26,8 +28,8 @@ public class LaserManager extends Manager implements Runnable {
     private final List<SimpleLaser> lasers;
     private BukkitTask laserTask;
 
-    public LaserManager(CobaltMagick cobaltMagick) {
-        super(cobaltMagick);
+    public LaserManager(CobaltCore cobaltCore) {
+        super(cobaltCore);
 
         this.lasers = new ArrayList<>();
         this.laserTask = null;
@@ -35,9 +37,9 @@ public class LaserManager extends Manager implements Runnable {
 
     @Override
     public void reload() {
-        Bukkit.getScheduler().runTaskLater(this.cobaltMagick, () -> {
+        Bukkit.getScheduler().runTaskLater(this.cobaltCore, () -> {
             long ticks = 1;
-            this.laserTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this.cobaltMagick, this, 0, ticks);
+            this.laserTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this.cobaltCore, this, 0, ticks);
         }, 5);
     }
 
