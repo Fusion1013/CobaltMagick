@@ -52,8 +52,8 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.ow2.asm:asm-tree:9.2" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.ow2.asm:asm-analysis:9.2" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains:annotations:16.0.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: dev.jorel.CommandAPI:commandapi-core:8.0.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: dev.jorel.CommandAPI:commandapi-preprocessor:8.0.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: dev.jorel:commandapi-core:8.2.1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: dev.jorel:commandapi-preprocessor:8.2.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.sk89q.worldguard:worldguard-bukkit:7.0.6" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.sk89q.worldguard:worldguard-core:7.0.6" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.sk89q.worldguard.worldguard-libs:core:7.0.6" level="project" />
@@ -73,7 +73,7 @@
     <orderEntry type="module-library">
       <library name="Maven: se.fusion1013.plugin:cobaltCore:3.0.0">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../Minecraft Servers/1.18.1 - Paper DEV/plugins/CobaltCore-shaded.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../Minecraft Servers/1.18.2 - Paper DEV/plugins/CobaltCore-shaded.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

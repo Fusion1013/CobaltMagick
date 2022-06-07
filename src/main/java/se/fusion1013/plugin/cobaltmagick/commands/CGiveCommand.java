@@ -251,9 +251,9 @@ public class CGiveCommand {
      *
      * @return list of arguments.
      */
-    private static List<Argument> getWandArguments(){
+    private static List<Argument<?>> getWandArguments(){
         // Get arguments for wand with stats command
-        List<Argument> wandArguments = new ArrayList<>();
+        List<Argument<?>> wandArguments = new ArrayList<>();
         wandArguments.add(new BooleanArgument("shuffle"));
         wandArguments.add(new IntegerArgument("spells/cast", 0));
         wandArguments.add(new DoubleArgument("cast delay"));
