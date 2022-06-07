@@ -72,7 +72,7 @@ public class ItemUtil {
 
         ItemStack[] truncatedItems = new ItemStack[27];
         for (int i = 0; i < items.length; i++) {
-            if (i % 27 == 0) {
+            if (i % 27 == 26) {
                 // If the list of items is full, give a box to the player and reset the list.
                 giveBox(p, truncatedItems, shulkerItem, (ShulkerBox)bsm.getBlockState(), name);
 
@@ -123,7 +123,7 @@ public class ItemUtil {
      */
     public static Inventory insertItems(Inventory inventory, ItemStack[] items) {
         for (ItemStack stack : items) {
-            inventory.addItem(stack);
+            if (stack != null) inventory.addItem(stack);
         }
         return inventory;
     }
