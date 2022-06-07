@@ -10,12 +10,14 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
+import se.fusion1013.plugin.cobaltcore.CobaltCore;
+import se.fusion1013.plugin.cobaltcore.manager.Manager;
+import se.fusion1013.plugin.cobaltcore.particle.styles.ParticleStyleCube;
+import se.fusion1013.plugin.cobaltcore.particle.styles.ParticleStyleLine;
+import se.fusion1013.plugin.cobaltcore.particle.styles.ParticleStylePoint;
+import se.fusion1013.plugin.cobaltcore.particle.styles.ParticleStyleSphere;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
-import se.fusion1013.plugin.cobaltmagick.particle.ParticleGroup;
-import se.fusion1013.plugin.cobaltmagick.particle.styles.ParticleStyleCube;
-import se.fusion1013.plugin.cobaltmagick.particle.styles.ParticleStyleLine;
-import se.fusion1013.plugin.cobaltmagick.particle.styles.ParticleStylePoint;
-import se.fusion1013.plugin.cobaltmagick.particle.styles.ParticleStyleSphere;
+import se.fusion1013.plugin.cobaltcore.particle.ParticleGroup;
 import se.fusion1013.plugin.cobaltmagick.spells.*;
 import se.fusion1013.plugin.cobaltmagick.spells.movementmodifier.HomingMovementModifier;
 import se.fusion1013.plugin.cobaltmagick.spells.spellmodifiers.AddSpellModuleModifier;
@@ -78,9 +80,9 @@ public class SpellManager extends Manager {
 
     public static final Spell FIREBOLT = register(new ProjectileSpell.ProjectileSpellBuilder(13, "firebolt")
             .addManaDrain(50).setRadius(.7).setSpread(2.9).setVelocity(5.3).setLifetime(10).addCastDelay(.5).addGravity(2).consumeOnUse(25)
-            .addExecuteOnEntityCollision(new ExplodeModule(true).setsFire().destroysBlocks())
-            .addExecuteOnDeath(new ExplodeModule(true).setsFire().destroysBlocks())
-            .addExecuteOnBlockCollision(new ExplodeModule(true).setsFire().destroysBlocks().onlyIfVelocityExceeds(.75))
+            .addExecuteOnEntityCollision(new ExplodeModule(true).setsFire().destroysBlocks().overrideRadius(1.3))
+            .addExecuteOnDeath(new ExplodeModule(true).setsFire().destroysBlocks().overrideRadius(1.3))
+            .addExecuteOnBlockCollision(new ExplodeModule(true).setsFire().destroysBlocks().onlyIfVelocityExceeds(.75).overrideRadius(1.3))
             .addDescription("A bouncy, explosive bolt")
             .setIsBouncy(true)
             .setParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
@@ -243,6 +245,21 @@ public class SpellManager extends Manager {
             .setCustomModel(38)
             .build());
 
+    public static final Spell FIREBALL = register(new ProjectileSpell.ProjectileSpellBuilder(116, "fireball")
+            .addManaDrain(70).setRadius(1.5).setVelocity(25).setLifetime(10).addCastDelay(0.83).setSpread(4).addGravity(1)
+            .addExecuteOnCollision(new ExplodeModule(true).setsFire().destroysBlocks())
+            .addExecuteOnEntityCollision(new DamageModule(20, true))
+            .addExecuteOnCast(new SoundSpellModule(Sound.ENTITY_BLAZE_SHOOT, SoundCategory.AMBIENT, false).setVolume(8))
+            .addExecuteOnCast(new SoundSpellModule(Sound.ENTITY_ENDER_DRAGON_HURT, SoundCategory.AMBIENT, false).setVolume(2))
+            .addDescription("A powerful exploding spell")
+            .setParticle(new ParticleGroup.ParticleGroupBuilder()
+                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.LAVA).setCount(7).setOffset(new Vector(.3, .3, .3)).build())
+                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.FLAME).setRadius(.6).setDensity(18).build())
+                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.SMOKE_NORMAL).setRadius(.4).setDensity(8).build())
+                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.SMOKE_LARGE).setCount(1).setOffset(new Vector(.1, .1, .1)).build())
+                    .build())
+            .build());
+
     // ----- STATIC PROJECTILE SPELLS ----- ID: 2+XXX
 
     public static final Spell SPHERE_OF_BUOYANCY = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(20, "sphere_of_buoyancy")
@@ -322,8 +339,8 @@ public class SpellManager extends Manager {
     public static final Spell TEST_SPELL = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(26, "test_spell")
             .addManaDrain(10).addCastDelay(.2).setRadius(1).setLifetime(30)
             .addParticle(new ParticleGroup.ParticleGroupBuilder()
-                    .addStyle(new ParticleStyleCube.ParticleStyleCubeBuilder().setParticle(Particle.FLAME).setEdgeLength(5).setParticlesPerEdge(10).setAngularVelocityY(.005).setAngularVelocityX(.0015).build())
-                    .addStyle(new ParticleStyleCube.ParticleStyleCubeBuilder().setParticle(Particle.FLAME).setEdgeLength(7).setParticlesPerEdge(12).setAngularVelocityY(-.005).setAngularVelocityX(.002).build())
+                    .addStyle(new ParticleStyleCube.ParticleStyleCubeBuilder().setParticle(Particle.FLAME).setEdgeLength(5).setParticlesPerEdge(10).setAngularVelocity(.0015, .005, 0).build())
+                    .addStyle(new ParticleStyleCube.ParticleStyleCubeBuilder().setParticle(Particle.FLAME).setEdgeLength(7).setParticlesPerEdge(12).setAngularVelocity(.002, -.005, 0).build())
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.FLAME).setRadius(1.5).setDensity(40).build())
                     .build())
             .build());
@@ -704,8 +721,8 @@ public class SpellManager extends Manager {
             .addExecuteOnEntityCollision(new DamageModule(4, true))
             .setIsBouncy(true)
             .setParticle(new ParticleGroup.ParticleGroupBuilder()
-                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.SOUL).setCount(10).setSpeed(.04).build())
-                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.SOUL_FIRE_FLAME).setCount(2).setSpeed(0).build())
+                    .addStyle(new ParticleStyleLine.ParticleStyleLineBuilder().setParticle(Particle.SOUL).setCount(10).setSpeed(.04).setDensity(3).build())
+                    .addStyle(new ParticleStyleLine.ParticleStyleLineBuilder().setParticle(Particle.SOUL_FIRE_FLAME).setCount(2).setSpeed(0).setDensity(3).build())
                     .build())
             .addExecuteOnCast(new SoundSpellModule("minecraft:magic.zap", SoundCategory.HOSTILE, false).setVolume(.5f))
             .addExecuteOnEntityCollision(new SoundSpellModule("minecraft:magic.hit", SoundCategory.HOSTILE, false).setVolume(.5f))
@@ -716,8 +733,8 @@ public class SpellManager extends Manager {
             .addManaDrain(1).setRadius(.2).setSpread(10).setVelocity(20).setLifetime(1.6)
             .addExecuteOnEntityCollision(new DamageModule(4, true))
             .setParticle(new ParticleGroup.ParticleGroupBuilder()
-                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.END_ROD).setCount(3).setOffset(new Vector(.1, .1, .1)).build())
-                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setExtra(new Particle.DustTransition(Color.WHITE, Color.YELLOW, 1)).setOffset(new Vector(.2, .2, .2)).build())
+                    .addStyle(new ParticleStyleLine.ParticleStyleLineBuilder().setParticle(Particle.END_ROD).setCount(3).setOffset(new Vector(.1, .1, .1)).setDensity(3).build())
+                    .addStyle(new ParticleStyleLine.ParticleStyleLineBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setExtra(new Particle.DustTransition(Color.WHITE, Color.YELLOW, 1)).setOffset(new Vector(.2, .2, .2)).setDensity(3).build())
                     .build())
             .addExecuteOnCast(new SoundSpellModule("minecraft:magic.zap", SoundCategory.HOSTILE, false).setVolume(.5f))
             .addExecuteOnCast(new SoundSpellModule("minecraft:block.beacon.deactivate", SoundCategory.HOSTILE, false).setVolume(.5f))
@@ -731,10 +748,10 @@ public class SpellManager extends Manager {
             .addExecuteOnEntityCollision(new DamageModule(10, true))
             .addExecuteOnCollision(new ExplodeModule(true).overrideRadius(2))
             .setParticle(new ParticleGroup.ParticleGroupBuilder()
-                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.LAVA).setCount(7).setOffset(new Vector(.25, .25, .25)).build())
+                    .addStyle(new ParticleStyleLine.ParticleStyleLineBuilder().setParticle(Particle.LAVA).setCount(7).setOffset(new Vector(.25, .25, .25)).setDensity(3).build())
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.FLAME).setRadius(.35).setDensity(10).build())
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.SMOKE_NORMAL).setRadius(.25).setDensity(5).build())
-                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.SMOKE_LARGE).setCount(2).setOffset(new Vector(.05, .05, .05)).build())
+                    .addStyle(new ParticleStyleLine.ParticleStyleLineBuilder().setParticle(Particle.SMOKE_LARGE).setCount(2).setOffset(new Vector(.05, .05, .05)).setDensity(3).build())
                     .build())
             .addExecuteOnCast(new SoundSpellModule("minecraft:magic.zap", SoundCategory.HOSTILE, false).setVolume(.5f))
             .addExecuteOnCast(new SoundSpellModule("minecraft:item.firecharge.use", SoundCategory.HOSTILE, false).setVolume(.5f))
@@ -748,8 +765,8 @@ public class SpellManager extends Manager {
             .addExecuteOnEntityCollision(new EntitySpellModule(EntityType.LIGHTNING, true))
             .addExecuteOnEntityCollision(new EffectModule(true).setPotionEffect(new PotionEffect(PotionEffectType.SLOW, 10, 1, true, false)))
             .setParticle(new ParticleGroup.ParticleGroupBuilder()
-                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.END_ROD).setCount(2).setOffset(new Vector(.1, .1, .1)).build())
-                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setExtra(new Particle.DustTransition(Color.BLUE, Color.SILVER, 1)).setCount(4).setOffset(new Vector(.2, .2, .2)).build())
+                    .addStyle(new ParticleStyleLine.ParticleStyleLineBuilder().setParticle(Particle.END_ROD).setCount(2).setOffset(new Vector(.1, .1, .1)).setDensity(3).build())
+                    .addStyle(new ParticleStyleLine.ParticleStyleLineBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setExtra(new Particle.DustTransition(Color.BLUE, Color.SILVER, 1)).setCount(4).setOffset(new Vector(.2, .2, .2)).setDensity(3).build())
                     .build())
             .addExecuteOnCast(new SoundSpellModule("minecraft:magic.zap", SoundCategory.HOSTILE, false).setVolume(.5f))
             .addExecuteOnCast(new SoundSpellModule("minecraft:block.beacon.deactivate", SoundCategory.HOSTILE, false).setVolume(.5f))
@@ -761,7 +778,7 @@ public class SpellManager extends Manager {
             .addDescription("This spell is intended for use by the Alchemist boss, not for gameplay!")
             .build());
 
-    private static final Spell alchemist_main_spell = register(new ProjectileSpell.ProjectileSpellBuilder(94, "alchemist_main_spell")
+    public static final Spell ALCHEMIST_MAIN_SPELL = register(new ProjectileSpell.ProjectileSpellBuilder(94, "alchemist_main_spell")
             .addManaDrain(1).setRadius(.1).setSpread(2).setVelocity(8).setLifetime(6)
             .addExecuteOnEntityCollision(new DamageModule(12, true))
             .setIsBouncy(true)
@@ -776,6 +793,31 @@ public class SpellManager extends Manager {
                     .build(), false))
             .addDescription("This spell is intended for use by the Alchemist boss, not for gameplay!")
             .addMovementModifier(new HomingMovementModifier().setRotateTowards(20))
+            .build());
+
+    public static final Spell FIRESPITTER = register(new ProjectileSpell.ProjectileSpellBuilder(95, "firespitter")
+            .addManaDrain(1).setRadius(.7).setSpread(1).setVelocity(7.3).setLifetime(10).addCastDelay(.5).addGravity(0.4).consumeOnUse(25)
+
+            .addExecuteOnCollision(new ReplaceBlocksModule(Material.FIRE, 2, true).onlySetTopBlocks())
+            .addExecuteOnCollision(new ExplodeModule(true).setsFire().overrideRadius(2))
+            .addExecuteOnCollision(new ParticleModule(new ParticleGroup.ParticleGroupBuilder().addStyle(
+                    new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.LAVA).setInSphere().setDensity(70).setRadius(2).setSpeed(.5).build()
+            ).build(), true))
+
+            .addExecuteOnDeath(new ReplaceBlocksModule(Material.FIRE, 2, true).onlySetTopBlocks())
+            .addExecuteOnDeath(new ExplodeModule(true).setsFire().overrideRadius(2))
+            .addExecuteOnDeath(new ParticleModule(new ParticleGroup.ParticleGroupBuilder().addStyle(
+                    new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.LAVA).setInSphere().setDensity(70).setRadius(2).setSpeed(.5).build()
+            ).build(), true))
+
+            .addDescription("A heavy, explosive sphere")
+            .setIsBouncy(true)
+            .setParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
+                    new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.FLAME).setCount(3).setOffset(new Vector(.1, .1, .1)).build()
+            ).addStyle(
+                    new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.LAVA).setCount(1).setOffset(new Vector(.1, .1, .1)).build()
+            ).build())
+            .setCustomModel(5)
             .build());
 
     /**
@@ -947,15 +989,15 @@ public class SpellManager extends Manager {
      */
     public static SpellManager getInstance(){
         if (INSTANCE == null){
-            INSTANCE = new SpellManager(CobaltMagick.getInstance());
+            INSTANCE = new SpellManager(CobaltCore.getInstance());
         }
         return INSTANCE;
     }
 
     // ----- CONSTRUCTOR -----
 
-    public SpellManager(CobaltMagick cobaltMagick) {
-        super(cobaltMagick);
+    public SpellManager(CobaltCore cobaltCore) {
+        super(cobaltCore);
         INSTANCE = this;
     }
 
