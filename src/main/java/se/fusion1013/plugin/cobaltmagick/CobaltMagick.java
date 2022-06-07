@@ -1,144 +1,109 @@
 package se.fusion1013.plugin.cobaltmagick;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import se.fusion1013.plugin.cobaltcore.CobaltCore;
+import se.fusion1013.plugin.cobaltcore.CobaltPlugin;
 import se.fusion1013.plugin.cobaltmagick.commands.CGiveCommand;
 import se.fusion1013.plugin.cobaltmagick.commands.*;
-import se.fusion1013.plugin.cobaltmagick.database.Database;
-import se.fusion1013.plugin.cobaltmagick.database.SQLite;
+import se.fusion1013.plugin.cobaltmagick.database.DatabaseHook;
+import se.fusion1013.plugin.cobaltmagick.entity.EntityManager;
 import se.fusion1013.plugin.cobaltmagick.eyes.CrystalSong;
 import se.fusion1013.plugin.cobaltmagick.gui.AbstractGUIListener;
+import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
 import se.fusion1013.plugin.cobaltmagick.manager.*;
+import se.fusion1013.plugin.cobaltmagick.scene.SceneManager;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 import se.fusion1013.plugin.cobaltmagick.wand.WandEvents;
 import se.fusion1013.plugin.cobaltmagick.world.WorldEvents;
+import se.fusion1013.plugin.cobaltmagick.world.structures.MagickStructureManager;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.logging.Filter;
-import java.util.logging.LogRecord;
-
-public final class CobaltMagick extends JavaPlugin implements CobaltMagickPlugin {
+public final class CobaltMagick extends JavaPlugin implements CobaltPlugin {
 
     private static CobaltMagick INSTANCE;
-    private static Database db;
-
-    private final Map<Class<?>, Manager> managers;
 
     static final int BUKKIT_DEV_ID = 313786;
 
     public CobaltMagick(){
         INSTANCE = this;
-        this.managers = new LinkedHashMap<>();
+    }
+
+    @Override
+    public String getPrefix() {
+        return "prefix.magick";
     }
 
     @Override
     public void onLoad(){
         WorldGuardManager.initialize(); // Registers WorldGuard flags
-    }
+    } // TODO: Move worldguard to Core
 
     @Override
     public void onEnable() {
-        onEnableRegistration();
+        CobaltCore.getInstance().registerCobaltPlugin(this);
     }
 
     @Override
     public void onDisable() {
-        this.managers.values().forEach(Manager::disable);
+        // CobaltCore.getInstance().onDisable(); // Replace with method that only disables the given plugin
+        CobaltCore.getInstance().disableCobaltPlugin(this);
     }
 
     public static CobaltMagick getInstance(){
         return INSTANCE;
     }
 
-    /**
-     * Gets the database
-     *
-     * @return the databse
-     */
-    public Database getRDatabase() { return db; }
-
-    /**
-     * Gets a manager instance
-     *
-     * @param managerClass The class of the manager instance to get
-     * @param <T> The manager type
-     * @return The manager instance or null if one does not exist
-     */
-    @SuppressWarnings("unchecked")
-    public <T extends Manager> T getManager(Class<T> managerClass) {
-        if (this.managers.containsKey(managerClass))
-            return (T) this.managers.get(managerClass);
-
-        try {
-            T manager = managerClass.getConstructor(this.getClass()).newInstance(this);
-            this.managers.put(managerClass, manager);
-            manager.reload();
-            return manager;
-        } catch (ReflectiveOperationException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-    }
+    // ----- COMMANDS -----
 
     /**
      * Registers all Cobalt commands
      */
-    public void registerCommands(){
-        WarpCommand.register();
-        GamemodeCommand.register();
+    @Override
+    public void registerCommands() {
         CGiveCommand.register();
         KillSpellsCommand.register();
         MagickCommand.register();
+        DirectionalPersonalParticle.register();
     }
+
+    // ----- MANAGERS -----
 
     /**
      * Reloads all Cobalt managers
      */
+    @Override
     public void reloadManagers(){
-        this.managers.values().forEach(Manager::disable);
-
-        this.managers.values().forEach(Manager::reload);
-
-        this.getManager(ParticleManager.class);
-        this.getManager(ParticleStyleManager.class);
-        this.getManager(LaserManager.class);
-        this.getManager(SpellManager.class);
-        if (WorldGuardManager.isEnabled()) this.getManager(WorldGuardManager.class); // TODO: Add isEnabled method to all managers and move check to registration
-        this.getManager(ConfigManager.class);
-        this.getManager(CustomItemManager.class);
-        this.getManager(DreamManager.class);
-        this.getManager(ChatManager.class);
-        this.getManager(EntityManager.class);
-        this.getManager(WandManager.class);
-        this.getManager(WorldManager.class);
+        CobaltCore.getInstance().getManager(this, LaserManager.class);
+        CobaltCore.getInstance().getManager(this, SpellManager.class);
+        if (WorldGuardManager.isEnabled()) CobaltCore.getInstance().getManager(this, WorldGuardManager.class); // TODO: Add isEnabled method to all managers and move check to registration
+        CobaltCore.getInstance().getManager(this, MagickConfigManager.class);
+        CobaltCore.getInstance().getManager(this, ItemManager.class);
+        CobaltCore.getInstance().getManager(this, DreamManager.class);
+        CobaltCore.getInstance().getManager(this, EntityManager.class);
+        CobaltCore.getInstance().getManager(this, WandManager.class);
+        CobaltCore.getInstance().getManager(this, WorldManager.class);
+        CobaltCore.getInstance().getManager(this, SceneManager.class);
+        CobaltCore.getInstance().getManager(this, MagickStructureManager.class);
     }
 
-    public void onEnableRegistration(){
+    // ----- LISTENERS -----
 
-        // Instantiate Database
-        getLogger().info("Instantiating Database...");
-        db = new SQLite(this);
-        db.load();
-
-        // Reloads all managers
-        getLogger().info("Reloading Managers...");
-        this.reloadManagers();
-
-        // Register Commands
-        getLogger().info("Registering commands...");
-        registerCommands();
-
-        // Register listeners
-        getLogger().info("Registering Listeners...");
+    @Override
+    public void registerListeners() {
         getServer().getPluginManager().registerEvents(new AbstractGUIListener(), this);
         getServer().getPluginManager().registerEvents(new WandEvents(), this);
         getServer().getPluginManager().registerEvents(new CrystalSong(), this);
         getServer().getPluginManager().registerEvents(new WorldEvents(), this);
+    }
 
-        // Load wand cache
-        getLogger().info("Loading Wand Cache from Database...");
-        Wand.loadCacheFromDatabase();
+    // ----- POST INIT -----
 
-        getLogger().info("Successfully registered " + getName() + ".");
+    @Override
+    public void postInit() {
+        Wand.loadCacheFromDatabase(); // Database tables have to be instantiated before wand cache loading
+    }
+
+    @Override
+    public void initDatabaseTables() {
+        DatabaseHook.instantiateTables();
     }
 }
