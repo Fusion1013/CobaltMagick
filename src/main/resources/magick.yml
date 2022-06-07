@@ -5,13 +5,16 @@
 disable-wand-editing: false
 #
 # Weather or not nether portals should explode upon creation
-unstable-nether-portals: false
+unstable-nether-portals: true
 #
 # Weather or not end portals should work
-unstable-end-portals: false
+unstable-end-portals: true
 #
 # Disables wand mana recharging
 disable-wand-recharging: false
 #
 # Disables auto-updating
-disable-auto-update: false
+disable-auto-update: true
+#
+# Toggles breakable amethyst buds
+breakable-amethyst-buds: true
