@@ -4,6 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import se.fusion1013.plugin.cobaltcore.CobaltCore;
+import se.fusion1013.plugin.cobaltcore.manager.Manager;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.protection.CustomWorldGuardFlags;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
@@ -21,13 +23,13 @@ public class WandManager extends Manager implements Runnable {
      */
     public static WandManager getInstance(){
         if (INSTANCE == null){
-            INSTANCE = new WandManager(CobaltMagick.getInstance());
+            INSTANCE = new WandManager(CobaltCore.getInstance());
         }
         return INSTANCE;
     }
 
-    public WandManager(CobaltMagick cobaltMagick) {
-        super(cobaltMagick);
+    public WandManager(CobaltCore cobaltCore) {
+        super(cobaltCore);
     }
 
     @Override
