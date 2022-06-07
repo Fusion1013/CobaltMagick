@@ -4,9 +4,10 @@ import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.DoubleArgument;
 import dev.jorel.commandapi.executors.CommandBlockCommandExecutor;
 import org.bukkit.entity.Player;
-import se.fusion1013.plugin.cobaltmagick.manager.LocaleManager;
+import se.fusion1013.plugin.cobaltcore.locale.LocaleManager;
+import se.fusion1013.plugin.cobaltcore.util.StringPlaceholders;
+import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.manager.SpellManager;
-import se.fusion1013.plugin.cobaltmagick.util.StringPlaceholders;
 
 /**
  * Command for killing all currently active spells
@@ -51,7 +52,7 @@ public class KillSpellsCommand {
                 .addPlaceholder("killed_spells", nKilled)
                 .build();
 
-        localeManager.sendMessage(player, "commands.killspells.killall.success", placeholders);
+        localeManager.sendMessage(CobaltMagick.getInstance(), player, "commands.killspells.killall.success", placeholders);
     }
 
     private static void killAllSpells() {
