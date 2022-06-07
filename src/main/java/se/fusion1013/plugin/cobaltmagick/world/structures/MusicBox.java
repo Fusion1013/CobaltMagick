@@ -11,6 +11,7 @@ import org.bukkit.block.Biome;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import se.fusion1013.plugin.cobaltcore.util.HexUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ public class MusicBox implements Listener {
 
     Location location;
     String sound;
+    String message = "";
     int id;
 
     // ----- CONSTRUCTORS -----
@@ -30,25 +32,33 @@ public class MusicBox implements Listener {
         this.sound = sound;
         this.id = id;
 
+        World world = location.getWorld();
+        this.message = getBiomeMessage(world, location);
+
         location.getBlock().setType(Material.NOTE_BLOCK);
     }
 
     // ----- LOGIC -----
 
+    /**
+     * Plays the music this box contains.
+     */
     public void playMusic() {
         World world = location.getWorld();
+
         if (world != null) {
-            world.playSound(location, sound, SoundCategory.AMBIENT, 1, 1);
             List<Entity> nearbyEntities = new ArrayList<>(world.getNearbyEntities(location, 20, 20, 20));
             for (Entity e : nearbyEntities) {
                 if (e instanceof Player p) {
-                    p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(getBiomeMessage(world, location)));
+                    p.stopSound(sound, SoundCategory.AMBIENT); // Stop the song from playing if it is already playing
+                    p.playSound(location, sound, SoundCategory.AMBIENT, 1, 1);
+                    p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(HexUtils.colorify(message)));
                 }
             }
         }
     }
 
-    // TODO: Move to locale
+    // TODO: Move to locale. Base color of temperature of biome (fade from blue to green)
     private static String getBiomeMessage(World world, Location location) {
         Biome biome = world.getBiome(location);
         String biomeName = biome.toString();
@@ -67,5 +77,13 @@ public class MusicBox implements Listener {
 
     public int getId() {
         return id;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String msg) {
+        this.message = msg;
     }
 }
