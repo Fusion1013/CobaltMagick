@@ -14,28 +14,34 @@ import se.fusion1013.plugin.cobaltcore.item.loot.CustomLootTable;
 import se.fusion1013.plugin.cobaltcore.item.loot.LootEntry;
 import se.fusion1013.plugin.cobaltcore.item.loot.LootPool;
 import se.fusion1013.plugin.cobaltcore.manager.Manager;
-import se.fusion1013.plugin.cobaltcore.world.sound.SoundArea;
-import se.fusion1013.plugin.cobaltcore.world.spawner.CustomSpawner;
-import se.fusion1013.plugin.cobaltcore.world.structure.Dilapidate;
+import se.fusion1013.plugin.cobaltcore.world.structure.criteria.MaxHeightVariationStructureModule;
 import se.fusion1013.plugin.cobaltcore.world.structure.structure.ConnectedStructure;
 import se.fusion1013.plugin.cobaltcore.world.structure.structure.IStructure;
 import se.fusion1013.plugin.cobaltcore.world.structure.StructureManager;
 import se.fusion1013.plugin.cobaltcore.world.structure.criteria.BiomeStructureCriteria;
 import se.fusion1013.plugin.cobaltcore.world.structure.criteria.HeightStructureCriteria;
-import se.fusion1013.plugin.cobaltcore.world.structure.criteria.OnlyInChunkCriteria;
 import se.fusion1013.plugin.cobaltcore.world.structure.modules.*;
 import se.fusion1013.plugin.cobaltcore.world.structure.structure.SimpleStructure;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
-import se.fusion1013.plugin.cobaltmagick.item.loot.WandLootEntry;
-import se.fusion1013.plugin.cobaltmagick.manager.SpellManager;
-import se.fusion1013.plugin.cobaltmagick.util.constants.BookConstants;
-import se.fusion1013.plugin.cobaltmagick.world.structures.modules.MagickChestStructureModule;
-import se.fusion1013.plugin.cobaltmagick.world.structures.modules.MusicBoxStructureModule;
+import se.fusion1013.plugin.cobaltmagick.world.structures.register.SurfaceRuinRegister;
 
 public class MagickStructureManager extends Manager implements Listener, CommandExecutor {
 
     // ----- LOOT TABLES -----
+
+    // -- GENERIC
+
+    public static CustomLootTable GENERIC_DEAD_LOOT = new CustomLootTable("chest",
+            new LootPool(9,
+                    new LootEntry(new ItemStack(Material.ROTTEN_FLESH), 4, 19),
+                    new LootEntry(new ItemStack(Material.GUNPOWDER), 4, 11),
+                    new LootEntry(new ItemStack(Material.SPIDER_EYE), 1, 2),
+                    new LootEntry(new ItemStack(Material.BONE), 2, 7)
+            )
+    );
+
+    /*
 
     // -- TEST
 
