@@ -512,6 +512,13 @@ public class MagickStructureManager extends Manager implements Listener, Command
             .addGenerationCriteria(new BiomeStructureCriteria(Biome.SNOWY_PLAINS))
             .addGenerationCriteria(location -> location.distanceSquared(new Location(location.getWorld(), 0, 64, 0)) > 500*500) // Don't generate within 500 blocks of (0,0)
             .build());
+     */
+
+    // ----- SMALL DUNGEON SURFACE: 4xxx -----
+
+    public static final IStructure SURFACE_RUIN = SurfaceRuinRegister.SURFACE_RUIN;
+
+    // -----
 
     // ----- CONSTRUCTORS -----
 
