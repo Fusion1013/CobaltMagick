@@ -12,6 +12,8 @@ import se.fusion1013.plugin.cobaltmagick.entity.create.*;
 import se.fusion1013.plugin.cobaltmagick.entity.create.sentientwand.SentientWand;
 import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
 
+import java.util.Random;
+
 public class EntityManager extends Manager implements Listener {
 
     // ----- CONSTRUCTORS -----
@@ -27,6 +29,11 @@ public class EntityManager extends Manager implements Listener {
     public static final ICustomEntity ORC_BRUTE = OrcBrute.register();
     public static final ICustomEntity ORC_ARCHER = OrcArcher.register();
     public static final ICustomEntity ORC_FLAMESPITTER = OrcFlamespitter.register();
+    public static final ICustomEntity ORC_HIVEMIND = OrcHivemind.register();
+    public static final ICustomEntity ORC_BOMBER = OrcBomber.register();
+    public static final ICustomEntity ORC_ARBALIST = OrcArbalist.register();
+    public static final ICustomEntity ORC_RAVAGER_RIDER = OrcRavagerRider.register();
+
     public static final ICustomEntity SENTIENT_WAND = SentientWand.register();
     public static final ICustomEntity HIGH_ALCHEMIST = HighAlchemist.register();
     public static final ICustomEntity APPRENTICE = Apprentice.register();
