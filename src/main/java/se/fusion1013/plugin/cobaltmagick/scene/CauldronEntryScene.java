@@ -401,6 +401,8 @@ public class CauldronEntryScene {
     // ----- METHODS -----
 
     public static void createEndBeams(Location location) {
+        // TODO: Fix Beams
+        /*
         try {
             new Laser.CrystalLaser(location.clone().add(new Vector(15, -4, 0)), location.clone().add(new Vector(0, -2, 0)), 30, 100).start(CobaltMagick.getInstance());
             new Laser.CrystalLaser(location.clone().add(new Vector(-15, -6, 0)), location.clone().add(new Vector(0, -2, 0)), 30, 100).start(CobaltMagick.getInstance());
@@ -409,6 +411,7 @@ public class CauldronEntryScene {
         } catch (ReflectiveOperationException ex) {
             ex.printStackTrace();
         }
+         */
     }
 
     public static void structureCircles(Location location) {
@@ -467,6 +470,10 @@ public class CauldronEntryScene {
             if (player.getLocation().distanceSquared(location) <= affectedPlayerRadius*affectedPlayerRadius) {
                 // playerLineGroup.display(location, player.getLocation());
 
+                buildLineGroup.display(location, player.getLocation());
+
+                // TODO: Fix guardian beams
+                /*
                 if (!playersWithLasers.contains(player) && (player.getGameMode() != GameMode.CREATIVE && player.getGameMode() != GameMode.SPECTATOR)) {
                     try {
                         Laser.GuardianLaser laser = new Laser.GuardianLaser(location, player.getLocation(), 26, 100);
@@ -477,6 +484,7 @@ public class CauldronEntryScene {
                         ex.printStackTrace();
                     }
                 }
+                 */
 
                 // Add levitation
                 player.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 10, 0, false, false));
