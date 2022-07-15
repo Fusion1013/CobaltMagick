@@ -135,11 +135,11 @@ public class SurfaceRuinRegister {
             .setNaturalGeneration(true)
             .setGenerationThreshold(.4)
             .setMinDistance(1200)
-            .setOnGround(true) // TODO: Make sure that onGround moves the structure up to avoid it generating in the ground
+            .setOnGround(true)
             .addGenerationCriteria(new MaxHeightVariationStructureModule(4, 24, 17))
             .addGenerationCriteria(new HeightStructureCriteria(319, 100))
             .addGenerationCriteria(new BiomeStructureCriteria(Biome.PLAINS, Biome.SAVANNA, Biome.TAIGA, Biome.SPARSE_JUNGLE, Biome.MEADOW))
-            .addGenerationCriteria(location -> location.distanceSquared(new Location(location.getWorld(), 0, 64, 0)) > 500*500) // Don't generate within 500 blocks of (0,0)
+            .addGenerationCriteria(location -> location.distanceSquared(new Location(location.getWorld(), 0, 64, 0)) > 500*500)
             .build());
 
 }
