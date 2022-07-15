@@ -2,28 +2,22 @@ package se.fusion1013.plugin.cobaltmagick.database;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 import se.fusion1013.plugin.cobaltcore.CobaltCore;
-import se.fusion1013.plugin.cobaltcore.database.location.ILocationDao;
 import se.fusion1013.plugin.cobaltcore.database.system.DataManager;
 import se.fusion1013.plugin.cobaltcore.database.system.Database;
-import se.fusion1013.plugin.cobaltcore.database.system.SQLite;
-import se.fusion1013.plugin.cobaltcore.item.CustomItem;
-import se.fusion1013.plugin.cobaltcore.item.CustomItemManager;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
+import se.fusion1013.plugin.cobaltmagick.database.door.IDoorDao;
+import se.fusion1013.plugin.cobaltmagick.database.lock.ILockDao;
+import se.fusion1013.plugin.cobaltmagick.database.musicbox.IMusicBoxDao;
 import se.fusion1013.plugin.cobaltmagick.manager.SpellManager;
-import se.fusion1013.plugin.cobaltmagick.manager.WorldManager;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
-import se.fusion1013.plugin.cobaltmagick.util.Warp;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 import se.fusion1013.plugin.cobaltmagick.world.structures.ItemLock;
 import se.fusion1013.plugin.cobaltmagick.world.structures.MagickDoor;
 import se.fusion1013.plugin.cobaltmagick.world.structures.MusicBox;
-import se.fusion1013.plugin.cobaltmagick.world.structures.system.Unlockable;
 
 import java.sql.*;
 import java.util.*;
-import java.util.logging.Level;
 
 /**
  * This class is used to access and edit/retrieve values from the database
@@ -120,36 +114,48 @@ public class DatabaseHook {
             " INNER JOIN locations ON locations.uuid = locks.location_uuid;";
 
     public static void instantiateTables() {
-        database.executeString(SQLiteCreateMusicBoxTable);
-        database.executeString(SQLiteCreateStatuesTable);
-        database.executeString(SQLiteCreateWandsTable);
-        database.executeString(SQLiteCreateWandSpellsTable);
-        database.executeString(SQLiteCreateDoorsTable);
-        database.executeString(SQLiteCreateDoorsView);
-        database.executeString(SQLiteCreateLockTable);
-        database.executeString(SQLiteCreateLockView);
+        // database.executeString(SQLiteCreateMusicBoxTable);
+        // database.executeString(SQLiteCreateStatuesTable);
+        // database.executeString(SQLiteCreateWandsTable);
+        // database.executeString(SQLiteCreateWandSpellsTable);
+        // database.executeString(SQLiteCreateDoorsTable);
+        // database.executeString(SQLiteCreateDoorsView);
+        // database.executeString(SQLiteCreateLockTable);
+        // database.executeString(SQLiteCreateLockView);
     }
 
     // ----- LOCKS -----
 
+    @Deprecated
     public static void removeLock(UUID uuid) {
+
+        DataManager.getInstance().getDao(ILockDao.class).removeLockAsync(uuid);
+
+        /*
         try {
             Connection conn = database.getSQLConnection();
             PreparedStatement ps = conn.prepareStatement("DELETE FROM locks WHERE lock_uuid = ?");
             ps.setString(1, uuid.toString());
             ps.executeUpdate();
             ps.close();
+            conn.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+         */
     }
 
     /**
      * Gets all locks that are in the database.
      *
-     * @return
+     * @return map
      */
+    @Deprecated
     public static Map<UUID, ItemLock> getLocks() {
+
+        return DataManager.getInstance().getDao(ILockDao.class).getLocks();
+
+        /*
         Map<UUID, ItemLock> locks = new HashMap<>();
         try {
             Connection conn = database.getSQLConnection();
@@ -167,12 +173,15 @@ public class DatabaseHook {
                 Unlockable unlockable = WorldManager.getDoor(UUID.fromString(rs.getString("unlockable_uuid"))); // TODO: Replace with getUnlockable method call
                 locks.put(uuid, new ItemLock(uuid, location, item, unlockable));
             }
+            rs.close();
             ps.close();
+            conn.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
 
         return locks;
+         */
     }
 
     /**
@@ -180,8 +189,12 @@ public class DatabaseHook {
      *
      * @param lock the lock to insert.
      */
+    @Deprecated
     public static void insertLock(ItemLock lock) {
 
+        DataManager.getInstance().getDao(ILockDao.class).insertLockAsync(lock);
+
+        /*
         DataManager.getInstance().getDao(ILocationDao.class).insertLocation(lock.getUuid(), lock.getLocation());
 
         try {
@@ -193,28 +206,40 @@ public class DatabaseHook {
             ps.setString(4, lock.getItem().getInternalName());
             ps.executeUpdate();
             ps.close();
+            conn.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+         */
     }
 
     // ----- DOORS -----
 
+    @Deprecated
     public static void removeDoor(UUID uuid) {
+        DataManager.getInstance().getDao(IDoorDao.class).removeDoorAsync(uuid);
+
+        /*
         try {
             Connection conn = database.getSQLConnection();
             PreparedStatement ps = conn.prepareStatement("DELETE FROM doors WHERE door_id = ?");
             ps.setString(1, uuid.toString());
             ps.executeUpdate();
             ps.close();
+            conn.close();
 
             DataManager.getInstance().getDao(ILocationDao.class).removeLocation(uuid);
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+         */
     }
 
+    @Deprecated
     public static void updateDoorsStatus(MagickDoor[] doors) {
+        DataManager.getInstance().getDao(IDoorDao.class).updateDoorStatusAsync(doors);
+
+        /*
         try {
             Connection conn = database.getSQLConnection();
             conn.setAutoCommit(false);
@@ -226,12 +251,18 @@ public class DatabaseHook {
             }
             conn.commit();
             conn.setAutoCommit(true);
+            conn.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+         */
     }
 
+    @Deprecated
     public static void insertDoor(MagickDoor door) {
+        DataManager.getInstance().getDao(IDoorDao.class).insertDoorAsync(door);
+
+        /*
         DataManager.getInstance().getDao(ILocationDao.class).insertLocation(door.getUuid(), door.getCorner()); // Insert the doors corner location
 
         CobaltMagick.getInstance().getLogger().info("Inserting door into database: " + door.getCorner());
@@ -249,12 +280,18 @@ public class DatabaseHook {
 
             ps.executeUpdate();
             ps.close();
+            conn.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+         */
     }
 
+    @Deprecated
     public static Map<UUID, MagickDoor> getDoors() {
+        return DataManager.getInstance().getDao(IDoorDao.class).getDoors();
+
+        /*
         Map<UUID, MagickDoor> doors = new HashMap<>();
         try {
             Connection conn = database.getSQLConnection();
@@ -271,16 +308,22 @@ public class DatabaseHook {
 
             rs.close();
             ps.close();
+            conn.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
 
         return doors;
+         */
     }
 
     // ----- MUSIC BOXES -----
 
+    @Deprecated
     public static void updateMusicBoxMessage(int boxId, String msg) {
+        DataManager.getInstance().getDao(IMusicBoxDao.class).updateMusicBoxMessageAsync(boxId, msg);
+
+        /*
         try {
             Connection conn = database.getSQLConnection();
             PreparedStatement ps = conn.prepareStatement("UPDATE music_boxes SET message = ? WHERE id = ?");
@@ -290,12 +333,18 @@ public class DatabaseHook {
 
             ps.executeUpdate();
             ps.close();
+            conn.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+         */
     }
 
+    @Deprecated
     public static Map<String, MusicBox> getMusicBoxes() {
+        return DataManager.getInstance().getDao(IMusicBoxDao.class).getMusicBoxes();
+
+        /*
         Map<String, MusicBox> boxMap = new HashMap<>();
         try {
             Connection conn = database.getSQLConnection();
@@ -307,14 +356,18 @@ public class DatabaseHook {
                 if (box != null) boxMap.put(WorldManager.getFormattedLocation(box.getLocation()), box);
             }
             CobaltMagick.getInstance().getLogger().info("Loaded " + boxMap.size() + " music boxes from database");
+            rsBox.close();
             stBox.close();
+            conn.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         return boxMap;
+         */
     }
 
+    @Deprecated
     private static MusicBox getBoxFromResult(ResultSet boxSet) {
         try {
             double xPos = boxSet.getDouble("pos_x");
@@ -336,7 +389,11 @@ public class DatabaseHook {
         return null;
     }
 
+    @Deprecated
     public static void insertMusicBox(MusicBox musicBox){
+        DataManager.getInstance().getDao(IMusicBoxDao.class).insertMusicBoxAsync(musicBox);
+
+        /*
         Location location = musicBox.getLocation();
         double xPos = location.getX();
         double yPos = location.getY();
@@ -370,6 +427,7 @@ public class DatabaseHook {
         }
 
         return;
+         */
     }
 
     // ----- WANDS -----
@@ -379,6 +437,7 @@ public class DatabaseHook {
      *
      * @return a list of wands
      */
+    @Deprecated
     public static List<Wand> getWands() {
         List<Wand> wands = new ArrayList<>();
         try {
@@ -402,6 +461,7 @@ public class DatabaseHook {
      * @param id id of the wand to find
      * @return a wand
      */
+    @Deprecated
     public static Wand getWandByID(int id){
         try {
             Connection conn = database.getSQLConnection();
@@ -427,6 +487,7 @@ public class DatabaseHook {
      * @param wandSet the <code>ResultSet</code> to extract information from
      * @return a new wand
      */
+    @Deprecated
     private static Wand getWandFromResult(ResultSet wandSet) {
         try {
             int id = wandSet.getInt("id");
@@ -476,6 +537,7 @@ public class DatabaseHook {
      * @param wand The wand to insert into the database
      * @return The id of the wand. Returns -1 if the wand was not able to be inserted into the database.
      */
+    @Deprecated
     public static int insertWand(Wand wand){
         boolean shuffle = wand.isShuffle();
         int spellsPerCast = wand.getSpellsPerCast();
@@ -527,6 +589,7 @@ public class DatabaseHook {
      *
      * @param wands the wands with the spells to insert into the database
      */
+    @Deprecated
     public static void updateWandSpells(List<Wand> wands){
 
         String deleteWandSpells = "DELETE FROM wand_spells WHERE wand_id = ?";
