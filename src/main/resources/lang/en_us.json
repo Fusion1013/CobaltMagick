@@ -23,7 +23,7 @@
 
   "commands.magick.version.version": "&3%plugin_name% &7v&3%version%",
   "commands.magick.version.author": "&7Author: &3Fusion1013",
-  "commands.magick.version.github_issues": "&7Issues: &3%github_issues_link%",
+  "commands.magick.version.website": "&7Issues: &3%github_issues_link%",
 
   "commands.magick.update.result": "&7%update_result%",
   "commands.magick.update.remote_version": "&7Remote Version: &3%remote_version%",
@@ -31,10 +31,30 @@
   "commands.magick.update.updater_disabled": "&7Auto updates are disabled. Check config file",
   "commands.magick.update.updater_already_checking": "&7Already checking for an update",
 
-  "commands.magick.structure.music_box.info": "&7[&3%id%&7] Location: &b%x%&7, &b%y%&7, &b%z% &7in &3%world%&7. Plays song &3%song%&7.",
-
   "commands.magick.structure.remove": "&7Removed &3%structure% &7at location %location%",
   "commands.magick.structure.place": "&7Placed new &3%structure% &7at location %location%",
+  "commands.magick.structure.not_found": "&7Structure not found",
+
+  "commands.magick.structure.music_box.place": "Placed new music box at %location% &7with sound &3%sound%",
+  "commands.magick.structure.music_box.info": "&7[&3%id%&7] Location: &b%x%&7, &b%y%&7, &b%z% &7in &3%world%&7. Plays sound &3%song%&7.",
+  "commands.magick.structure.music_box.edit.message": "Changed the message of music box with id &3%id% &7to \"&r%message%&7\"",
+  "commands.magick.structure.music_box.remove": "Removed music box with id &3%id%",
+  "commands.magick.structure.music_box.not_found": "Music box with id &3%id% &7not found",
+
+  "commands.magick.structure.door.place": "&7Placed new &3Door &7with UUID &3%uuid% &7at location %location%",
+  "commands.magick.structure.door.toggle": "&7Toggled door &3%uuid%&7 at location &3%location%",
+  "commands.magick.structure.door.info": "&7[&3%uuid%&7] Location: %location%&7, Size: &3%x_size%x&7, &3%y_size%y&7, &3%z_size%z",
+  "commands.magick.structure.door.list": "",
+  "commands.magick.structure.door.remove": "",
+
   "commands.magick.structure.lock.info": "&7[&3%id%&7] Location: %location%. Key: &3%key%",
-  "commands.magick.structure.not_found": "&7Structure not found"
+
+  "commands.magick.structure.rune_lock.place": "",
+  "commands.magick.structure.rune_lock.info": "&7[&3%id%&7] Location: %location%",
+  "commands.magick.structure.rune_lock.list_header": "&7%header%:",
+  "commands.magick.structure.rune_lock.item": "&7 - [&3%id%&7] Item: &3%item%",
+  "commands.magick.structure.rune_lock.list": "",
+  "commands.magick.structure.rune_lock.add_item": "&7Added item &3%item% &7to rune lock with id &3%id%",
+  "commands.magick.structure.rune_lock.remove": "",
+  "commands.magick.structure.rune_lock.not_found": "Rune Lock with id &3%id% &7not found"
 }
