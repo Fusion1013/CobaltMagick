@@ -1,7 +1,12 @@
 package se.fusion1013.plugin.cobaltmagick.world.structures;
 
 import org.bukkit.*;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
+import se.fusion1013.plugin.cobaltcore.util.VectorUtil;
+import se.fusion1013.plugin.cobaltcore.world.block.entity.BlockEntityCollection;
+import se.fusion1013.plugin.cobaltcore.world.block.entity.BlockEntityManager;
+import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.world.structures.system.IMagickDoor;
 import se.fusion1013.plugin.cobaltmagick.world.structures.system.Unlockable;
 
@@ -45,7 +50,10 @@ public class MagickDoor implements IMagickDoor, Unlockable {
         doorMaterials = new Material[width][height][depth];
         storeDoorMaterials();
 
-        if (!isClosed) open();
+        if (!this.isClosed) {
+            this.isClosed = true;
+            open();
+        }
     }
 
     // ----- LOGIC -----
@@ -85,6 +93,11 @@ public class MagickDoor implements IMagickDoor, Unlockable {
         storeDoorMaterials();
 
         World world = cornerLocation.getWorld();
+
+        // setDoorBlocks(true);
+        createMovingDoor(cornerLocation.clone(), cornerLocation.clone().add(new Vector(0, height+1, 0)), true);
+
+        /*
         if (world == null) return;
 
         int cx = cornerLocation.getBlockX();
@@ -100,13 +113,21 @@ public class MagickDoor implements IMagickDoor, Unlockable {
                 }
             }
         }
+         */
 
         world.playSound(cornerLocation.clone().add(new Vector(width / 2, height / 2, depth / 2)), "cobalt.perk_unseal", SoundCategory.BLOCKS, 1, 1);
+
+
     }
 
     @Override
     public void close() {
         isClosed = true;
+
+        // setDoorBlocks(false);
+        createMovingDoor(cornerLocation.clone().add(new Vector(0, height+1, 0)), cornerLocation.clone(), false);
+
+        /*
         World world = cornerLocation.getWorld();
         if (world == null) return;
 
@@ -121,10 +142,51 @@ public class MagickDoor implements IMagickDoor, Unlockable {
                 }
             }
         }
+         */
+    }
+
+    public void setDoorBlocks(boolean remove) {
+        World world = cornerLocation.getWorld();
+        if (world == null) return;
+
+        int cx = cornerLocation.getBlockX();
+        int cy = cornerLocation.getBlockY();
+        int cz = cornerLocation.getBlockZ();
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                for (int z = 0; z < depth; z++) {
+                    if (remove) new Location(world, cx + x, cy + y, cz + z).getBlock().setType(Material.AIR);
+                    else new Location(world, cx + x, cy + y, cz + z).getBlock().setType(doorMaterials[x][y][z]);
+                }
+            }
+        }
+    }
+
+    BukkitTask doorTask;
+    private double p = 0;
+
+    private void createMovingDoor(Location from, Location to, boolean remove) {
+        BlockEntityCollection collection = BlockEntityManager.getInstance().createBlockEntityCollection(from, doorMaterials);
+
+        if (remove) setDoorBlocks(true);
+
+        this.doorTask = Bukkit.getScheduler().runTaskTimer(CobaltMagick.getInstance(), () -> {
+            if (p >= 1) {
+                BlockEntityManager.getInstance().removeBlockEntityCollection(collection.getUuid());
+                if (!remove) setDoorBlocks(false);
+                p = 0;
+                doorTask.cancel();
+            }
+
+            Vector newLocation = VectorUtil.lerp(from.toVector(), to.toVector(), p);
+            Location currentLocation = new Location(from.getWorld(), newLocation.getX(), newLocation.getY(), newLocation.getZ());
+            collection.moveTo(currentLocation);
+            p += (1.0 / (height * 8));
+        }, 0, 1);
     }
 
     // ----- GETTERS / SETTERS -----
-
 
     @Override
     public boolean isLocked() {
