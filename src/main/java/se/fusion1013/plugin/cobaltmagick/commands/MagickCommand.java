@@ -5,7 +5,6 @@ import dev.jorel.commandapi.arguments.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -18,18 +17,13 @@ import se.fusion1013.plugin.cobaltcore.util.HexUtils;
 import se.fusion1013.plugin.cobaltcore.util.StringPlaceholders;
 import se.fusion1013.plugin.cobaltcore.util.VersionUtil;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
-import se.fusion1013.plugin.cobaltmagick.database.DatabaseHook;
+import se.fusion1013.plugin.cobaltmagick.commands.structure.StructureCommand;
 import se.fusion1013.plugin.cobaltmagick.manager.*;
 import se.fusion1013.plugin.cobaltmagick.util.SchematicUtil;
 import se.fusion1013.plugin.cobaltmagick.world.structures.HiddenMessage;
 import se.fusion1013.plugin.cobaltmagick.world.structures.ItemLock;
-import se.fusion1013.plugin.cobaltmagick.world.structures.MagickDoor;
-import se.fusion1013.plugin.cobaltmagick.world.structures.MusicBox;
 import se.fusion1013.plugin.cobaltmagick.world.structures.system.Unlockable;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
 import java.util.UUID;
 
 public class MagickCommand {
@@ -45,7 +39,7 @@ public class MagickCommand {
                 .withSubcommand(createColorCommand())
                 .withSubcommand(createEditCommand())
                 .withSubcommand(createDreamCommand())
-                .withSubcommand(createStructureCommand())
+                .withSubcommand(StructureCommand.createStructureCommand())
                 .withSubcommand(createUpdateCommand())
                 .register();
     }
@@ -72,8 +66,6 @@ public class MagickCommand {
     private static CommandAPICommand createStructureCommand() {
         return new CommandAPICommand("structure")
                 .withPermission("commands.magick.structure")
-                .withSubcommand(createMusicBoxCommand())
-                .withSubcommand(createDoorCommand())
                 .withSubcommand(createHiddenMessageCommand())
                 .withSubcommand(createLockCommand());
     } // TODO: Replace sound suggestions
@@ -86,7 +78,7 @@ public class MagickCommand {
                         .withArguments(new GreedyStringArgument("door_id").replaceSuggestions(ArgumentSuggestions.strings(info -> WorldManager.getDoorKeys())))
                         .executes((MagickCommand::placeLock)))
                 .withSubcommand(new CommandAPICommand("remove")
-                        .withArguments(new GreedyStringArgument("uuid").replaceSuggestions(ArgumentSuggestions.strings(info -> WorldManager.getLockKeys())))
+                        .withArguments(new GreedyStringArgument("uuid").replaceSuggestions(ArgumentSuggestions.strings(info -> WorldManager.getItemLockKeys())))
                         .executes(MagickCommand::removeLock))
                 .withSubcommand(new CommandAPICommand("list")
                         .executesPlayer(MagickCommand::listLock));
@@ -99,7 +91,7 @@ public class MagickCommand {
      * @param args command arguments.
      */
     private static void listLock(Player player, Object[] args) {
-        ItemLock[] locks = WorldManager.getLocks();
+        ItemLock[] locks = WorldManager.getItemLocks();
 
         if (locks.length == 0) {
             LocaleManager.getInstance().sendMessage(CobaltMagick.getInstance(), player, "commands.magick.structure.not_found");
@@ -128,7 +120,7 @@ public class MagickCommand {
      */
     private static void removeLock(CommandSender sender, Object[] args) {
         UUID uuid = UUID.fromString((String)args[0]);
-        ItemLock lock = WorldManager.getLock(uuid);
+        ItemLock lock = WorldManager.getItemLock(uuid);
 
         if (sender instanceof Player p) {
             StringPlaceholders placeholders = StringPlaceholders.builder()
@@ -138,7 +130,7 @@ public class MagickCommand {
             LocaleManager.getInstance().sendMessage(CobaltMagick.getInstance(), p, "commands.magick.structure.remove", placeholders);
         }
 
-        WorldManager.removeLock(uuid);
+        WorldManager.removeItemLock(uuid);
     }
 
     /**
@@ -151,7 +143,7 @@ public class MagickCommand {
         Location location = (Location)args[0];
         CustomItem item = CustomItemManager.getCustomItem((String)args[1]);
         Unlockable unlockable = WorldManager.getDoor(UUID.fromString((String)args[2]));
-        WorldManager.registerLock(location, item, unlockable);
+        WorldManager.registerItemLock(location, item, unlockable);
 
         if (sender instanceof Player p) {
             StringPlaceholders placeholders = StringPlaceholders.builder()
@@ -173,98 +165,6 @@ public class MagickCommand {
 
     private static void addHiddenMessage(Player p, Object[] args) {
         WorldManager.addHiddenMessage(new HiddenMessage((String)args[2], (Location)args[0], -Math.toRadians((int)args[1]), HiddenMessage.TextEncryption.GALACTIC)); // Rotate the rotation to switch the rotation direction
-    }
-
-    private static CommandAPICommand createDoorCommand() {
-        return new CommandAPICommand("door")
-                .withSubcommand(new CommandAPICommand("place")
-                        .withArguments(new LocationArgument("position"))
-                        .withArguments(new IntegerArgument("width"))
-                        .withArguments(new IntegerArgument("height"))
-                        .withArguments(new IntegerArgument("depth"))
-                        .executesPlayer((MagickCommand::placeDoor)))
-                .withSubcommand(new CommandAPICommand("list"))
-                .withSubcommand(new CommandAPICommand("edit"))
-                .withSubcommand(new CommandAPICommand("toggle")
-                        .withArguments(new StringArgument("id").replaceSuggestions(ArgumentSuggestions.strings(info -> WorldManager.getDoorKeys())))
-                        .executesPlayer(MagickCommand::toggleDoor))
-                .withSubcommand(new CommandAPICommand("remove")
-                        .withArguments(new StringArgument("id").replaceSuggestions(ArgumentSuggestions.strings(info -> WorldManager.getDoorKeys())))
-                        .executesPlayer(MagickCommand::removeDoor));
-    }
-
-    private static void removeDoor(Player p, Object[] args) {
-        UUID id = UUID.fromString((String)args[0]);
-        WorldManager.removeDoor(id);
-    }
-
-    private static void toggleDoor(Player p, Object[] args) {
-        UUID id = UUID.fromString((String)args[0]);
-
-        MagickDoor door = WorldManager.getDoor(id);
-        if (door.isClosed()) door.open();
-        else door.close();
-    }
-
-    private static void placeDoor(Player p, Object[] args) {
-        Location location = (Location)args[0];
-        int dx = (Integer)args[1];
-        int dy = (Integer)args[2];
-        int dz = (Integer)args[3];
-
-        WorldManager.registerDoor(location, dx, dy, dz);
-    }
-
-    private static CommandAPICommand createMusicBoxCommand() {
-        return new CommandAPICommand("music_box")
-                .withSubcommand(new CommandAPICommand("place")
-                        .withArguments(new GreedyStringArgument("sound"))
-                        .executesPlayer(MagickCommand::placeMusicBox))
-                .withSubcommand(new CommandAPICommand("list")
-                        .executesPlayer(MagickCommand::getMusicBoxes))
-                .withSubcommand(new CommandAPICommand("edit")
-                        .withSubcommand(new CommandAPICommand("message")
-                                .withArguments(new IntegerArgument("id").replaceSuggestions(ArgumentSuggestions.strings(info -> WorldManager.getInstance().getMusicBoxIdStrings())))
-                                .withArguments(new GreedyStringArgument("message"))
-                                .executesPlayer(MagickCommand::editMusicBoxMessage)));
-    }
-
-    private static void editMusicBoxMessage(Player p, Object[] args) {
-        int id = (Integer)args[0];
-        String message = (String)args[1];
-
-        WorldManager.getInstance().getMusicBox(id).setMessage(message);
-        DatabaseHook.updateMusicBoxMessage(id, message);
-    }
-
-    private static void getMusicBoxes(Player p, Object[] args) {
-        LocaleManager localeManager = LocaleManager.getInstance();
-        MusicBox[] boxes = WorldManager.getInstance().getMusicBoxes();
-
-        StringPlaceholders placeholders1 = StringPlaceholders.builder()
-                .addPlaceholder("header", "Music Boxes")
-                .build();
-
-        localeManager.sendMessage(CobaltMagick.getInstance(), p, "list-header", placeholders1);
-
-        for (MusicBox box : boxes) {
-            Location location = box.getLocation();
-            StringPlaceholders placeholders = StringPlaceholders.builder()
-                    .addPlaceholder("id", box.getId())
-                    .addPlaceholder("x", location.getX())
-                    .addPlaceholder("y", location.getY())
-                    .addPlaceholder("z", location.getZ())
-                    .addPlaceholder("world", location.getWorld().getName())
-                    .addPlaceholder("song", box.getSound())
-                    .build();
-            localeManager.sendMessage("", p, "commands.magick.structure.music_box.info", placeholders);
-        }
-    }
-
-    private static void placeMusicBox(Player p, Object[] args) {
-        Location location = p.getLocation();
-        String sound = (String)args[0];
-        WorldManager.registerMusicBox(location, sound);
     }
 
     private static CommandAPICommand createVersionCommand() {
