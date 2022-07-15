@@ -5,16 +5,19 @@ import dev.jorel.commandapi.arguments.*;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import se.fusion1013.plugin.cobaltcore.database.system.DataManager;
 import se.fusion1013.plugin.cobaltcore.item.CustomItemManager;
 import se.fusion1013.plugin.cobaltcore.locale.LocaleManager;
 import se.fusion1013.plugin.cobaltcore.util.StringPlaceholders;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.database.DatabaseHook;
+import se.fusion1013.plugin.cobaltmagick.database.wand.IWandDao;
 import se.fusion1013.plugin.cobaltmagick.manager.SpellManager;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
 import se.fusion1013.plugin.cobaltmagick.spells.Spell;
 import se.fusion1013.plugin.cobaltmagick.util.ItemUtil;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
+import se.fusion1013.plugin.cobaltmagick.wand.WandManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -233,10 +236,7 @@ public class CGiveCommand {
         int capacity = (Integer)args[6];
         double spread = (Double)args[7];
 
-        Wand wand = new Wand(shuffle, spellsPerCast, castDelay, rechargeTime, manaMax, manaChargeSpeed, capacity, spread, new ArrayList<>(), 0);
-        int id = DatabaseHook.insertWand(wand);
-        wand.setId(id);
-        Wand.addWandToCache(wand);
+        Wand wand = WandManager.getInstance().createWand(shuffle, spellsPerCast, castDelay, rechargeTime, manaMax, manaChargeSpeed, capacity, spread, new ArrayList<>(), 0);
 
         player.getInventory().addItem(wand.getWandItem());
 
@@ -279,10 +279,7 @@ public class CGiveCommand {
         int cost = 20 * level;
         if (cost == 20) cost+=10;
 
-        Wand wand = new Wand(cost, level, false);
-        int id = DatabaseHook.insertWand(wand);
-        wand.setId(id);
-        Wand.addWandToCache(wand);
+        Wand wand = WandManager.getInstance().createWand(cost, level, false);
 
         player.getInventory().addItem(wand.getWandItem());
 
@@ -307,7 +304,7 @@ public class CGiveCommand {
                 .addPlaceholder("player_name", player.getName())
                 .build();
 
-        Wand wand = Wand.getWandFromCache(id);
+        Wand wand = WandManager.getInstance().getWandFromCache(id);
 
         if (wand == null) {
             localeManager.sendMessage(CobaltMagick.getInstance(), player, "commands.cgive.spell.fromid.wand_not_found", spellPlaceholder);
