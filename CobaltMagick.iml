@@ -80,5 +80,14 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Maven: com.github.ZockerAxel:CrazyAdvancementsAPI:2.1.10">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../Minecraft Servers/1.19 - Paper DEV/plugins/CrazyAdvancementsAPI.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
