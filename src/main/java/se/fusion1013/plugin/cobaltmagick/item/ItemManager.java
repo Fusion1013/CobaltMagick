@@ -8,11 +8,20 @@ import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.*;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -23,6 +32,7 @@ import se.fusion1013.plugin.cobaltcore.manager.Manager;
 import se.fusion1013.plugin.cobaltcore.util.HexUtils;
 import se.fusion1013.plugin.cobaltcore.util.PlayerUtil;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
+import se.fusion1013.plugin.cobaltmagick.item.brewing.BrewingRecipe;
 import se.fusion1013.plugin.cobaltmagick.item.create.ShinyOrb;
 import se.fusion1013.plugin.cobaltmagick.manager.SpellManager;
 import se.fusion1013.plugin.cobaltmagick.util.constants.MerchantRecipeConstants;
@@ -35,7 +45,7 @@ import static se.fusion1013.plugin.cobaltcore.item.CustomItemManager.register;
  * Holds all <code>CustomItems</code> registered by the <code>CobaltMagick</code> plugin.
  * Items are registered through <code>CobaltCore</code>.
  */
-public class ItemManager extends Manager {
+public class ItemManager extends Manager implements Listener {
 
     // ----- CONSTRUCTORS -----
 
@@ -415,6 +425,97 @@ public class ItemManager extends Manager {
             .setCustomModel(1)
             .build());
 
+    // ----- EMPTY BOTTLES / GLASSES / FLASKS -----
+
+    // TODO: Add method for filling them with water
+
+    public static final ICustomItem EMPTY_MARTINI_GLASS = register(new CustomItem.CustomItemBuilder("empty_martini_glass", Material.GLASS_BOTTLE, 4)
+            .setCustomName(HexUtils.colorify("&fEmpty Martini Glass")).setCustomModel(7).addStoneCuttingRecipe(Material.GLASS)
+            .build());
+
+    public static final ICustomItem EMPTY_DIAMOND_BOTTLE = register(new CustomItem.CustomItemBuilder("empty_diamond_bottle", Material.GLASS_BOTTLE, 1)
+            .setCustomName(HexUtils.colorify("&fEmpty Diamond Bottle")).setCustomModel(3).addStoneCuttingRecipe(Material.GLASS)
+            .build());
+
+    public static final ICustomItem EMPTY_JAR = register(new CustomItem.CustomItemBuilder("empty_jar", Material.GLASS_BOTTLE, 1)
+            .setCustomName(HexUtils.colorify("&fEmpty Jar")).setCustomModel(5).addStoneCuttingRecipe(Material.GLASS)
+            .build());
+
+    public static final ICustomItem EMPTY_ROCKS_GLASS_2 = register(new CustomItem.CustomItemBuilder("empty_rocks_glass_2", Material.GLASS_BOTTLE, 4)
+            .setCustomName(HexUtils.colorify("&fEmpty Rocks Glass")).setCustomModel(10).addStoneCuttingRecipe(Material.GLASS)
+            .build());
+
+    public static final ICustomItem EMPTY_ROCKS_GLASS = register(new CustomItem.CustomItemBuilder("empty_rocks_glass", Material.GLASS_BOTTLE, 1)
+            .setCustomName(HexUtils.colorify("&fEmpty Rocks Glass")).setCustomModel(9).addStoneCuttingRecipe(Material.GLASS)
+            .build());
+
+    public static final ICustomItem EMPTY_PERFUME_BOTTLE = register(new CustomItem.CustomItemBuilder("empty_perfume_bottle", Material.GLASS_BOTTLE, 1)
+            .setCustomName(HexUtils.colorify("&fEmpty Perfume Bottle")).setCustomModel(8).addStoneCuttingRecipe(Material.GLASS)
+            .build());
+
+    public static final ICustomItem EMPTY_WINE_GLASS = register(new CustomItem.CustomItemBuilder("empty_wine_glass", Material.GLASS_BOTTLE, 4)
+            .setCustomName(HexUtils.colorify("&fEmpty Wine Glass")).setCustomModel(15).addStoneCuttingRecipe(Material.GLASS)
+            .build());
+
+    public static final ICustomItem EMPTY_ROUND_BOTTLE = register(new CustomItem.CustomItemBuilder("empty_round_bottle", Material.GLASS_BOTTLE, 1)
+            .setCustomName(HexUtils.colorify("&fEmpty Round Bottle")).setCustomModel(11).addStoneCuttingRecipe(Material.GLASS)
+            .build());
+
+    public static final ICustomItem EMPTY_SHOT_GLASS = register(new CustomItem.CustomItemBuilder("empty_shot_glass", Material.GLASS_BOTTLE, 8)
+            .setCustomName(HexUtils.colorify("&fEmpty Shot Glass")).setCustomModel(12).addStoneCuttingRecipe(Material.GLASS)
+            .build());
+
+    public static final ICustomItem EMPTY_FLASK = register(new CustomItem.CustomItemBuilder("empty_flask", Material.GLASS_BOTTLE, 1)
+            .setCustomName(HexUtils.colorify("&fEmpty Flask")).setCustomModel(4).addStoneCuttingRecipe(Material.GLASS)
+            .build());
+
+    public static final ICustomItem EMPTY_TRIANGLE_BOTTLE = register(new CustomItem.CustomItemBuilder("empty_triangle_bottle", Material.GLASS_BOTTLE, 1)
+            .setCustomName(HexUtils.colorify("&fEmpty Triangle Bottle")).setCustomModel(14).addStoneCuttingRecipe(Material.GLASS)
+            .build());
+
+    public static final ICustomItem EMPTY_CHAMPAGNE_GLASS = register(new CustomItem.CustomItemBuilder("empty_champagne_glass", Material.GLASS_BOTTLE, 4)
+            .setCustomName(HexUtils.colorify("&fEmpty Champagne Glass")).setCustomModel(2).addStoneCuttingRecipe(Material.GLASS)
+            .build());
+
+    public static final ICustomItem EMPTY_BOTTLE = register(new CustomItem.CustomItemBuilder("empty_bottle", Material.GLASS_BOTTLE, 1)
+            .setCustomName(HexUtils.colorify("&fEmpty Jar")).setCustomModel(1).addStoneCuttingRecipe(Material.GLASS)
+            .build());
+
+    public static final ICustomItem EMPTY_LABELED_BOTTLE = register(new CustomItem.CustomItemBuilder("empty_labeled_bottle", Material.GLASS_BOTTLE, 1)
+            .setCustomName(HexUtils.colorify("&fEmpty Labeled Bottle")).setCustomModel(6).addStoneCuttingRecipe(Material.GLASS)
+            .build());
+
+    public static final StonecuttingRecipe GLASS_BOTTLE_RECIPE = CustomItemManager.addStoneCuttingRecipe(
+            new StonecuttingRecipe(new NamespacedKey(CobaltMagick.getInstance(), "cobaltmagick.custom.stonecutting.glass_bottle"), new ItemStack(Material.GLASS_BOTTLE), Material.GLASS)
+    );
+
+
+    public static final ICustomItem EMPTY_SKULL_BOTTLE = register(new CustomItem.CustomItemBuilder("empty_skull_bottle", Material.GLASS_BOTTLE, 1)
+            .setCustomName(HexUtils.colorify("&fEmpty Skull Bottle")).setCustomModel(13).addStoneCuttingRecipe(Material.GLASS)
+            .build());
+
+    // ----- POTIONS -----
+
+    public static final ICustomItem POTION_JAR = register(new CustomItem.CustomItemBuilder("potion_jar", Material.POTION, 1)
+            .setCustomName(HexUtils.colorify("&fPotion Jar"))
+            .setCustomModel(1)
+            .setItemMetaEditor(itemMeta -> {
+                PotionMeta potionMeta = (PotionMeta) itemMeta;
+                // TODO: Load when the item is created
+                potionMeta.setColor(Color.fromRGB(26, 93, 201));
+                potionMeta.addCustomEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, 20*16, 0, false, true), true);
+                return potionMeta;
+            })
+            .addItemActivator(ItemActivator.PLAYER_CONSUME, ((iCustomItem, event, equipmentSlot) -> {
+                PlayerItemConsumeEvent consumeEvent = (PlayerItemConsumeEvent) event;
+                ItemStack item = consumeEvent.getPlayer().getEquipment().getItem(equipmentSlot);
+                PotionMeta meta = (PotionMeta) item.getItemMeta();
+                if (meta.getCustomModelData() < 3) meta.setCustomModelData(meta.getCustomModelData() + 1);
+                else consumeEvent.getPlayer().getEquipment().setItem(equipmentSlot, EMPTY_BOTTLE.getItemStack());
+                item.setItemMeta(meta);
+            }))
+            .build());
+
     // ----- CUSTOM RECIPES -----
 
     public static final ShapedRecipe BUNDLE_RECIPE = CustomItemManager.addShapedRecipe(new ItemStack(Material.BUNDLE),
@@ -432,11 +533,71 @@ public class ItemManager extends Manager {
 
     @Override
     public void reload() {
+        Bukkit.getServer().getPluginManager().registerEvents(this, CobaltMagick.getInstance());
     }
 
     @Override
     public void disable() {
 
+    }
+
+    // ----- CUSTOM POTION RECIPE TEST -----
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void potionItemPlacer(final InventoryClickEvent e) {
+        if (e.getClickedInventory() == null)
+            return;
+        if (e.getClickedInventory().getType() != InventoryType.BREWING)
+            return;
+        if (!(e.getClick() == ClickType.LEFT)) //Make sure we are placing an item
+            return;
+        final ItemStack is = e.getCurrentItem(); //We want to get the item in the slot
+        final ItemStack is2 = e.getCursor().clone(); //And the item in the cursor
+        if(is2 == null) //We make sure we got something in the cursor
+            return;
+        if(is2.getType() == Material.AIR)
+            return;
+        Bukkit.getScheduler().scheduleSyncDelayedTask(CobaltMagick.getInstance(), () -> {
+            e.setCursor(is);//Now we make the switch
+            e.getClickedInventory().setItem(e.getSlot(), is2);
+        }, 1L);//(Delay in 1 tick)
+        ((Player)e.getWhoClicked()).updateInventory();//And we update the inventory
+    }
+
+    public static BrewingRecipe TEST_BREWING_RECIPE = new BrewingRecipe(new ItemStack(Material.WHITE_WOOL), (inventory, item, ingredient) -> {//Some lambda magic
+        if (!item.getType().toString().contains("LEATHER"))
+            return;
+        LeatherArmorMeta armorMeta = (LeatherArmorMeta) item.getItemMeta();
+        armorMeta.setColor(Color.BLUE);
+        item.setItemMeta(armorMeta);
+    }, true);
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void PotionListener(InventoryClickEvent e){
+        // CobaltMagick.getInstance().getLogger().info("Click");
+
+        if(e.getClickedInventory() == null)
+            return;
+
+        // CobaltMagick.getInstance().getLogger().info("Click2");
+
+        if(e.getClickedInventory().getType() != InventoryType.BREWING)
+            return;
+
+        // CobaltMagick.getInstance().getLogger().info("Click3");
+
+        if(((BrewerInventory)e.getInventory()).getIngredient() == null)
+            return;
+
+        // CobaltMagick.getInstance().getLogger().info("Click4");
+
+        BrewingRecipe recipe = BrewingRecipe.getRecipe((BrewerInventory) e.getClickedInventory());
+        if(recipe == null)
+            return;
+
+        // CobaltMagick.getInstance().getLogger().info("Click5");
+
+        recipe.startBrewing((BrewerInventory) e.getClickedInventory());
     }
 
     // ----- INSTANCE VARIABLE & METHOD -----
