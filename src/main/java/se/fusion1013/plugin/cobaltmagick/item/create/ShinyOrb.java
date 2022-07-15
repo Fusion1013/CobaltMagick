@@ -13,6 +13,7 @@ import se.fusion1013.plugin.cobaltcore.item.ItemActivator;
 import se.fusion1013.plugin.cobaltcore.util.HexUtils;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
+import se.fusion1013.plugin.cobaltmagick.util.BlockUtil;
 import se.fusion1013.plugin.cobaltmagick.util.constants.ItemConstants;
 
 import java.util.Random;
@@ -48,7 +49,7 @@ public class ShinyOrb {
 
                         // Check if the orb should drop gold or explode (25% to explode)
                         if (r.nextDouble() < 0.25 + (.1*currentUses)) {
-                            location.getWorld().createExplosion(location, 7, true);
+                            BlockUtil.createExplosion(location, location.getWorld(), 6, true, true, true);
                             return;
                         }
 
