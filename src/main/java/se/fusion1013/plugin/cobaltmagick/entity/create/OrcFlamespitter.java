@@ -3,6 +3,7 @@ package se.fusion1013.plugin.cobaltmagick.entity.create;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -36,7 +37,11 @@ public class OrcFlamespitter {
         ItemStack boot = new ItemStack(Material.LEATHER_BOOTS);
         LeatherArmorMeta meta = (LeatherArmorMeta)chest.getItemMeta();
 
-        if (meta != null) meta.setColor(Color.fromRGB(194, 84, 25));
+        if (meta != null) {
+            meta.setColor(Color.fromRGB(194, 84, 25));
+            meta.addEnchant(Enchantment.PROTECTION_EXPLOSIONS, 10, true);
+            meta.addEnchant(Enchantment.DURABILITY, 10, true);
+        }
         chest.setItemMeta(meta);
         leg.setItemMeta(meta);
         boot.setItemMeta(meta);
@@ -68,7 +73,7 @@ public class OrcFlamespitter {
                 .addAbilityModule(new CasterAbility(10.2, 16, SpellManager.FIRESPITTER))
 
                 // Set general cooldown for abilities
-                .setGeneralAbilityCooldown(20) // 1 second
+                .setGeneralAbilityCooldown(10) // 20 seconds
                 .build();
         return CustomEntityManager.register(orcPyromancer);
     }
