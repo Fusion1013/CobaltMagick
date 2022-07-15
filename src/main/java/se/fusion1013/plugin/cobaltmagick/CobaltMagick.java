@@ -6,6 +6,7 @@ import se.fusion1013.plugin.cobaltcore.CobaltPlugin;
 import se.fusion1013.plugin.cobaltmagick.commands.CGiveCommand;
 import se.fusion1013.plugin.cobaltmagick.commands.*;
 import se.fusion1013.plugin.cobaltmagick.database.DatabaseHook;
+import se.fusion1013.plugin.cobaltmagick.database.system.MagickDataManager;
 import se.fusion1013.plugin.cobaltmagick.entity.EntityManager;
 import se.fusion1013.plugin.cobaltmagick.eyes.CrystalSong;
 import se.fusion1013.plugin.cobaltmagick.gui.AbstractGUIListener;
@@ -14,6 +15,7 @@ import se.fusion1013.plugin.cobaltmagick.manager.*;
 import se.fusion1013.plugin.cobaltmagick.scene.SceneManager;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 import se.fusion1013.plugin.cobaltmagick.wand.WandEvents;
+import se.fusion1013.plugin.cobaltmagick.wand.WandManager;
 import se.fusion1013.plugin.cobaltmagick.world.WorldEvents;
 import se.fusion1013.plugin.cobaltmagick.world.structures.MagickStructureManager;
 
@@ -44,7 +46,6 @@ public final class CobaltMagick extends JavaPlugin implements CobaltPlugin {
 
     @Override
     public void onDisable() {
-        // CobaltCore.getInstance().onDisable(); // Replace with method that only disables the given plugin
         CobaltCore.getInstance().disableCobaltPlugin(this);
     }
 
@@ -72,9 +73,13 @@ public final class CobaltMagick extends JavaPlugin implements CobaltPlugin {
      */
     @Override
     public void reloadManagers(){
+        CobaltCore.getInstance().getManager(this, MagickDataManager.class);
         CobaltCore.getInstance().getManager(this, LaserManager.class);
         CobaltCore.getInstance().getManager(this, SpellManager.class);
+
+        // TODO: Move worldguard integration to core
         if (WorldGuardManager.isEnabled()) CobaltCore.getInstance().getManager(this, WorldGuardManager.class); // TODO: Add isEnabled method to all managers and move check to registration
+
         CobaltCore.getInstance().getManager(this, MagickConfigManager.class);
         CobaltCore.getInstance().getManager(this, ItemManager.class);
         CobaltCore.getInstance().getManager(this, DreamManager.class);
@@ -83,12 +88,14 @@ public final class CobaltMagick extends JavaPlugin implements CobaltPlugin {
         CobaltCore.getInstance().getManager(this, WorldManager.class);
         CobaltCore.getInstance().getManager(this, SceneManager.class);
         CobaltCore.getInstance().getManager(this, MagickStructureManager.class);
+        // CobaltCore.getInstance().reloadPluginIntegrationManager("CrazyAdvancementsAPI", AdvancementManager.class);
     }
 
     // ----- LISTENERS -----
 
     @Override
     public void registerListeners() {
+        // TODO: Move to managers
         getServer().getPluginManager().registerEvents(new AbstractGUIListener(), this);
         getServer().getPluginManager().registerEvents(new WandEvents(), this);
         getServer().getPluginManager().registerEvents(new CrystalSong(), this);
@@ -98,9 +105,7 @@ public final class CobaltMagick extends JavaPlugin implements CobaltPlugin {
     // ----- POST INIT -----
 
     @Override
-    public void postInit() {
-        Wand.loadCacheFromDatabase(); // Database tables have to be instantiated before wand cache loading
-    }
+    public void postInit() {}
 
     @Override
     public void initDatabaseTables() {
