@@ -8,8 +8,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.persistence.PersistentDataType;
+import se.fusion1013.plugin.cobaltcore.database.system.DataManager;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.database.DatabaseHook;
+import se.fusion1013.plugin.cobaltmagick.database.wand.IWandDao;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
 
 import java.util.ArrayList;
@@ -352,43 +354,7 @@ public abstract class AbstractWand {
 
     // ----- WAND CACHE -----
 
-    static List<Wand> wandCache = new ArrayList<>();
     static NamespacedKey wandKey = new NamespacedKey(CobaltMagick.getInstance(), "wand_id");
-
-    /**
-     * Adds a wand to the cache. This should always be done on plugin load for all wands in the database
-     *
-     * @param wand the wand to add to the cache
-     */
-    public static void addWandToCache(Wand wand) { wandCache.add(wand); }
-
-    /**
-     * Gets a specific wand from the cache
-     *
-     * @param id the id of the wand to get
-     * @return a wand or null
-     */
-    public static Wand getWandFromCache(int id) {
-        for (Wand wand : wandCache) {
-            if (wand.getId() == id) return wand;
-        }
-        return null;
-    }
-
-    /**
-     * Gets all wands in the database and adds them to the cache for easy retrieval. Should be done on startup
-     */
-    public static void loadCacheFromDatabase() {
-        List<Wand> wandsToCache = DatabaseHook.getWands();
-        wandCache = new ArrayList<>(wandsToCache);
-    }
-
-    /**
-     * Saves all wands that are currently in the wand cache to the database
-     */
-    public static void saveAllWandData() {
-        DatabaseHook.updateWandSpells(wandCache);
-    }
 
     /**
      * Returns the wand key
@@ -413,7 +379,7 @@ public abstract class AbstractWand {
         if (meta == null) return null;
         Integer wandId = meta.getPersistentDataContainer().get(wandKey, PersistentDataType.INTEGER);
         if (wandId != null) {
-            return getWandFromCache(wandId);
+            return WandManager.getInstance().getWandFromCache(wandId);
         }
         return null;
     }
