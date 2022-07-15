@@ -2,9 +2,12 @@ package se.fusion1013.plugin.cobaltmagick.item.loot;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import se.fusion1013.plugin.cobaltcore.database.system.DataManager;
 import se.fusion1013.plugin.cobaltcore.item.loot.LootEntry;
 import se.fusion1013.plugin.cobaltmagick.database.DatabaseHook;
+import se.fusion1013.plugin.cobaltmagick.database.wand.IWandDao;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
+import se.fusion1013.plugin.cobaltmagick.wand.WandManager;
 
 import java.util.Random;
 
@@ -25,11 +28,7 @@ public class WandLootEntry extends LootEntry {
 
     @Override
     public ItemStack getStack(Random r) {
-        Wand wand = new Wand(cost, level, forceUnshuffle);
-        int id = DatabaseHook.insertWand(wand);
-        wand.setId(id);
-        Wand.addWandToCache(wand); // TODO: Add this to wand manager
-
+        Wand wand = WandManager.getInstance().createWand(cost, level, forceUnshuffle);
         return wand.getWandItem();
     }
 }
