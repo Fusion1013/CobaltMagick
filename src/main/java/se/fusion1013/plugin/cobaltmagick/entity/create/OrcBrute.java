@@ -31,7 +31,7 @@ public class OrcBrute {
         ItemStack head = CustomItemManager.createPlayerHead("/give @p minecraft:player_head{display:{Name:\"{\\\"text\\\":\\\"Orc\\\"}\"},SkullOwner:{Id:[I;1031173686,1427721963,-1818151168,-828994218],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzQyYWU3NmEzN2I1YmY3YzM3ODgwYjEwNjEwOTQ1NTFiYTE1YjQ2ZDUwNzhmMDYzOWY5ZGM0MjQ5NDRkOTAwOCJ9fX0=\"}]}}} 1");
 
         // Sword Item
-        ItemStack sword = new ItemStack(Material.DIAMOND_SWORD);
+        ItemStack sword = new ItemStack(Material.DIAMOND_AXE);
         ItemMeta swordMeta = sword.getItemMeta();
         swordMeta.setCustomModelData(6);
         swordMeta.addEnchant(Enchantment.DAMAGE_ALL, 5, true);
