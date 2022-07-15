@@ -13,7 +13,7 @@ import se.fusion1013.plugin.cobaltmagick.gui.AbstractGUIListener;
 import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
 import se.fusion1013.plugin.cobaltmagick.manager.*;
 import se.fusion1013.plugin.cobaltmagick.scene.SceneManager;
-import se.fusion1013.plugin.cobaltmagick.wand.Wand;
+import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
 import se.fusion1013.plugin.cobaltmagick.wand.WandEvents;
 import se.fusion1013.plugin.cobaltmagick.wand.WandManager;
 import se.fusion1013.plugin.cobaltmagick.world.WorldEvents;

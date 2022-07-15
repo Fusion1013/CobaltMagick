@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import se.fusion1013.plugin.cobaltcore.locale.LocaleManager;
 import se.fusion1013.plugin.cobaltcore.util.StringPlaceholders;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
-import se.fusion1013.plugin.cobaltmagick.manager.SpellManager;
+import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
 
 /**
  * Command for killing all currently active spells

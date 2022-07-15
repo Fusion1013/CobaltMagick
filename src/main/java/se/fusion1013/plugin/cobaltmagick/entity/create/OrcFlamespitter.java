@@ -1,6 +1,5 @@
 package se.fusion1013.plugin.cobaltmagick.entity.create;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -19,10 +18,7 @@ import se.fusion1013.plugin.cobaltcore.entity.modules.EntityHealthModule;
 import se.fusion1013.plugin.cobaltcore.entity.modules.EntityPotionEffectModule;
 import se.fusion1013.plugin.cobaltcore.item.CustomItemManager;
 import se.fusion1013.plugin.cobaltmagick.entity.modules.ability.CasterAbility;
-import se.fusion1013.plugin.cobaltmagick.manager.SpellManager;
-import se.fusion1013.plugin.cobaltmagick.wand.Wand;
-
-import java.util.ArrayList;
+import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
 
 public class OrcFlamespitter {
 

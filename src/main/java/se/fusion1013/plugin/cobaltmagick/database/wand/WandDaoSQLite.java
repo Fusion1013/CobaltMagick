@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import se.fusion1013.plugin.cobaltcore.database.system.Dao;
 import se.fusion1013.plugin.cobaltcore.database.system.DataManager;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
-import se.fusion1013.plugin.cobaltmagick.manager.SpellManager;
+import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 

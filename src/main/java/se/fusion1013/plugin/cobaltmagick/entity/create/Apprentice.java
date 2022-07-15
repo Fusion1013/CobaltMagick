@@ -10,8 +10,7 @@ import se.fusion1013.plugin.cobaltcore.entity.CustomEntityManager;
 import se.fusion1013.plugin.cobaltcore.entity.ICustomEntity;
 import se.fusion1013.plugin.cobaltcore.entity.modules.EntityEquipmentModule;
 import se.fusion1013.plugin.cobaltmagick.entity.modules.ability.CasterAbility;
-import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
-import se.fusion1013.plugin.cobaltmagick.manager.SpellManager;
+import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
 
 public class Apprentice {
 

@@ -9,17 +9,15 @@ import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltcore.entity.CustomEntity;
 import se.fusion1013.plugin.cobaltcore.entity.CustomEntityManager;
 import se.fusion1013.plugin.cobaltcore.entity.ICustomEntity;
-import se.fusion1013.plugin.cobaltcore.entity.ISpawnParameters;
 import se.fusion1013.plugin.cobaltcore.entity.modules.EntityParticleModule;
 import se.fusion1013.plugin.cobaltcore.entity.modules.EntityPotionEffectModule;
 import se.fusion1013.plugin.cobaltcore.entity.modules.EntityTickMethodModule;
-import se.fusion1013.plugin.cobaltcore.entity.modules.ITickExecutable;
 import se.fusion1013.plugin.cobaltcore.particle.ParticleGroup;
 import se.fusion1013.plugin.cobaltcore.particle.styles.ParticleStylePoint;
 import se.fusion1013.plugin.cobaltmagick.entity.modules.EntityKillTimerModule;
 import se.fusion1013.plugin.cobaltmagick.entity.modules.EntityStandPassengerModule;
 import se.fusion1013.plugin.cobaltmagick.entity.modules.ability.CasterAbility;
-import se.fusion1013.plugin.cobaltmagick.manager.SpellManager;
+import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
 import java.util.ArrayList;

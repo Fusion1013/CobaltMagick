@@ -9,7 +9,7 @@ import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.database.door.IDoorDao;
 import se.fusion1013.plugin.cobaltmagick.database.lock.ILockDao;
 import se.fusion1013.plugin.cobaltmagick.database.musicbox.IMusicBoxDao;
-import se.fusion1013.plugin.cobaltmagick.manager.SpellManager;
+import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 import se.fusion1013.plugin.cobaltmagick.world.structures.ItemLock;

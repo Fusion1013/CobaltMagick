@@ -34,7 +34,7 @@ import se.fusion1013.plugin.cobaltcore.util.PlayerUtil;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.item.brewing.BrewingRecipe;
 import se.fusion1013.plugin.cobaltmagick.item.create.ShinyOrb;
-import se.fusion1013.plugin.cobaltmagick.manager.SpellManager;
+import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
 import se.fusion1013.plugin.cobaltmagick.util.constants.MerchantRecipeConstants;
 
 import java.util.Objects;

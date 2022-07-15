@@ -1,14 +1,10 @@
 package se.fusion1013.plugin.cobaltmagick.spells;
 
 import org.bukkit.*;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
-import se.fusion1013.plugin.cobaltmagick.manager.SpellManager;
 import se.fusion1013.plugin.cobaltcore.particle.ParticleGroup;
 import se.fusion1013.plugin.cobaltmagick.spells.spellmodules.AbstractSpellModule;
 import se.fusion1013.plugin.cobaltmagick.spells.spellmodules.SpellModule;

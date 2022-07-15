@@ -34,7 +34,7 @@ import se.fusion1013.plugin.cobaltmagick.entity.modules.ability.CasterAbility;
 import se.fusion1013.plugin.cobaltmagick.item.loot.WandLootEntry;
 import se.fusion1013.plugin.cobaltmagick.entity.EntityManager;
 import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
-import se.fusion1013.plugin.cobaltmagick.manager.SpellManager;
+import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
 import se.fusion1013.plugin.cobaltmagick.spells.spellmodules.EffectModule;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;

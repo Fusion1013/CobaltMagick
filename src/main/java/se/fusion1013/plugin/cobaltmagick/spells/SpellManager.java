@@ -1,4 +1,4 @@
-package se.fusion1013.plugin.cobaltmagick.manager;
+package se.fusion1013.plugin.cobaltmagick.spells;
 
 import org.bukkit.*;
 import org.bukkit.entity.EntityType;
@@ -18,7 +18,6 @@ import se.fusion1013.plugin.cobaltcore.particle.styles.ParticleStylePoint;
 import se.fusion1013.plugin.cobaltcore.particle.styles.ParticleStyleSphere;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltcore.particle.ParticleGroup;
-import se.fusion1013.plugin.cobaltmagick.spells.*;
 import se.fusion1013.plugin.cobaltmagick.spells.movementmodifier.HomingMovementModifier;
 import se.fusion1013.plugin.cobaltmagick.spells.spellmodifiers.AddSpellModuleModifier;
 import se.fusion1013.plugin.cobaltmagick.spells.spellmodifiers.ValueSpellModifier;
