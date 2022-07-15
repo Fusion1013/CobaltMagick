@@ -70,12 +70,12 @@
 
     <repositories>
         <repository>
-            <id>sonatype</id>
-            <url>https://oss.sonatype.org/content/groups/public/</url>
-        </repository>
-        <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
+        </repository>
+        <repository>
+            <id>sonatype</id>
+            <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
         <repository>
             <id>sk89q-repo</id>
@@ -117,6 +117,13 @@
             <version>3.0.0</version>
             <scope>system</scope>
             <systemPath>G:/Dokument/Minecraft/Minecraft Servers/1.19 - Paper DEV/plugins/CobaltCore-shaded.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ZockerAxel</groupId>
+            <artifactId>CrazyAdvancementsAPI</artifactId>
+            <version>2.1.10</version>
+            <scope>system</scope>
+            <systemPath>G:/Dokument/Minecraft/Minecraft Servers/1.19 - Paper DEV/plugins/CrazyAdvancementsAPI.jar</systemPath>
         </dependency>
     </dependencies>
 </project>
