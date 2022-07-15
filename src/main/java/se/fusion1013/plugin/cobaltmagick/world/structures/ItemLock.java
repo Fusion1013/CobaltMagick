@@ -38,14 +38,16 @@ public class ItemLock {
 
     // ----- LOGIC -----
 
-    public void onClick(Player p) {
+    public boolean onClick(Player p) {
         ItemStack pItem = p.getInventory().getItemInMainHand();
         if (item.compareTo(pItem)) {
             if (unlockable.isLocked()) {
                 unlockable.unlock();
                 if (p.getGameMode() != GameMode.CREATIVE) p.getInventory().getItemInMainHand().setAmount(pItem.getAmount()-1);
+                return true;
             }
         }
+        return false;
     }
 
     // ----- GETTERS / SETTERS -----
