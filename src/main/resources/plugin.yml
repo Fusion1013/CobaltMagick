@@ -11,3 +11,4 @@ depend:
   - CobaltCore
 softdepend:
   - WorldGuard
+  - CrazyAdvancementsAPI
