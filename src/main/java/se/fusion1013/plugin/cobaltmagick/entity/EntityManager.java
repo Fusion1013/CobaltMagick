@@ -43,7 +43,8 @@ public class EntityManager extends Manager implements Listener {
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
         if (event.getEntity().getType() == EntityType.WARDEN) {
-            event.getDrops().add(ItemManager.ECHO_INGOT.getItemStack()); // TODO: Move into Cobalt Core
+            Random r = new Random();
+            if (r.nextDouble() > .75) event.getDrops().add(ItemManager.ECHO_INGOT.getItemStack()); // TODO: Move into Cobalt Core
         }
     }
 
