@@ -90,6 +90,8 @@ public class WandDaoSQLite extends Dao implements IWandDao {
                     wand.setSpells(spellList);
                     wand.setId(id);
 
+                    wands.add(wand);
+
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
@@ -122,23 +124,20 @@ public class WandDaoSQLite extends Dao implements IWandDao {
 
         try (
                 Connection conn = DataManager.getInstance().getSqliteDb().getSQLConnection();
-                PreparedStatement st = conn.prepareStatement("INSERT INTO wands(shuffle, spells_per_cast, cast_delay, recharge_time, mana_max, mana_charge_speed, capacity, spread, wand_tier) VALUES(?,?,?,?,?,?,?,?,?)");
-                PreparedStatement st2 = conn.prepareStatement("SELECT COUNT(*) AS total FROM wands");
-                ResultSet rs2 = st2.executeQuery();
+                PreparedStatement st = conn.prepareStatement("INSERT INTO wands(id, shuffle, spells_per_cast, cast_delay, recharge_time, mana_max, mana_charge_speed, capacity, spread, wand_tier) VALUES(?,?,?,?,?,?,?,?,?,?)");
         ) {
-            st.setBoolean(1, shuffle);
-            st.setInt(2, spellsPerCast);
-            st.setDouble(3, castDelay);
-            st.setDouble(4, rechargeTime);
-            st.setInt(5, manaMax);
-            st.setInt(6, manaChargeSpeed);
-            st.setInt(7, capacity);
-            st.setDouble(8, spread);
-            st.setInt(9, wandTier);
+            st.setInt(1, wand.getId());
+            st.setBoolean(2, shuffle);
+            st.setInt(3, spellsPerCast);
+            st.setDouble(4, castDelay);
+            st.setDouble(5, rechargeTime);
+            st.setInt(6, manaMax);
+            st.setInt(7, manaChargeSpeed);
+            st.setInt(8, capacity);
+            st.setDouble(9, spread);
+            st.setInt(10, wandTier);
             st.executeUpdate();
 
-            int wandId = rs2.getInt("total");
-            wand.setId(wandId);
             updateWandSpellsAsync(wand);
 
         } catch (SQLException ex) {
