@@ -259,6 +259,16 @@ public class SpellManager extends Manager {
                     .build())
             .build());
 
+    public static final Spell ARROW = register(new ProjectileSpell.ProjectileSpellBuilder(117, "arrow")
+            .addManaDrain(15).setRadius(.2).setVelocity(16).setLifetime(1).addCastDelay(.17).setSpread(.6)
+            .addExecuteOnCast(new SoundSpellModule(Sound.ITEM_CROSSBOW_SHOOT, SoundCategory.PLAYERS, false))
+            .addExecuteOnCast(new EntitySpellModule(EntityType.ARROW, false).setKeepSpellVelocity())
+            .addDescription("Summons an arrow")
+            .setParticle(new ParticleGroup.ParticleGroupBuilder()
+                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.CLOUD).setCount(1).build())
+                    .build())
+            .build());
+
     // ----- STATIC PROJECTILE SPELLS ----- ID: 2+XXX
 
     public static final Spell SPHERE_OF_BUOYANCY = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(20, "sphere_of_buoyancy")
