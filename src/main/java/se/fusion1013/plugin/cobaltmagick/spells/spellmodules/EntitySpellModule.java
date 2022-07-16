@@ -16,11 +16,16 @@ import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
 public class EntitySpellModule extends AbstractSpellModule<EntitySpellModule> implements SpellModule {
 
+    // ----- VARIABLES -----
+
     EntityType entity;
     boolean cancelsCast; // TODO: Move cancelsCast to abstract class
 
     // Optional Variables
     boolean inSphere;
+    boolean keepSpellVelocity = false;
+
+    // ----- CONSTRUCTORS -----
 
     public EntitySpellModule(EntityType entity, boolean cancelsCast){
         this.entity = entity;
@@ -33,7 +38,10 @@ public class EntitySpellModule extends AbstractSpellModule<EntitySpellModule> im
         this.cancelsCast = target.cancelsCast;
 
         this.inSphere = target.inSphere;
+        this.keepSpellVelocity = target.keepSpellVelocity;
     }
+
+    // ----- BUILDER METHODS -----
 
     public EntitySpellModule setSummonInSphere(double radius){
         overrideRadius(radius);
@@ -41,16 +49,23 @@ public class EntitySpellModule extends AbstractSpellModule<EntitySpellModule> im
         return getThis();
     }
 
+    public EntitySpellModule setKeepSpellVelocity() {
+        this.keepSpellVelocity = true;
+        return getThis();
+    }
+
+    // ----- EXECUTE METHODS -----
+
     @Override
     public void executeOnTick(Wand wand, LivingEntity caster, ISpell spell) {
         if (!canRun) return;
 
-        summon(spell.getLocation());
+        summon(spell);
     }
 
     @Override
     public void executeOnCast(Wand wand, LivingEntity caster, ISpell spell) {
-        summon(spell.getLocation());
+        summon(spell);
     }
 
     @Override
@@ -58,7 +73,7 @@ public class EntitySpellModule extends AbstractSpellModule<EntitySpellModule> im
         super.executeOnBlockHit(wand, caster, spell, blockHit, hitBlockFace);
         if (!canRun) return;
 
-        summon(spell.getLocation());
+        summon(spell);
     }
 
     @Override
@@ -66,23 +81,36 @@ public class EntitySpellModule extends AbstractSpellModule<EntitySpellModule> im
         super.executeOnEntityHit(wand, caster, spell, entityHit);
         if (!canRun) return;
 
-        summon(spell.getLocation());
+        summon(spell);
     }
 
     @Override
     public void executeOnDeath(Wand wand, LivingEntity caster, ISpell spell) {
-        summon(spell.getLocation());
+        summon(spell);
     }
 
-    private void summon(Location location){
-        World w = location.getWorld();
+    // ----- SUMMON METHOD -----
+
+    private void summon(ISpell spell){
+        Location spawnLocation = spell.getLocation().clone();
+        World w = spawnLocation.getWorld();
         if (w == null) return;
-        if (inSphere){
-            Vector point = GeometryUtil.getPointInSphere(currentRadius);
-            w.spawnEntity(location.clone().add(point), entity);
-        }
-        else w.spawnEntity(location, entity);
+
+        Entity summonedEntity;
+
+        // Modify the spawn location based on optional variables
+        if (inSphere) spawnLocation.add(GeometryUtil.getPointInSphere(currentRadius));
+
+        // Summon the entity
+        summonedEntity = w.spawnEntity(spawnLocation, entity);
+
+        // Velocity editing methods
+        Vector velocity = new Vector();
+        if (keepSpellVelocity && spell instanceof MovableSpell movableSpell) velocity.add(movableSpell.getVelocityVector()); // Only do this if the spell is movable
+        summonedEntity.setVelocity(velocity);
     }
+
+    // ----- UTILITY METHODS -----
 
     @Override
     public boolean cancelsCast() {
