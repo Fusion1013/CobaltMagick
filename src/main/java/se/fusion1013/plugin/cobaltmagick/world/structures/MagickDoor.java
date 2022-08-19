@@ -7,12 +7,12 @@ import se.fusion1013.plugin.cobaltcore.util.VectorUtil;
 import se.fusion1013.plugin.cobaltcore.world.block.entity.BlockEntityCollection;
 import se.fusion1013.plugin.cobaltcore.world.block.entity.BlockEntityManager;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
+import se.fusion1013.plugin.cobaltmagick.world.structures.system.IActivatable;
 import se.fusion1013.plugin.cobaltmagick.world.structures.system.IMagickDoor;
-import se.fusion1013.plugin.cobaltmagick.world.structures.system.Unlockable;
 
 import java.util.UUID;
 
-public class MagickDoor implements IMagickDoor, Unlockable {
+public class MagickDoor implements IMagickDoor, IActivatable {
 
     // ----- VARIABLES -----
 
@@ -51,8 +51,7 @@ public class MagickDoor implements IMagickDoor, Unlockable {
         storeDoorMaterials();
 
         if (!this.isClosed) {
-            this.isClosed = true;
-            open();
+            setDoorBlocks(true);
         }
     }
 
@@ -81,7 +80,7 @@ public class MagickDoor implements IMagickDoor, Unlockable {
     }
 
     @Override
-    public void unlock() {
+    public void activate() {
         open();
     }
 
@@ -97,24 +96,6 @@ public class MagickDoor implements IMagickDoor, Unlockable {
         // setDoorBlocks(true);
         createMovingDoor(cornerLocation.clone(), cornerLocation.clone().add(new Vector(0, height+1, 0)), true);
 
-        /*
-        if (world == null) return;
-
-        int cx = cornerLocation.getBlockX();
-        int cy = cornerLocation.getBlockY();
-        int cz = cornerLocation.getBlockZ();
-
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                for (int z = 0; z < depth; z++) {
-                    Location location = new Location(world, cx + x, cy + y, cz + z);
-                    location.getBlock().setType(Material.AIR);
-                    world.spawnParticle(Particle.CRIT, location.add(new Vector(.5, .5, .5)), 8, .2, .2, .2, 0);
-                }
-            }
-        }
-         */
-
         world.playSound(cornerLocation.clone().add(new Vector(width / 2, height / 2, depth / 2)), "cobalt.perk_unseal", SoundCategory.BLOCKS, 1, 1);
 
 
@@ -126,23 +107,6 @@ public class MagickDoor implements IMagickDoor, Unlockable {
 
         // setDoorBlocks(false);
         createMovingDoor(cornerLocation.clone().add(new Vector(0, height+1, 0)), cornerLocation.clone(), false);
-
-        /*
-        World world = cornerLocation.getWorld();
-        if (world == null) return;
-
-        int cx = cornerLocation.getBlockX();
-        int cy = cornerLocation.getBlockY();
-        int cz = cornerLocation.getBlockZ();
-
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                for (int z = 0; z < depth; z++) {
-                    new Location(world, cx + x, cy + y, cz + z).getBlock().setType(doorMaterials[x][y][z]);
-                }
-            }
-        }
-         */
     }
 
     public void setDoorBlocks(boolean remove) {
@@ -189,8 +153,8 @@ public class MagickDoor implements IMagickDoor, Unlockable {
     // ----- GETTERS / SETTERS -----
 
     @Override
-    public boolean isLocked() {
-        return isClosed;
+    public boolean isActive() {
+        return !isClosed;
     }
 
     @Override
