@@ -39,7 +39,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <outputFile>G:\Dokument\Minecraft\Minecraft Servers\1.19 - Paper DEV\plugins\CobaltMagick-shaded.jar</outputFile>
                         </configuration>
                     </execution>
                 </executions>
