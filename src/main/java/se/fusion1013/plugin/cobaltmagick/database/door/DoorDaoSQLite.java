@@ -93,12 +93,21 @@ public class DoorDaoSQLite extends Dao implements IDoorDao {
 
     @Override
     public void insertDoorSync(MagickDoor door) {
-        DataManager.getInstance().getDao(ILocationDao.class).insertLocation(door.getUuid(), door.getCorner()); // Insert the doors corner location
-
         try (
                 Connection conn = DataManager.getInstance().getSqliteDb().getSQLConnection();
-                PreparedStatement ps = conn.prepareStatement("INSERT INTO doors(door_id, location_uuid, width, height, depth, is_closed) VALUES(?, ?, ?, ?, ?, ?)")
+                PreparedStatement ps = conn.prepareStatement("INSERT INTO doors(door_id, location_uuid, width, height, depth, is_closed) VALUES(?, ?, ?, ?, ?, ?)");
+                PreparedStatement psLocation = conn.prepareStatement("INSERT OR REPLACE INTO locations(uuid, world, x_pos, y_pos, z_pos, yaw, pitch) VALUES(?, ?, ?, ?, ?, ?, ?)")
         ) {
+            // Insert location
+            psLocation.setString(1, door.getUuid().toString());
+            psLocation.setString(2, door.getCorner().getWorld().getName());
+            psLocation.setDouble(3, door.getCorner().getX());
+            psLocation.setDouble(4, door.getCorner().getY());
+            psLocation.setDouble(5, door.getCorner().getZ());
+            psLocation.setDouble(6, door.getCorner().getYaw());
+            psLocation.setDouble(7, door.getCorner().getPitch());
+            psLocation.execute();
+
             ps.setString(1, door.getUuid().toString());
             ps.setString(2, door.getUuid().toString());
             ps.setInt(3, door.getWidth());
