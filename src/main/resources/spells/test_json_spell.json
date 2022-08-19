@@ -1,0 +1,50 @@
+{
+    "id": 10,
+    "spell_type": "projectile",
+    "spell_name": "test_json_spark_bolt",
+    "description": "A weak but enchanting sparkling projectile",
+    "custom_model": 100000,
+    "unicode_character_icon": "\uE000",
+
+    "mana_drain": 5,
+    "radius": 0.2,
+    "velocity": 16,
+    "lifetime": 1.6,
+    "cast_delay": 0.05,
+    "spread": -1,
+
+    "spell_tiers": [
+        0, 1, 2
+    ],
+    "tier_weights": [
+        1, 1, 1
+    ],
+
+    "physics": {
+        "air_resistance": false
+    },
+
+    "on_entity_collision": [
+        {
+            "module_name": "damage",
+            "damage": 2,
+            "critical_chance": 5,
+            "cancels_cast": true
+        }
+    ],
+
+    "particle": {
+        "style": "line",
+        "particle": "dust_color_transition",
+        "particle_extra": {
+            "type": "dust_transition",
+            "color1": "purple",
+            "color2": [245, 66, 239],
+            "size": 1
+        },
+        "offset": [0.1, 0.1, 0.1],
+        "speed": 0,
+        "count": 5,
+        "density": 5
+    }
+}
