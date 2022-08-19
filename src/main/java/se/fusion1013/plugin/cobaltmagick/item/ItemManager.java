@@ -417,6 +417,36 @@ public class ItemManager extends Manager implements Listener {
             .setCustomName(ChatColor.RESET + "" + ChatColor.DARK_AQUA + "Dreamglass")
             .addLoreLine(ChatColor.WHITE + "The lens distorts reality")
             .setCustomModel(1)
+            .setItemMetaEditor(itemMeta -> {
+                List<Component> currentLore = itemMeta.lore();
+                if (currentLore != null) {
+                    currentLore.addAll(
+                            List.of(new Component[]{
+                                    Component.text("----------").color(NamedTextColor.BLACK),
+                                    Component.text("[")
+                                            .color(NamedTextColor.GRAY)
+                                            .append(Component.keybind("key.sneak")
+                                                    .color(NamedTextColor.GOLD))
+                                            .append(Component.text("]: Focus")
+                                                    .color(NamedTextColor.GRAY))
+                                            .decoration(TextDecoration.ITALIC, false),
+                                    Component.text("[")
+                                            .color(NamedTextColor.GRAY)
+                                            .append(Component.keybind("key.use")
+                                                    .color(NamedTextColor.GOLD))
+                                            .append(Component.text("]: Interact")
+                                                    .color(NamedTextColor.GRAY))
+                                            .decoration(TextDecoration.ITALIC, false)
+                            })
+                    );
+                    itemMeta.lore(currentLore);
+                }
+                return itemMeta;
+            })
+            .setCustomModel(1).setItemCategory(MagickItemCategory.TOOL)
+            .addTag("dream_item")
+            .build());
+
             .build());
 
     // ----- EMPTY BOTTLES / GLASSES / FLASKS -----
