@@ -136,7 +136,7 @@ public class WandDaoSQLite extends Dao implements IWandDao {
             st.setInt(8, capacity);
             st.setDouble(9, spread);
             st.setInt(10, wandTier);
-            st.executeUpdate();
+            st.execute();
 
             updateWandSpellsAsync(wand);
 
