@@ -474,89 +474,300 @@ public class ItemManager extends Manager implements Listener {
         }
     }
 
+    public static final ICustomItem EMPTY_MARTINI_GLASS = register(new CustomItem.CustomItemBuilder("empty_martini_glass", Material.BUCKET, 4)
+            .setCustomName(HexUtils.colorify("&fEmpty Martini Glass")).setCustomModel(7).addStoneCuttingRecipe(Material.GLASS).setItemCategory(MagickItemCategory.POTION)
             .build());
 
-    // ----- EMPTY BOTTLES / GLASSES / FLASKS -----
-
-    // TODO: Add method for filling them with water
-
-    public static final ICustomItem EMPTY_MARTINI_GLASS = register(new CustomItem.CustomItemBuilder("empty_martini_glass", Material.GLASS_BOTTLE, 4)
-            .setCustomName(HexUtils.colorify("&fEmpty Martini Glass")).setCustomModel(7).addStoneCuttingRecipe(Material.GLASS)
+    public static final ICustomItem MARTINI_GLASS = register(new CustomItem.CustomItemBuilder("martini_glass", Material.POTION, 1)
+            .setCustomName(HexUtils.colorify("&fMartini Glass")).setCustomModel(7).setItemCategory(MagickItemCategory.POTION)
+            .setItemMetaEditor(itemMeta -> {
+                PotionMeta potionMeta = (PotionMeta) itemMeta;
+                potionMeta.setBasePotionData(new PotionData(PotionType.WATER));
+                return potionMeta;
+            })
+            .addItemActivator(ItemActivator.PLAYER_CONSUME, ((iCustomItem, event, equipmentSlot) -> {
+                PlayerItemConsumeEvent consumeEvent = (PlayerItemConsumeEvent) event;
+                ItemStack item = EMPTY_MARTINI_GLASS.getItemStack();
+                item.setAmount(1);
+                consumeEvent.getPlayer().getEquipment().setItem(equipmentSlot, item);
+            }))
             .build());
 
-    public static final ICustomItem EMPTY_DIAMOND_BOTTLE = register(new CustomItem.CustomItemBuilder("empty_diamond_bottle", Material.GLASS_BOTTLE, 1)
-            .setCustomName(HexUtils.colorify("&fEmpty Diamond Bottle")).setCustomModel(3).addStoneCuttingRecipe(Material.GLASS)
+    public static final ICustomItem EMPTY_DIAMOND_BOTTLE = register(new CustomItem.CustomItemBuilder("empty_diamond_bottle", Material.BUCKET, 1)
+            .setCustomName(HexUtils.colorify("&fEmpty Diamond Bottle")).setCustomModel(3).addStoneCuttingRecipe(Material.GLASS).setItemCategory(MagickItemCategory.POTION)
             .build());
 
-    public static final ICustomItem EMPTY_JAR = register(new CustomItem.CustomItemBuilder("empty_jar", Material.GLASS_BOTTLE, 1)
-            .setCustomName(HexUtils.colorify("&fEmpty Jar")).setCustomModel(5).addStoneCuttingRecipe(Material.GLASS)
+    public static final ICustomItem DIAMOND_BOTTLE = register(new CustomItem.CustomItemBuilder("diamond_bottle", Material.POTION, 1)
+            .setCustomName(HexUtils.colorify("&fDiamond Bottle")).setCustomModel(17).setItemCategory(MagickItemCategory.POTION)
+            .setItemMetaEditor(itemMeta -> {
+                PotionMeta potionMeta = (PotionMeta) itemMeta;
+                potionMeta.setBasePotionData(new PotionData(PotionType.WATER));
+                return potionMeta;
+            })
+            .addItemActivator(ItemActivator.PLAYER_CONSUME, ((iCustomItem, event, equipmentSlot) -> {
+                PlayerItemConsumeEvent consumeEvent = (PlayerItemConsumeEvent) event;
+                ItemStack item = EMPTY_DIAMOND_BOTTLE.getItemStack();
+                item.setAmount(1);
+                consumeEvent.getPlayer().getEquipment().setItem(equipmentSlot, item);
+            }))
             .build());
 
-    public static final ICustomItem EMPTY_ROCKS_GLASS_2 = register(new CustomItem.CustomItemBuilder("empty_rocks_glass_2", Material.GLASS_BOTTLE, 4)
-            .setCustomName(HexUtils.colorify("&fEmpty Rocks Glass")).setCustomModel(10).addStoneCuttingRecipe(Material.GLASS)
+    public static final ICustomItem EMPTY_JAR = register(new CustomItem.CustomItemBuilder("empty_jar", Material.BUCKET, 1)
+            .setCustomName(HexUtils.colorify("&fEmpty Jar")).setCustomModel(5).addStoneCuttingRecipe(Material.GLASS).setItemCategory(MagickItemCategory.POTION)
             .build());
 
-    public static final ICustomItem EMPTY_ROCKS_GLASS = register(new CustomItem.CustomItemBuilder("empty_rocks_glass", Material.GLASS_BOTTLE, 1)
-            .setCustomName(HexUtils.colorify("&fEmpty Rocks Glass")).setCustomModel(9).addStoneCuttingRecipe(Material.GLASS)
+    public static final ICustomItem JAR = register(new CustomItem.CustomItemBuilder("jar", Material.POTION, 1)
+            .setCustomName(HexUtils.colorify("&fJar")).setCustomModel(5).setItemCategory(MagickItemCategory.POTION)
+            .setItemMetaEditor(itemMeta -> {
+                PotionMeta potionMeta = (PotionMeta) itemMeta;
+                potionMeta.setBasePotionData(new PotionData(PotionType.WATER));
+                return potionMeta;
+            })
+            .addItemActivator(ItemActivator.PLAYER_CONSUME, ((iCustomItem, event, equipmentSlot) -> {
+                PlayerItemConsumeEvent consumeEvent = (PlayerItemConsumeEvent) event;
+                ItemStack item = EMPTY_JAR.getItemStack();
+                item.setAmount(1);
+                consumeEvent.getPlayer().getEquipment().setItem(equipmentSlot, item);
+            }))
             .build());
 
-    public static final ICustomItem EMPTY_PERFUME_BOTTLE = register(new CustomItem.CustomItemBuilder("empty_perfume_bottle", Material.GLASS_BOTTLE, 1)
-            .setCustomName(HexUtils.colorify("&fEmpty Perfume Bottle")).setCustomModel(8).addStoneCuttingRecipe(Material.GLASS)
+    public static final ICustomItem EMPTY_ROCKS_GLASS_2 = register(new CustomItem.CustomItemBuilder("empty_rocks_glass_2", Material.BUCKET, 4)
+            .setCustomName(HexUtils.colorify("&fEmpty Rocks Glass")).setCustomModel(10).addStoneCuttingRecipe(Material.GLASS).setItemCategory(MagickItemCategory.POTION)
             .build());
 
-    public static final ICustomItem EMPTY_WINE_GLASS = register(new CustomItem.CustomItemBuilder("empty_wine_glass", Material.GLASS_BOTTLE, 4)
-            .setCustomName(HexUtils.colorify("&fEmpty Wine Glass")).setCustomModel(15).addStoneCuttingRecipe(Material.GLASS)
+    public static final ICustomItem ROCKS_GLASS_2 = register(new CustomItem.CustomItemBuilder("rocks_glass_2", Material.POTION, 1)
+            .setCustomName(HexUtils.colorify("&fRocks Glass")).setCustomModel(10).setItemCategory(MagickItemCategory.POTION)
+            .setItemMetaEditor(itemMeta -> {
+                PotionMeta potionMeta = (PotionMeta) itemMeta;
+                potionMeta.setBasePotionData(new PotionData(PotionType.WATER));
+                return potionMeta;
+            })
+            .addItemActivator(ItemActivator.PLAYER_CONSUME, ((iCustomItem, event, equipmentSlot) -> {
+                PlayerItemConsumeEvent consumeEvent = (PlayerItemConsumeEvent) event;
+                ItemStack item = EMPTY_ROCKS_GLASS_2.getItemStack();
+                item.setAmount(1);
+                consumeEvent.getPlayer().getEquipment().setItem(equipmentSlot, item);
+            }))
             .build());
 
-    public static final ICustomItem EMPTY_ROUND_BOTTLE = register(new CustomItem.CustomItemBuilder("empty_round_bottle", Material.GLASS_BOTTLE, 1)
-            .setCustomName(HexUtils.colorify("&fEmpty Round Bottle")).setCustomModel(11).addStoneCuttingRecipe(Material.GLASS)
+    public static final ICustomItem EMPTY_ROCKS_GLASS = register(new CustomItem.CustomItemBuilder("empty_rocks_glass", Material.BUCKET, 1)
+            .setCustomName(HexUtils.colorify("&fEmpty Rocks Glass")).setCustomModel(9).addStoneCuttingRecipe(Material.GLASS).setItemCategory(MagickItemCategory.POTION)
             .build());
 
-    public static final ICustomItem EMPTY_SHOT_GLASS = register(new CustomItem.CustomItemBuilder("empty_shot_glass", Material.GLASS_BOTTLE, 8)
-            .setCustomName(HexUtils.colorify("&fEmpty Shot Glass")).setCustomModel(12).addStoneCuttingRecipe(Material.GLASS)
+    public static final ICustomItem ROCKS_GLASS = register(new CustomItem.CustomItemBuilder("rocks_glass", Material.POTION, 1)
+            .setCustomName(HexUtils.colorify("&fRocks Glass")).setCustomModel(9).setItemCategory(MagickItemCategory.POTION)
+            .setItemMetaEditor(itemMeta -> {
+                PotionMeta potionMeta = (PotionMeta) itemMeta;
+                potionMeta.setBasePotionData(new PotionData(PotionType.WATER));
+                return potionMeta;
+            })
+            .addItemActivator(ItemActivator.PLAYER_CONSUME, ((iCustomItem, event, equipmentSlot) -> {
+                PlayerItemConsumeEvent consumeEvent = (PlayerItemConsumeEvent) event;
+                ItemStack item = EMPTY_ROCKS_GLASS.getItemStack();
+                item.setAmount(1);
+                consumeEvent.getPlayer().getEquipment().setItem(equipmentSlot, item);
+            }))
             .build());
 
-    public static final ICustomItem EMPTY_FLASK = register(new CustomItem.CustomItemBuilder("empty_flask", Material.GLASS_BOTTLE, 1)
-            .setCustomName(HexUtils.colorify("&fEmpty Flask")).setCustomModel(4).addStoneCuttingRecipe(Material.GLASS)
+    public static final ICustomItem EMPTY_PERFUME_BOTTLE = register(new CustomItem.CustomItemBuilder("empty_perfume_bottle", Material.BUCKET, 1)
+            .setCustomName(HexUtils.colorify("&fEmpty Perfume Bottle")).setCustomModel(8).addStoneCuttingRecipe(Material.GLASS).setItemCategory(MagickItemCategory.POTION)
             .build());
 
-    public static final ICustomItem EMPTY_TRIANGLE_BOTTLE = register(new CustomItem.CustomItemBuilder("empty_triangle_bottle", Material.GLASS_BOTTLE, 1)
-            .setCustomName(HexUtils.colorify("&fEmpty Triangle Bottle")).setCustomModel(14).addStoneCuttingRecipe(Material.GLASS)
+    public static final ICustomItem PERFUME_BOTTLE = register(new CustomItem.CustomItemBuilder("perfume_bottle", Material.POTION, 1)
+            .setCustomName(HexUtils.colorify("&fPerfume Bottle")).setCustomModel(8).setItemCategory(MagickItemCategory.POTION)
+            .setItemMetaEditor(itemMeta -> {
+                PotionMeta potionMeta = (PotionMeta) itemMeta;
+                potionMeta.setBasePotionData(new PotionData(PotionType.WATER));
+                return potionMeta;
+            })
+            .addItemActivator(ItemActivator.PLAYER_CONSUME, ((iCustomItem, event, equipmentSlot) -> {
+                PlayerItemConsumeEvent consumeEvent = (PlayerItemConsumeEvent) event;
+                ItemStack item = EMPTY_PERFUME_BOTTLE.getItemStack();
+                item.setAmount(1);
+                consumeEvent.getPlayer().getEquipment().setItem(equipmentSlot, item);
+            }))
             .build());
 
-    public static final ICustomItem EMPTY_CHAMPAGNE_GLASS = register(new CustomItem.CustomItemBuilder("empty_champagne_glass", Material.GLASS_BOTTLE, 4)
-            .setCustomName(HexUtils.colorify("&fEmpty Champagne Glass")).setCustomModel(2).addStoneCuttingRecipe(Material.GLASS)
+    public static final ICustomItem EMPTY_WINE_GLASS = register(new CustomItem.CustomItemBuilder("empty_wine_glass", Material.BUCKET, 4)
+            .setCustomName(HexUtils.colorify("&fEmpty Wine Glass")).setCustomModel(15).addStoneCuttingRecipe(Material.GLASS).setItemCategory(MagickItemCategory.POTION)
             .build());
 
-    public static final ICustomItem EMPTY_BOTTLE = register(new CustomItem.CustomItemBuilder("empty_bottle", Material.GLASS_BOTTLE, 1)
-            .setCustomName(HexUtils.colorify("&fEmpty Jar")).setCustomModel(1).addStoneCuttingRecipe(Material.GLASS)
+    public static final ICustomItem WINE_GLASS = register(new CustomItem.CustomItemBuilder("wine_glass", Material.POTION, 1)
+            .setCustomName(HexUtils.colorify("&fWine Glass")).setCustomModel(15).setItemCategory(MagickItemCategory.POTION)
+            .setItemMetaEditor(itemMeta -> {
+                PotionMeta potionMeta = (PotionMeta) itemMeta;
+                potionMeta.setBasePotionData(new PotionData(PotionType.WATER));
+                return potionMeta;
+            })
+            .addItemActivator(ItemActivator.PLAYER_CONSUME, ((iCustomItem, event, equipmentSlot) -> {
+                PlayerItemConsumeEvent consumeEvent = (PlayerItemConsumeEvent) event;
+                ItemStack item = EMPTY_WINE_GLASS.getItemStack();
+                item.setAmount(1);
+                consumeEvent.getPlayer().getEquipment().setItem(equipmentSlot, item);
+            }))
             .build());
 
-    public static final ICustomItem EMPTY_LABELED_BOTTLE = register(new CustomItem.CustomItemBuilder("empty_labeled_bottle", Material.GLASS_BOTTLE, 1)
-            .setCustomName(HexUtils.colorify("&fEmpty Labeled Bottle")).setCustomModel(6).addStoneCuttingRecipe(Material.GLASS)
+    public static final ICustomItem EMPTY_ROUND_BOTTLE = register(new CustomItem.CustomItemBuilder("empty_round_bottle", Material.BUCKET, 1)
+            .setCustomName(HexUtils.colorify("&fEmpty Round Bottle")).setCustomModel(11).addStoneCuttingRecipe(Material.GLASS).setItemCategory(MagickItemCategory.POTION)
+            .build());
+
+    public static final ICustomItem ROUND_BOTTLE = register(new CustomItem.CustomItemBuilder("round_bottle", Material.POTION, 1)
+            .setCustomName(HexUtils.colorify("&fRound Bottle")).setCustomModel(11).setItemCategory(MagickItemCategory.POTION)
+            .setItemMetaEditor(itemMeta -> {
+                PotionMeta potionMeta = (PotionMeta) itemMeta;
+                potionMeta.setBasePotionData(new PotionData(PotionType.WATER));
+                return potionMeta;
+            })
+            .addItemActivator(ItemActivator.PLAYER_CONSUME, ((iCustomItem, event, equipmentSlot) -> {
+                PlayerItemConsumeEvent consumeEvent = (PlayerItemConsumeEvent) event;
+                ItemStack item = EMPTY_ROUND_BOTTLE.getItemStack();
+                item.setAmount(1);
+                consumeEvent.getPlayer().getEquipment().setItem(equipmentSlot, item);
+            }))
+            .build());
+
+    public static final ICustomItem EMPTY_SHOT_GLASS = register(new CustomItem.CustomItemBuilder("empty_shot_glass", Material.BUCKET, 8)
+            .setCustomName(HexUtils.colorify("&fEmpty Shot Glass")).setCustomModel(12).addStoneCuttingRecipe(Material.GLASS).setItemCategory(MagickItemCategory.POTION)
+            .build());
+
+    public static final ICustomItem SHOT_GLASS = register(new CustomItem.CustomItemBuilder("shot_glass", Material.POTION, 1)
+            .setCustomName(HexUtils.colorify("&fShot Glass")).setCustomModel(12).setItemCategory(MagickItemCategory.POTION)
+            .setItemMetaEditor(itemMeta -> {
+                PotionMeta potionMeta = (PotionMeta) itemMeta;
+                potionMeta.setBasePotionData(new PotionData(PotionType.WATER));
+                return potionMeta;
+            })
+            .addItemActivator(ItemActivator.PLAYER_CONSUME, ((iCustomItem, event, equipmentSlot) -> {
+                PlayerItemConsumeEvent consumeEvent = (PlayerItemConsumeEvent) event;
+                ItemStack item = EMPTY_SHOT_GLASS.getItemStack();
+                item.setAmount(1);
+                consumeEvent.getPlayer().getEquipment().setItem(equipmentSlot, item);
+            }))
+            .build());
+
+    public static final ICustomItem EMPTY_FLASK = register(new CustomItem.CustomItemBuilder("empty_flask", Material.BUCKET, 1)
+            .setCustomName(HexUtils.colorify("&fEmpty Flask")).setCustomModel(4).addStoneCuttingRecipe(Material.GLASS).setItemCategory(MagickItemCategory.POTION)
+            .build());
+
+    public static final ICustomItem FLASK = register(new CustomItem.CustomItemBuilder("flask", Material.POTION, 1)
+            .setCustomName(HexUtils.colorify("&fFlask")).setCustomModel(4).setItemCategory(MagickItemCategory.POTION)
+            .setItemMetaEditor(itemMeta -> {
+                PotionMeta potionMeta = (PotionMeta) itemMeta;
+                potionMeta.setBasePotionData(new PotionData(PotionType.WATER));
+                return potionMeta;
+            })
+            .addItemActivator(ItemActivator.PLAYER_CONSUME, ((iCustomItem, event, equipmentSlot) -> {
+                PlayerItemConsumeEvent consumeEvent = (PlayerItemConsumeEvent) event;
+                ItemStack item = EMPTY_FLASK.getItemStack();
+                item.setAmount(1);
+                consumeEvent.getPlayer().getEquipment().setItem(equipmentSlot, item);
+            }))
+            .build());
+
+    public static final ICustomItem EMPTY_TRIANGLE_BOTTLE = register(new CustomItem.CustomItemBuilder("empty_triangle_bottle", Material.BUCKET, 1)
+            .setCustomName(HexUtils.colorify("&fEmpty Triangle Bottle")).setCustomModel(14).addStoneCuttingRecipe(Material.GLASS).setItemCategory(MagickItemCategory.POTION)
+            .build());
+
+    public static final ICustomItem TRIANGLE_BOTTLE = register(new CustomItem.CustomItemBuilder("triangle_bottle", Material.POTION, 1)
+            .setCustomName(HexUtils.colorify("&fTriangle Bottle")).setCustomModel(14).setItemCategory(MagickItemCategory.POTION)
+            .setItemMetaEditor(itemMeta -> {
+                PotionMeta potionMeta = (PotionMeta) itemMeta;
+                potionMeta.setBasePotionData(new PotionData(PotionType.WATER));
+                return potionMeta;
+            })
+            .addItemActivator(ItemActivator.PLAYER_CONSUME, ((iCustomItem, event, equipmentSlot) -> {
+                PlayerItemConsumeEvent consumeEvent = (PlayerItemConsumeEvent) event;
+                ItemStack item = EMPTY_TRIANGLE_BOTTLE.getItemStack();
+                item.setAmount(1);
+                consumeEvent.getPlayer().getEquipment().setItem(equipmentSlot, item);
+            }))
+            .build());
+
+    public static final ICustomItem EMPTY_CHAMPAGNE_GLASS = register(new CustomItem.CustomItemBuilder("empty_champagne_glass", Material.BUCKET, 4)
+            .setCustomName(HexUtils.colorify("&fEmpty Champagne Glass")).setCustomModel(2).addStoneCuttingRecipe(Material.GLASS).setItemCategory(MagickItemCategory.POTION)
+            .build());
+
+    public static final ICustomItem CHAMPAGNE_GLASS = register(new CustomItem.CustomItemBuilder("champagne_glass", Material.POTION, 1)
+            .setCustomName(HexUtils.colorify("&fChampagne Glass")).setCustomModel(16).setItemCategory(MagickItemCategory.POTION)
+            .setItemMetaEditor(itemMeta -> {
+                PotionMeta potionMeta = (PotionMeta) itemMeta;
+                potionMeta.setBasePotionData(new PotionData(PotionType.WATER));
+                return potionMeta;
+            })
+            .addItemActivator(ItemActivator.PLAYER_CONSUME, ((iCustomItem, event, equipmentSlot) -> {
+                PlayerItemConsumeEvent consumeEvent = (PlayerItemConsumeEvent) event;
+                ItemStack item = EMPTY_CHAMPAGNE_GLASS.getItemStack();
+                item.setAmount(1);
+                consumeEvent.getPlayer().getEquipment().setItem(equipmentSlot, item);
+            }))
+            .build());
+
+    public static final ICustomItem EMPTY_BOTTLE = register(new CustomItem.CustomItemBuilder("empty_bottle", Material.BUCKET, 1)
+            .setCustomName(HexUtils.colorify("&fEmpty Jar")).setCustomModel(1).addStoneCuttingRecipe(Material.GLASS).setItemCategory(MagickItemCategory.POTION)
+            .build());
+
+    public static final ICustomItem BOTTLE = register(new CustomItem.CustomItemBuilder("bottle", Material.POTION, 1)
+            .setCustomName(HexUtils.colorify("&fBottle")).setCustomModel(1).setItemCategory(MagickItemCategory.POTION)
+            .setItemMetaEditor(itemMeta -> {
+                PotionMeta potionMeta = (PotionMeta) itemMeta;
+                potionMeta.setBasePotionData(new PotionData(PotionType.WATER));
+                return potionMeta;
+            })
+            .addItemActivator(ItemActivator.PLAYER_CONSUME, ((iCustomItem, event, equipmentSlot) -> {
+                PlayerItemConsumeEvent consumeEvent = (PlayerItemConsumeEvent) event;
+                ItemStack item = EMPTY_BOTTLE.getItemStack();
+                item.setAmount(1);
+                consumeEvent.getPlayer().getEquipment().setItem(equipmentSlot, item);
+            }))
+            .build());
+
+    public static final ICustomItem EMPTY_LABELED_BOTTLE = register(new CustomItem.CustomItemBuilder("empty_labeled_bottle", Material.BUCKET, 1)
+            .setCustomName(HexUtils.colorify("&fEmpty Labeled Bottle")).setCustomModel(6).addStoneCuttingRecipe(Material.GLASS).setItemCategory(MagickItemCategory.POTION)
+            .build());
+
+    public static final ICustomItem LABELED_BOTTLE = register(new CustomItem.CustomItemBuilder("labeled_bottle", Material.POTION, 1)
+            .setCustomName(HexUtils.colorify("&fLabeled Bottle")).setCustomModel(6).setItemCategory(MagickItemCategory.POTION)
+            .setItemMetaEditor(itemMeta -> {
+                PotionMeta potionMeta = (PotionMeta) itemMeta;
+                potionMeta.setBasePotionData(new PotionData(PotionType.WATER));
+                return potionMeta;
+            })
+            .addItemActivator(ItemActivator.PLAYER_CONSUME, ((iCustomItem, event, equipmentSlot) -> {
+                PlayerItemConsumeEvent consumeEvent = (PlayerItemConsumeEvent) event;
+                ItemStack item = EMPTY_LABELED_BOTTLE.getItemStack();
+                item.setAmount(1);
+                consumeEvent.getPlayer().getEquipment().setItem(equipmentSlot, item);
+            }))
             .build());
 
     public static final StonecuttingRecipe GLASS_BOTTLE_RECIPE = CustomItemManager.addStoneCuttingRecipe(
             new StonecuttingRecipe(new NamespacedKey(CobaltMagick.getInstance(), "cobaltmagick.custom.stonecutting.glass_bottle"), new ItemStack(Material.GLASS_BOTTLE), Material.GLASS)
     );
 
+    public static final ICustomItem EMPTY_SKULL_BOTTLE = register(new CustomItem.CustomItemBuilder("empty_skull_bottle", Material.BUCKET, 1)
+            .setCustomName(HexUtils.colorify("&fEmpty Skull Bottle")).setCustomModel(13).addStoneCuttingRecipe(Material.GLASS).setItemCategory(MagickItemCategory.POTION)
+            .build());
 
-    public static final ICustomItem EMPTY_SKULL_BOTTLE = register(new CustomItem.CustomItemBuilder("empty_skull_bottle", Material.GLASS_BOTTLE, 1)
-            .setCustomName(HexUtils.colorify("&fEmpty Skull Bottle")).setCustomModel(13).addStoneCuttingRecipe(Material.GLASS)
+    public static final ICustomItem SKULL_BOTTLE = register(new CustomItem.CustomItemBuilder("skull_bottle", Material.POTION, 1)
+            .setCustomName(HexUtils.colorify("&fSkull Bottle")).setCustomModel(13).setItemCategory(MagickItemCategory.POTION)
+            .setItemMetaEditor(itemMeta -> {
+                PotionMeta potionMeta = (PotionMeta) itemMeta;
+                potionMeta.setBasePotionData(new PotionData(PotionType.WATER));
+                return potionMeta;
+            })
+            .addItemActivator(ItemActivator.PLAYER_CONSUME, ((iCustomItem, event, equipmentSlot) -> {
+                PlayerItemConsumeEvent consumeEvent = (PlayerItemConsumeEvent) event;
+                ItemStack item = EMPTY_SKULL_BOTTLE.getItemStack();
+                item.setAmount(1);
+                consumeEvent.getPlayer().getEquipment().setItem(equipmentSlot, item);
+            }))
             .build());
 
     // ----- POTIONS -----
 
     public static final ICustomItem POTION_JAR = register(new CustomItem.CustomItemBuilder("potion_jar", Material.POTION, 1)
             .setCustomName(HexUtils.colorify("&fPotion Jar"))
-            .setCustomModel(1)
-            .setItemMetaEditor(itemMeta -> {
-                PotionMeta potionMeta = (PotionMeta) itemMeta;
-                // TODO: Load when the item is created
-                potionMeta.setColor(Color.fromRGB(26, 93, 201));
-                potionMeta.addCustomEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, 20*16, 0, false, true), true);
-                return potionMeta;
-            })
+            .setCustomModel(1).setItemCategory(MagickItemCategory.POTION)
             .addItemActivator(ItemActivator.PLAYER_CONSUME, ((iCustomItem, event, equipmentSlot) -> {
                 PlayerItemConsumeEvent consumeEvent = (PlayerItemConsumeEvent) event;
                 ItemStack item = consumeEvent.getPlayer().getEquipment().getItem(equipmentSlot);
