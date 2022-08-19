@@ -420,7 +420,7 @@ public class CauldronEntryScene {
 
     public static void teleport(Location location) {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (location.distanceSquared(player.getLocation()) <= 200*200) {
+            if (location.distanceSquared(player.getLocation()) <= affectedPlayerRadius*affectedPlayerRadius) {
                 player.teleport(new Location(location.getWorld(), 6096.778, -16, -3072.192, -32.6f, -1.9f));
             }
         }
