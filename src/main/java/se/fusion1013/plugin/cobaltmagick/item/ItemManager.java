@@ -346,16 +346,21 @@ public class ItemManager extends Manager implements Listener {
     public static final CustomItem BATTLEAXE = register(new CustomItem.CustomItemBuilder("battle_axe", Material.NETHERITE_AXE, 1)
             .setCustomName(ChatColor.RESET + "Battle Axe")
             .addShapelessRecipe(new AbstractCustomItem.ShapelessIngredient(1, Material.NETHERITE_AXE), new AbstractCustomItem.ShapelessIngredient(1, Material.NETHERITE_AXE))
-            .addItemActivator(ItemActivator.PLAYER_KILL_PLAYER, (item, event, slot) -> {
+            .addItemActivatorSync(ItemActivator.PLAYER_KILL_PLAYER, (item, event, slot) -> {
                 EntityDamageByEntityEvent killEvent = (EntityDamageByEntityEvent) event;
                 ItemStack skullItem = new ItemStack(Material.PLAYER_HEAD, 1);
                 SkullMeta skullMeta = (SkullMeta) skullItem.getItemMeta();
 
                 // Set item meta
                 skullMeta.setOwningPlayer((Player) killEvent.getEntity());
-                skullMeta.setDisplayName(killEvent.getEntity().getName()); // TODO: Replace with component
+                skullMeta.displayName(Component.text(killEvent.getEntity().getName()).color(NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false));
+
+                List<Component> lore = new ArrayList<>();
+                lore.add(Component.text("Killed by: " + killEvent.getDamager().getName()).color(NamedTextColor.DARK_PURPLE));
+                skullMeta.lore(lore);
 
                 skullItem.setItemMeta(skullMeta);
+                killEvent.getEntity().getWorld().dropItemNaturally(killEvent.getEntity().getLocation(), skullItem);
             })
             .setCustomModel(5)
             .build());
