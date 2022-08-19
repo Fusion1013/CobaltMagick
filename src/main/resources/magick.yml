@@ -18,3 +18,11 @@ disable-auto-update: true
 #
 # Toggles breakable amethyst buds
 breakable-amethyst-buds: true
+#
+##### STRUCTURES #####
+#
+# This section contains all structure configurations
+#
+#
+# Disable structure generation entirely
+disable-natural-structure-generation: true
