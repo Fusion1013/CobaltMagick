@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class AbstractGUIListener implements Listener {
+
     @EventHandler
     public void onClick(InventoryClickEvent e){
         if (!(e.getWhoClicked() instanceof Player)){
@@ -66,7 +67,7 @@ public class AbstractGUIListener implements Listener {
         UUID playerUUID = player.getUniqueId();
 
         AbstractGUI gui = AbstractGUI.inventoriesByUUID.get(AbstractGUI.openInventories.get(playerUUID));
-        if (gui instanceof WandGUI) updateWandSpells((WandGUI)gui);
+        if (gui instanceof WandGUI) updateWandSpells((Player) player, (WandGUI)gui);
 
         AbstractGUI.openInventories.remove(playerUUID);
     }
@@ -77,12 +78,12 @@ public class AbstractGUIListener implements Listener {
         UUID playerUUID = player.getUniqueId();
 
         AbstractGUI gui = AbstractGUI.inventoriesByUUID.get(AbstractGUI.openInventories.get(playerUUID));
-        if (gui instanceof WandGUI) updateWandSpells((WandGUI)gui);
+        if (gui instanceof WandGUI) updateWandSpells(player, (WandGUI)gui);
 
         AbstractGUI.openInventories.remove(playerUUID);
     }
 
-    private void updateWandSpells(WandGUI gui) {
+    private void updateWandSpells(Player player, WandGUI gui) {
         Wand wand = gui.wand;
         Inventory inventory = gui.getGuiInventory();
         List<ISpell> spells = new ArrayList<>();
@@ -97,6 +98,12 @@ public class AbstractGUIListener implements Listener {
             }
         }
 
+        // Set the spells
         wand.setSpells(spells);
+
+        // Set the new lore of the wand
+        ItemMeta wandMeta = player.getInventory().getItemInMainHand().getItemMeta();
+        wandMeta.setLore(wand.getLore());
+        player.getInventory().getItemInMainHand().setItemMeta(wandMeta);
     }
 }
