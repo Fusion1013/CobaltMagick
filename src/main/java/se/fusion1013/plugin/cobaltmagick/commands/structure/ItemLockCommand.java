@@ -45,8 +45,8 @@ public class ItemLockCommand {
     private static void placeItemLock(CommandSender sender, Object[] args) {
         Location location = (Location)args[0];
         CustomItem item = CustomItemManager.getCustomItem((String)args[1]);
-        Unlockable unlockable = WorldManager.getDoor(UUID.fromString((String)args[2]));
-        WorldManager.registerItemLock(location, item, unlockable);
+        IActivatable activatable = WorldManager.getActivatable(UUID.fromString((String)args[2]));
+        WorldManager.registerItemLock(location, item, activatable);
 
         if (sender instanceof Player p) {
             StringPlaceholders placeholders = StringPlaceholders.builder()
