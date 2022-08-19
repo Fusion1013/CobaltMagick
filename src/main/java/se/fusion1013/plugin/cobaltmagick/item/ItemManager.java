@@ -187,6 +187,44 @@ public class ItemManager extends Manager implements Listener {
 
     public static final CustomItem CRYSTAL_SHARDS = register(new CustomItem.CustomItemBuilder("crystal_shards", Material.EMERALD, 1)
             .setCustomName(HexUtils.colorify("&dCrystal Shards")).setCustomModel(42).build());
+    // ----- CAULDRON THINGS -----
+
+    public static final CustomItem OUR_MATTER = register(new CustomItem.CustomItemBuilder("our_matter", Material.EMERALD, 1)
+            .setCustomName(HexUtils.colorify("<g:#969696:#1a1a1a>Our Matter")).setCustomModel(1001).setItemCategory(MagickItemCategory.MATERIAL).build());
+
+    public static final CustomItem EVIL_EYE = register(new CustomItem.CustomItemBuilder("evil_eye", Material.EMERALD, 1)
+            .setCustomName(HexUtils.colorify("<g:#172373:#2442a3>Evil Eye")).setCustomModel(1012).setItemCategory(MagickItemCategory.MATERIAL).build());
+
+    public static final CustomItem DEATH_BOUND_AMULET_DEACTIVATED = register(new CustomItem.CustomItemBuilder("death_bound_amulet_deactivated", Material.EMERALD, 1)
+            .setCustomName(HexUtils.colorify("<g:#5e0000:#b80000>Death-Bound Amulet"))
+            .addLoreLine(HexUtils.colorify("&7&oIt seems inactive for now...")).setCustomModel(1008).setItemCategory(MagickItemCategory.MATERIAL).build());
+
+    public static final CustomItem DEATH_BOUND_AMULET = register(new CustomItem.CustomItemBuilder("death_bound_amulet", Material.EMERALD, 1)
+            .setCustomName(HexUtils.colorify("<g:#5e0000:#b80000>Death-Bound Amulet")).setCustomModel(1007).setItemCategory(MagickItemCategory.MATERIAL)
+            .addLoreLine(HexUtils.colorify("&7Bound Player: "))
+            .addItemActivatorSync(ItemActivator.PLAYER_RIGHT_CLICK, (((iCustomItem, event, equipmentSlot) -> {
+
+                PlayerInteractEvent interactEvent = (PlayerInteractEvent) event;
+                Player player = interactEvent.getPlayer();
+                ItemStack item = player.getInventory().getItem(equipmentSlot);
+                ItemMeta itemMeta = item.getItemMeta();
+
+                // Set persistent data
+                itemMeta.getPersistentDataContainer().set(ItemConstants.DEATH_BOUND_ORB_OWNER, PersistentDataType.STRING, player.getUniqueId().toString());
+
+                // Set new lore
+                List<String> lore = new ArrayList<>();
+                lore.add(HexUtils.colorify("&7Bound Player: " + player.getName()));
+                itemMeta.setLore(lore);
+                item.setItemMeta(itemMeta);
+
+                // Play effects
+                player.playSound(player.getLocation(), "cobalt.brain", 1000000, 1);
+
+            })))
+            .addShapelessRecipe(new AbstractCustomItem.ShapelessIngredient(1, DEATH_BOUND_AMULET_DEACTIVATED.getItemStack()),
+                                new AbstractCustomItem.ShapelessIngredient(1, EVIL_EYE.getItemStack()))
+            .build());
 
     // ----- RUNES -----
 
