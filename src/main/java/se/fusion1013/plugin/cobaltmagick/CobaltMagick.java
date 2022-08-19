@@ -3,7 +3,8 @@ package se.fusion1013.plugin.cobaltmagick;
 import org.bukkit.plugin.java.JavaPlugin;
 import se.fusion1013.plugin.cobaltcore.CobaltCore;
 import se.fusion1013.plugin.cobaltcore.CobaltPlugin;
-import se.fusion1013.plugin.cobaltmagick.commands.CGiveCommand;
+import se.fusion1013.plugin.cobaltmagick.advancement.MagickAdvancementManager;
+import se.fusion1013.plugin.cobaltmagick.commands.cgive.CGiveCommand;
 import se.fusion1013.plugin.cobaltmagick.commands.*;
 import se.fusion1013.plugin.cobaltmagick.database.DatabaseHook;
 import se.fusion1013.plugin.cobaltmagick.database.system.MagickDataManager;
@@ -11,12 +12,14 @@ import se.fusion1013.plugin.cobaltmagick.entity.EntityManager;
 import se.fusion1013.plugin.cobaltmagick.eyes.CrystalSong;
 import se.fusion1013.plugin.cobaltmagick.gui.AbstractGUIListener;
 import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
+import se.fusion1013.plugin.cobaltmagick.world.structures.laser.LaserManager;
 import se.fusion1013.plugin.cobaltmagick.manager.*;
 import se.fusion1013.plugin.cobaltmagick.scene.SceneManager;
 import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
 import se.fusion1013.plugin.cobaltmagick.wand.WandEvents;
 import se.fusion1013.plugin.cobaltmagick.wand.WandManager;
 import se.fusion1013.plugin.cobaltmagick.world.WorldEvents;
+import se.fusion1013.plugin.cobaltmagick.world.WorldManager;
 import se.fusion1013.plugin.cobaltmagick.world.structures.MagickStructureManager;
 
 public final class CobaltMagick extends JavaPlugin implements CobaltPlugin {
@@ -88,7 +91,8 @@ public final class CobaltMagick extends JavaPlugin implements CobaltPlugin {
         CobaltCore.getInstance().getManager(this, WorldManager.class);
         CobaltCore.getInstance().getManager(this, SceneManager.class);
         CobaltCore.getInstance().getManager(this, MagickStructureManager.class);
-        // CobaltCore.getInstance().reloadPluginIntegrationManager("CrazyAdvancementsAPI", AdvancementManager.class);
+
+        CobaltCore.getInstance().reloadPluginIntegrationManager("CrazyAdvancementsAPI", this, MagickAdvancementManager.class);
     }
 
     // ----- LISTENERS -----
