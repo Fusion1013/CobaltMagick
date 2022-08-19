@@ -131,7 +131,7 @@ public class StaticProjectileSpell extends MovableSpell implements Cloneable, Ru
     public static class StaticProjectileSpellBuilder extends MovableSpellBuilder<StaticProjectileSpell, StaticProjectileSpellBuilder> {
         StaticProjectileShape staticProjectileShape;
 
-        double lifetime;
+        double lifetime = 0;
         ParticleGroup particleGroup;
 
         List<SpellModule> executeOnCast = new ArrayList<>();
