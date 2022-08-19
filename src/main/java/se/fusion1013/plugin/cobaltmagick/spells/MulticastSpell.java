@@ -1,9 +1,11 @@
 package se.fusion1013.plugin.cobaltmagick.spells;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
+import se.fusion1013.plugin.cobaltmagick.event.SpellCastEvent;
 import se.fusion1013.plugin.cobaltmagick.wand.CastParser;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
@@ -35,13 +37,13 @@ public class MulticastSpell extends Spell implements Cloneable, Runnable {
     }
 
     @Override
-    public void performPreCast(List<ISpell> wandSpells, int casts, int spellPos) {
-        super.performPreCast(wandSpells, casts, spellPos);
+    public void performPreCast(LivingEntity caster, Wand wand, List<ISpell> wandSpells, int casts, int spellPos) {
+        super.performPreCast(caster, wand, wandSpells, casts, spellPos);
 
         if (formation == Formation.NONE){
-            spellsToCast = new CastParser(wandSpells, numberSpellsToCast, spellPos+1).addModifiers(modifierSpells).prepareCast();
+            spellsToCast = new CastParser(caster, wand.getId(), wandSpells, numberSpellsToCast, spellPos+1).addModifiers(modifierSpells).prepareCast();
         } else {
-            spellsToCast = new CastParser(wandSpells, formation.getDirectionModifiers().length, spellPos+1).addModifiers(modifierSpells).prepareCast();
+            spellsToCast = new CastParser(caster, wand.getId(), wandSpells, formation.getDirectionModifiers().length, spellPos+1).addModifiers(modifierSpells).prepareCast();
             int pos = 0;
             for (ISpell spell : spellsToCast) {
                 if (spell instanceof ProjectileSpell ps) {
@@ -65,16 +67,28 @@ public class MulticastSpell extends Spell implements Cloneable, Runnable {
         Location currentLocation = caster.getEyeLocation();
 
         for (ISpell s : spellsToCast){
+            s.setCaster(caster);
             // s.castSpell(wand, caster, direction.clone(), currentLocation.clone());
-            s.castSpell(wand, caster);
+            SpellCastEvent event = new SpellCastEvent(s);
+            Bukkit.getPluginManager().callEvent(event);
+
+            if (!event.isCancelled()) {
+                s.castSpell(wand, caster);
+            }
         }
     }
 
     @Override
     public void castSpell(Wand wand, LivingEntity caster, Vector direction, Location location) {
         super.castSpell(wand, caster);
-        for (ISpell s : spellsToCast){
-            s.castSpell(wand, caster, direction.clone(), location.clone());
+        for (ISpell s : spellsToCast) {
+            s.setCaster(caster);
+            SpellCastEvent event = new SpellCastEvent(s);
+            Bukkit.getPluginManager().callEvent(event);
+
+            if (!event.isCancelled()) {
+                s.castSpell(wand, caster, direction.clone(), location.clone());
+            }
         }
     }
 
