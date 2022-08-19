@@ -7,7 +7,7 @@ import se.fusion1013.plugin.cobaltcore.database.system.DataManager;
 import se.fusion1013.plugin.cobaltcore.database.system.Database;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.database.door.IDoorDao;
-import se.fusion1013.plugin.cobaltmagick.database.lock.ILockDao;
+import se.fusion1013.plugin.cobaltmagick.database.itemlock.IItemLockDao;
 import se.fusion1013.plugin.cobaltmagick.database.musicbox.IMusicBoxDao;
 import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
@@ -129,7 +129,7 @@ public class DatabaseHook {
     @Deprecated
     public static void removeLock(UUID uuid) {
 
-        DataManager.getInstance().getDao(ILockDao.class).removeLockAsync(uuid);
+        DataManager.getInstance().getDao(IItemLockDao.class).removeLockAsync(uuid);
 
         /*
         try {
@@ -153,7 +153,7 @@ public class DatabaseHook {
     @Deprecated
     public static Map<UUID, ItemLock> getLocks() {
 
-        return DataManager.getInstance().getDao(ILockDao.class).getLocks();
+        return DataManager.getInstance().getDao(IItemLockDao.class).getLocks();
 
         /*
         Map<UUID, ItemLock> locks = new HashMap<>();
@@ -192,7 +192,7 @@ public class DatabaseHook {
     @Deprecated
     public static void insertLock(ItemLock lock) {
 
-        DataManager.getInstance().getDao(ILockDao.class).insertLockAsync(lock);
+        DataManager.getInstance().getDao(IItemLockDao.class).insertLockAsync(lock);
 
         /*
         DataManager.getInstance().getDao(ILocationDao.class).insertLocation(lock.getUuid(), lock.getLocation());
