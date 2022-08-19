@@ -24,7 +24,8 @@ public class RuneLockCommand {
                 .withPermission("cobalt.magick.commands.structure.rune_lock")
                 .withSubcommand(createPlaceCommand())
                 .withSubcommand(createInfoCommand())
-                .withSubcommand(addItemCommand());
+                .withSubcommand(addItemCommand())
+                .withSubcommand(createRemoveCommand());
     }
 
     // ----- PLACE COMMAND -----
