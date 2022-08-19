@@ -15,6 +15,8 @@ import java.util.Random;
 
 public class DamageModule extends AbstractSpellModule<DamageModule> implements SpellModule {
 
+    // ----- VARIABLES -----
+
     int damage;
     boolean cancelsCast;
 
