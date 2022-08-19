@@ -21,7 +21,7 @@ public class Apprentice {
         wand.setItemMeta(wandMeta);
 
         ICustomEntity apprentice = new CustomEntity.CustomEntityBuilder("apprentice", EntityType.ZOMBIE)
-                .addAbilityModule(new CasterAbility(2, 10, SpellManager.SPARK_BOLT))
+                .addAbilityModule(new CasterAbility(3, 10, SpellManager.SPARK_BOLT))
                 .addExecuteOnSpawnModule(new EntityEquipmentModule(EquipmentSlot.HAND, wand, 0))
                 .addExecuteOnSpawnModule(new EntityEquipmentModule(EquipmentSlot.HEAD, new ItemStack(Material.LEATHER_HELMET), 0))
                 .addExecuteOnSpawnModule(new EntityEquipmentModule(EquipmentSlot.CHEST, new ItemStack(Material.IRON_CHESTPLATE), 0))
