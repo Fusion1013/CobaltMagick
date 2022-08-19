@@ -4,12 +4,11 @@ import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -20,6 +19,7 @@ import se.fusion1013.plugin.cobaltcore.entity.ICustomEntity;
 import se.fusion1013.plugin.cobaltcore.entity.modules.*;
 import se.fusion1013.plugin.cobaltcore.entity.modules.ability.SummonerAbility;
 import se.fusion1013.plugin.cobaltcore.item.loot.CustomLootTable;
+import se.fusion1013.plugin.cobaltcore.item.loot.LootEntry;
 import se.fusion1013.plugin.cobaltcore.item.loot.LootPool;
 import se.fusion1013.plugin.cobaltcore.particle.ParticleGroup;
 import se.fusion1013.plugin.cobaltcore.particle.styles.ParticleStyle;
@@ -37,6 +37,7 @@ import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
 import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
 import se.fusion1013.plugin.cobaltmagick.spells.spellmodules.EffectModule;
+import se.fusion1013.plugin.cobaltmagick.util.constants.BookConstants;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
 import java.util.ArrayList;
@@ -51,7 +52,7 @@ public class HighAlchemist {
     static double damageFieldRadius = 2;
 
     // Wand
-    static Wand wand = new Wand(false, 1, 0.01, 0.01, 1000, 1000, 9, 0, new ArrayList<>(), 0);
+    static Wand wand = new Wand(false, 1, 0, 0, 1000, 1000, 9, 0, new ArrayList<>(), 0);
 
     // ----- REGISTER -----
 
@@ -64,11 +65,16 @@ public class HighAlchemist {
         ItemStack boot = new ItemStack(Material.LEATHER_BOOTS);
         LeatherArmorMeta meta = (LeatherArmorMeta)helmet.getItemMeta();
 
-        if (meta != null) meta.setColor(Color.fromRGB(0, 255, 0));
+        if (meta != null) meta.setColor(Color.fromRGB(9, 25, 61));
         helmet.setItemMeta(meta);
         chest.setItemMeta(meta);
         leg.setItemMeta(meta);
         boot.setItemMeta(meta);
+
+        ItemStack sword = new ItemStack(Material.NETHERITE_SWORD, 1);
+        ItemMeta swordMeta = sword.getItemMeta();
+        swordMeta.addEnchant(Enchantment.DAMAGE_ALL, 4, true);
+        sword.setItemMeta(swordMeta);
 
         // Create Entity
         ICustomEntity highAlchemist = new CustomEntity.CustomEntityBuilder("high_alchemist", EntityType.ZOMBIE)
@@ -78,15 +84,20 @@ public class HighAlchemist {
                 .addExecuteOnTickModule(new EntityStateModule(createHealthStates())) // Health state
 
                 // Set entity stats
-                .addExecuteOnSpawnModule(new EntityHealthModule(500)) // TODO: Health scaling
-                // TODO: Entity speed (change using attributes)
+                .addExecuteOnSpawnModule(new EntityHealthModule(700).scaleHealth())
+                .addEntityModification(entity -> {
+                    if (entity instanceof Zombie zombie) {
+                        zombie.setAdult();
+                    }
+                })
 
                 // Potion effects
                 .addExecuteOnSpawnModule(new EntityPotionEffectModule(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 1000000, 0, true, false)))
+                .addExecuteOnSpawnModule(new EntityPotionEffectModule(new PotionEffect(PotionEffectType.SPEED, 1000000, 1, true, false)))
 
                 // Add equipment
-                .addExecuteOnSpawnModule(new EntityEquipmentModule(EquipmentSlot.HAND, new ItemStack(Material.NETHERITE_SWORD), 0))
-                .addExecuteOnSpawnModule(new EntityEquipmentModule(EquipmentSlot.OFF_HAND, new ItemStack(Material.NETHERITE_SWORD), 0))
+                .addExecuteOnSpawnModule(new EntityEquipmentModule(EquipmentSlot.HAND, sword, 0))
+                .addExecuteOnSpawnModule(new EntityEquipmentModule(EquipmentSlot.OFF_HAND, sword, 0))
                 .addExecuteOnSpawnModule(new EntityEquipmentModule(EquipmentSlot.HEAD, helmet, 0))
                 .addExecuteOnSpawnModule(new EntityEquipmentModule(EquipmentSlot.CHEST, chest, 0))
                 .addExecuteOnSpawnModule(new EntityEquipmentModule(EquipmentSlot.LEGS, leg, 0))
@@ -96,11 +107,13 @@ public class HighAlchemist {
                 .addExecuteOnTickModule(new EntityBossBarModule("High Alchemist", 50, BarColor.BLUE, BarStyle.SEGMENTED_10))
 
                 // Drops
-                .addExecuteOnDeathModule(new EntityDropModule(6000, 10, ItemManager.CRYSTAL_KEY.getItemStack(), 1))
-                .addExecuteOnDeathModule(new EntityDropModule(0, 0, new CustomLootTable("drop",
-                        new LootPool(1,
-                                new WandLootEntry(1, false)
-                        )
+                .addExecuteOnDeathModule(new EntityDropModule(6000, 10, new CustomLootTable(new CustomLootTable.LootTarget[] {CustomLootTable.LootTarget.CHEST, CustomLootTable.LootTarget.BARREL, CustomLootTable.LootTarget.SHULKER_BOX},
+                        new LootPool(1, new LootEntry(SpellManager.ALPHA.getSpellItem(), 1, 1)),
+                        new LootPool(1, new LootEntry(SpellManager.GAMMA.getSpellItem(), 1, 1)),
+                        new LootPool(1, new LootEntry(ItemManager.CRYSTAL_KEY.getItemStack(), 1, 1)),
+                        new LootPool(1, new LootEntry(BookConstants.getEmeraldTabletII(), 1, 1))/*,
+                        new LootPool(1, new WandLootEntry(4, true))
+                        */
                 )))
 
                 // TODO: Should not take fall damage
@@ -138,7 +151,7 @@ public class HighAlchemist {
                 )
 
                 // Set general cooldown for abilities
-                .setGeneralAbilityCooldown(0) // 2 seconds
+                .setGeneralAbilityCooldown(0) // 0 seconds
                 .build();
 
         return CustomEntityManager.register(highAlchemist);
