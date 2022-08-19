@@ -12,7 +12,7 @@ import se.fusion1013.plugin.cobaltcore.item.CustomItemManager;
 import se.fusion1013.plugin.cobaltcore.particle.ParticleGroup;
 import se.fusion1013.plugin.cobaltcore.particle.styles.ParticleStyleCircle;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
-import se.fusion1013.plugin.cobaltmagick.world.structures.system.Unlockable;
+import se.fusion1013.plugin.cobaltmagick.world.structures.system.IActivatable;
 
 import java.util.*;
 
@@ -29,19 +29,29 @@ public class RuneLock implements Runnable {
     List<String> itemsNeeded = new ArrayList<>();
     List<ItemStack> insertedItems = new ArrayList<>();
     int id;
-    Unlockable unlockable;
+    UUID uuid;
+    IActivatable activatable;
 
     int insertionCooldown = 0;
 
     // ----- CONSTRUCTORS -----
 
-    public RuneLock(Location location, Unlockable unlockable, int id, String... items) {
+    public RuneLock(Location location, IActivatable activatable, int id, String... items) {
         this.location = location;
-        this.unlockable = unlockable;
+        this.activatable = activatable;
         this.id = id;
+        this.uuid = UUID.randomUUID();
         itemsNeeded.addAll(Arrays.asList(items));
 
         placeLock();
+    }
+
+    public RuneLock(Location location, IActivatable activatable, int id, UUID uuid, String... items) {
+        this.location = location;
+        this.activatable = activatable;
+        this.id = id;
+        this.uuid = uuid;
+        itemsNeeded.addAll(Arrays.asList(items));
     }
 
     // ----- PLACEMENT -----
@@ -53,11 +63,14 @@ public class RuneLock implements Runnable {
     // ----- LOGIC -----
 
     public boolean onClick(Player player) {
-        // If unlockable is already unlocked, do not attempt to unlock it again
-        if (!unlockable.isLocked()) return false;
+        // If activatable is already active, do not attempt to activate it again
+        if (activatable.isActive()) return false;
 
         // If the lock is currently on cooldown, reduce the cooldown and return
-        if (insertionCooldown > 0) return false;
+        if (insertionCooldown > 0) {
+            insertionCooldown--;
+            return false;
+        }
 
         ItemStack itemInHand = player.getInventory().getItemInMainHand();
         if (itemsNeeded.size() == insertedItems.size()) return false; // This should never happen
@@ -92,6 +105,7 @@ public class RuneLock implements Runnable {
             runeLockTask.cancel();
             runeLockTask = null;
             tick = 0;
+            insertionCooldown = 1;
             armorStands.forEach(Entity::remove);
             armorStands.clear();
 
@@ -109,7 +123,7 @@ public class RuneLock implements Runnable {
             }
 
             // All the items are the correct ones, unlock the unlockable
-            unlockable.unlock();
+            activatable.activate();
 
             // Clear the items inserted list
             insertedItems.clear();
@@ -149,13 +163,13 @@ public class RuneLock implements Runnable {
     ParticleStyleCircle particleStyleCircleObsidian = new ParticleStyleCircle.ParticleStyleCircleBuilder("rune_circle_obsidian")
             .setParticle(Particle.DRIPPING_OBSIDIAN_TEAR).setCount(1).setOffset(new Vector(0, 0, 0)).setSpeed(0)
             .setRadius(2).setIterations(8)
-            .setAngularVelocity(0, Math.toRadians(10), 0)
+            .setAngularVelocity(0, Math.toRadians(35), 0)
             .build();
 
     ParticleStyleCircle particleStyleCircleEndRod = new ParticleStyleCircle.ParticleStyleCircleBuilder("rune_circle_end_rod")
             .setParticle(Particle.END_ROD).setCount(1).setOffset(new Vector(0, 0, 0)).setSpeed(0)
             .setRadius(1.5).setIterations(8)
-            .setAngularVelocity(0, Math.toRadians(-10), 0)
+            .setAngularVelocity(0, Math.toRadians(-35), 0)
             .build();
 
     ParticleGroup idleGroup = new ParticleGroup.ParticleGroupBuilder("rune_lock_idle")
@@ -215,7 +229,15 @@ public class RuneLock implements Runnable {
         return insertedItems;
     }
 
-    public Unlockable getUnlockable() {
-        return unlockable;
+    public IActivatable getActivatable() {
+        return activatable;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public int getId() {
+        return id;
     }
 }
