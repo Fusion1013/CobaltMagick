@@ -9,13 +9,14 @@ import se.fusion1013.plugin.cobaltcore.locale.LocaleManager;
 import se.fusion1013.plugin.cobaltcore.util.StringPlaceholders;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.database.musicbox.IMusicBoxDao;
-import se.fusion1013.plugin.cobaltmagick.manager.WorldManager;
+import se.fusion1013.plugin.cobaltmagick.world.WorldManager;
 import se.fusion1013.plugin.cobaltmagick.world.structures.MusicBox;
 
 public class MusicBoxCommand {
 
     public static CommandAPICommand createMusicBoxCommand() {
         return new CommandAPICommand("music_box")
+                .withPermission("cobalt.magick.commands.structure.music_box")
                 .withSubcommand(createPlaceCommand())
                 .withSubcommand(createListCommand())
                 .withSubcommand(createRemoveCommand())
