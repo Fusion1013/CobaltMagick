@@ -1,30 +1,29 @@
 package se.fusion1013.plugin.cobaltmagick.world.structures;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Biome;
+import org.bukkit.World;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltcore.CobaltCore;
 import se.fusion1013.plugin.cobaltcore.commands.system.CommandExecutor;
 import se.fusion1013.plugin.cobaltcore.commands.system.CommandManager;
+import se.fusion1013.plugin.cobaltcore.config.ConfigManager;
 import se.fusion1013.plugin.cobaltcore.item.loot.CustomLootTable;
 import se.fusion1013.plugin.cobaltcore.item.loot.LootEntry;
 import se.fusion1013.plugin.cobaltcore.item.loot.LootPool;
 import se.fusion1013.plugin.cobaltcore.manager.Manager;
-import se.fusion1013.plugin.cobaltcore.world.structure.criteria.MaxHeightVariationStructureModule;
-import se.fusion1013.plugin.cobaltcore.world.structure.structure.ConnectedStructure;
 import se.fusion1013.plugin.cobaltcore.world.structure.structure.IStructure;
 import se.fusion1013.plugin.cobaltcore.world.structure.StructureManager;
-import se.fusion1013.plugin.cobaltcore.world.structure.criteria.BiomeStructureCriteria;
-import se.fusion1013.plugin.cobaltcore.world.structure.criteria.HeightStructureCriteria;
-import se.fusion1013.plugin.cobaltcore.world.structure.modules.*;
-import se.fusion1013.plugin.cobaltcore.world.structure.structure.SimpleStructure;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
-import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
-import se.fusion1013.plugin.cobaltmagick.world.structures.register.SurfaceRuinRegister;
+import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
+import se.fusion1013.plugin.cobaltmagick.world.structures.register.CreateChestStructures;
+import se.fusion1013.plugin.cobaltmagick.world.structures.register.CreateHighAlchemistDungeon;
+import se.fusion1013.plugin.cobaltmagick.world.structures.register.CreateMusicBoxStructures;
+import se.fusion1013.plugin.cobaltmagick.world.structures.register.CreateWandShrines;
+
+import java.util.Random;
 
 public class MagickStructureManager extends Manager implements Listener, CommandExecutor {
 
@@ -32,7 +31,7 @@ public class MagickStructureManager extends Manager implements Listener, Command
 
     // -- GENERIC
 
-    public static CustomLootTable GENERIC_DEAD_LOOT = new CustomLootTable("chest",
+    public static CustomLootTable GENERIC_DEAD_LOOT = new CustomLootTable(new CustomLootTable.LootTarget[] {CustomLootTable.LootTarget.CHEST, CustomLootTable.LootTarget.BARREL, CustomLootTable.LootTarget.SHULKER_BOX},
             new LootPool(9,
                     new LootEntry(new ItemStack(Material.ROTTEN_FLESH), 4, 19),
                     new LootEntry(new ItemStack(Material.GUNPOWDER), 4, 11),
@@ -516,9 +515,24 @@ public class MagickStructureManager extends Manager implements Listener, Command
 
     // ----- SMALL DUNGEON SURFACE: 4xxx -----
 
-    public static final IStructure SURFACE_RUIN = SurfaceRuinRegister.SURFACE_RUIN;
+    // public static final IStructure SURFACE_RUIN = SurfaceRuinRegister.SURFACE_RUIN;
 
-    // -----
+    // ----- CHESTS: 5xxx -----
+
+    public static final CustomLootTable LIGHT_CHEST_LOOT = new CustomLootTable(new CustomLootTable.LootTarget[] {CustomLootTable.LootTarget.CHEST, CustomLootTable.LootTarget.BARREL, CustomLootTable.LootTarget.SHULKER_BOX},
+            new LootPool(1, new LootEntry(SpellManager.TUPLE_SPELL.getSpellItem(), 1, 1)),
+            new LootPool(1, new LootEntry(SpellManager.TRIPLE_SPELL.getSpellItem(), 1, 1)),
+            new LootPool(1, new LootEntry(SpellManager.QUADRUPLE_SPELL.getSpellItem(), 1, 1)),
+            new LootPool(1, new LootEntry(SpellManager.OCTUPLE_SPELL.getSpellItem(), 1, 1)),
+            new LootPool(1, new LootEntry(SpellManager.SPHERE_OF_WATER.getSpellItem(), 1, 1))
+    );
+
+    /*
+    public static final IStructure LIGHT_CHEST = StructureManager.register(new SimpleStructure.SimpleStructureBuilder(CobaltMagick.getInstance(), 50, "light_chest", "structures/chests/light_chest.json")
+            .addStructureModule(new MagickChestStructureModule(Material.RED_WOOL, 2, ItemManager.CRYSTAL_KEY_LIGHT_ACTIVE, LIGHT_CHEST_LOOT))
+            .setNaturalGeneration(false)
+            .build());
+     */
 
     // ----- CONSTRUCTORS -----
 
@@ -534,10 +548,32 @@ public class MagickStructureManager extends Manager implements Listener, Command
         CommandManager.getInstance().registerCommandModule("magick_structure", this);
         Bukkit.getPluginManager().registerEvents(this, CobaltMagick.getInstance());
 
-        // Load magick chests
-        // TODO: Incorporate this into the general structure layout
+        // Register Structures
+        if (ConfigManager.getInstance().getBooleanFromConfig(CobaltMagick.getInstance(), "magick.yml", "disable-natural-structure-generation")) return;
 
+        // ----- STRUCTURES: 6xxx -----
+
+        /*
+        for (IStructure wandShrineStructure : CreateWandShrines.create(60)) StructureManager.register(wandShrineStructure);
+        CreateChestStructures.create();
+        CreateMusicBoxStructures.create();
+        StructureManager.registerAlwaysGenerate(CreateHighAlchemistDungeon.create(), seed -> {
+            Random r = new Random(seed);
+            int dist = r.nextInt(-1000, 1000);
+            Vector location;
+            if (r.nextDouble() >= 0.5) location = new Vector(dist, 10, 1000 * (-1 * r.nextInt(0, 2)));
+            else location = new Vector(1000 * (-1 * r.nextInt(0, 2)), -50, dist);
+
+            highAlchemistDungeonLocation = location;
+
+            return location;
+        });
+
+         */
     }
+
+    public static Vector highAlchemistDungeonLocation = new Vector();
+    public static World highAlchemistWorld = Bukkit.getWorlds().get(0);;
 
     @Override
     public void disable() {
