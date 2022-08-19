@@ -21,6 +21,7 @@ public class RuneLockCommand {
 
     public static CommandAPICommand createRuneLockCommand() {
         return new CommandAPICommand("rune_lock")
+                .withPermission("cobalt.magick.commands.structure.rune_lock")
                 .withSubcommand(createPlaceCommand())
                 .withSubcommand(createInfoCommand())
                 .withSubcommand(addItemCommand());
