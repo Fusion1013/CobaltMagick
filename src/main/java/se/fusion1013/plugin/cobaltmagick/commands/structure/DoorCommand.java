@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import se.fusion1013.plugin.cobaltcore.locale.LocaleManager;
 import se.fusion1013.plugin.cobaltcore.util.StringPlaceholders;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
-import se.fusion1013.plugin.cobaltmagick.manager.WorldManager;
+import se.fusion1013.plugin.cobaltmagick.world.WorldManager;
 import se.fusion1013.plugin.cobaltmagick.world.structures.MagickDoor;
 
 import java.util.UUID;
@@ -18,6 +18,7 @@ public class DoorCommand {
 
     public static CommandAPICommand createDoorCommand() {
         return new CommandAPICommand("door")
+                .withPermission("cobalt.magick.commands.structure.door")
                 .withSubcommand(createPlaceCommand())
                 .withSubcommand(createToggleCommand())
                 .withSubcommand(createInfoCommand())
