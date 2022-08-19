@@ -21,12 +21,12 @@ public class KillSpellsCommand {
      */
     public static void register(){
         new CommandAPICommand("killspells")
-                .withPermission("cobalt.command.killspells")
+                .withPermission("cobalt.magick.commands.killspells")
                 .executesPlayer(KillSpellsCommand::killSpells)
                 .register();
 
         new CommandAPICommand("killspells")
-                .withPermission("cobalt.command.killspells")
+                .withPermission("cobalt.magick.commands.killspells")
                 .withArguments(new DoubleArgument("max_distance"))
                 .executesPlayer(KillSpellsCommand::killSpells)
                 .executesCommandBlock((CommandBlockCommandExecutor) (sender, args) -> killAllSpells())
