@@ -53,33 +53,6 @@ public class ItemManager extends Manager implements Listener {
         super(cobaltCore);
     }
 
-    // ----- KEYS -----
-
-    public static final CustomItem DUNGEON_KEY = register(new CustomItem.CustomItemBuilder("dungeon_key", Material.EMERALD, 1)
-            .setCustomName(ChatColor.RESET + "" + ChatColor.GOLD + "Dungeon Key")
-            .setCustomModel(2)
-            .build());
-
-    public static final CustomItem RUSTY_KEY = register(new CustomItem.CustomItemBuilder("rusty_key", Material.EMERALD, 1)
-            .setCustomName(ChatColor.RESET + "" + ChatColor.GRAY + "Rusty Key")
-            .setCustomModel(11)
-            .build());
-
-    public static final CustomItem RED_KEY = register(new CustomItem.CustomItemBuilder("red_key", Material.EMERALD, 1)
-            .setCustomName(ChatColor.RESET + "" + ChatColor.RED + "Red Key")
-            .setCustomModel(12)
-            .build());
-
-    public static final CustomItem GREEN_KEY = register(new CustomItem.CustomItemBuilder("green_key", Material.EMERALD, 1)
-            .setCustomName(ChatColor.RESET + "" + ChatColor.GREEN + "Green Key")
-            .setCustomModel(13)
-            .build());
-
-    public static final CustomItem BLUE_KEY = register(new CustomItem.CustomItemBuilder("blue_key", Material.EMERALD, 1)
-            .setCustomName(ChatColor.RESET + "" + ChatColor.BLUE + "Blue Key")
-            .setCustomModel(14)
-            .build());
-
     // ----- MISCELLANEOUS -----
 
     public static final CustomItem BROKEN_SPELL = register(new CustomItem.CustomItemBuilder("broken_spell", Material.CLOCK, 1)
