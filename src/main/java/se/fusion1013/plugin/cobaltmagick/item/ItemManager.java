@@ -311,11 +311,33 @@ public class ItemManager extends Manager implements Listener {
 
     // ----- TOOLS -----
 
+    public static final CustomItem DUNGEON_LOCATOR = register(new CustomItem.CustomItemBuilder("dungeon_locator", Material.COMPASS, 1)
+            .setCustomName(HexUtils.colorify("&fDungeon Locator"))
+            .addItemActivatorSync(ItemActivator.PLAYER_RIGHT_CLICK, ((iCustomItem, event, equipmentSlot) -> {
                 PlayerInteractEvent interactEvent = (PlayerInteractEvent) event;
 
+                if (interactEvent.getItem().getItemMeta() instanceof CompassMeta compassMeta) {
 
+                    // Set dungeon location
+                    compassMeta.setLodestoneTracked(false);
+                    compassMeta.setLodestone(new Location(interactEvent.getPlayer().getWorld(), MagickStructureManager.highAlchemistDungeonLocation.getX(), MagickStructureManager.highAlchemistDungeonLocation.getY(), MagickStructureManager.highAlchemistDungeonLocation.getZ()));
 
+                    // Add enchant
+                    compassMeta.addEnchant(Enchantment.DURABILITY, 1, true);
+                    compassMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+
+                    interactEvent.getItem().setItemMeta(compassMeta);
+
+                    CobaltMagick.getInstance().getLogger().info("Set compass location to: " + MagickStructureManager.highAlchemistDungeonLocation + ", in world: " + MagickStructureManager.highAlchemistWorld.getName());
                 }
+            }))
+            .addShapedRecipe(
+                    "-e-",
+                    "ece",
+                    "-e-",
+                    new AbstractCustomItem.ShapedIngredient('c', Material.RECOVERY_COMPASS),
+                    new AbstractCustomItem.ShapedIngredient('e', Material.ECHO_SHARD)
+            )
             .build());
 
     // Battleaxe
