@@ -20,6 +20,7 @@ public class ItemLockCommand {
 
     public static CommandAPICommand createItemLockCommand() {
         return new CommandAPICommand("lock")
+                .withPermission("cobalt.magick.commands.structure.lock")
                 .withSubcommand(createPlaceCommand())
                 .withSubcommand(createListCommand())
                 .withSubcommand(createRemoveCommand());
