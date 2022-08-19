@@ -31,7 +31,7 @@ public class ItemLockCommand {
         return new CommandAPICommand("place")
                 .withArguments(new LocationArgument("location", LocationType.BLOCK_POSITION))
                 .withArguments(new StringArgument("item").replaceSuggestions(ArgumentSuggestions.strings(info -> CustomItemManager.getItemNames())))
-                .withArguments(new GreedyStringArgument("door_id").replaceSuggestions(ArgumentSuggestions.strings(info -> WorldManager.getDoorKeys()))) // TODO: Replace with unlockable
+                .withArguments(new GreedyStringArgument("activatable_id").replaceSuggestions(ArgumentSuggestions.strings(info -> WorldManager.getActivatableStrings()))) // TODO: Replace with unlockable
                 .executes(ItemLockCommand::placeItemLock);
     }
 
