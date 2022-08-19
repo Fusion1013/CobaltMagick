@@ -29,6 +29,8 @@ public class SoundSpellModule extends AbstractSpellModule<SoundSpellModule> impl
     Instrument instrument;
     Note note;
 
+    private static final int MAX_PLAYER_DISTANCE = 120;
+
     public SoundSpellModule(String soundString, SoundCategory category, boolean cancelsCast){
         this.soundString = soundString;
         this.category = category;
@@ -109,8 +111,12 @@ public class SoundSpellModule extends AbstractSpellModule<SoundSpellModule> impl
         playSound(spell.getLocation());
     }
 
-    private void playSound(Location location){
-        for (Player p : Bukkit.getOnlinePlayers()){
+    private void playSound(Location location) {
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (p.getWorld() != location.getWorld()) continue; // If the player is not in the same dimension as the spell, skip
+
+            if (p.getLocation().distanceSquared(location) > MAX_PLAYER_DISTANCE*MAX_PLAYER_DISTANCE) continue;
+
             if (playInstrument) p.playNote(location, instrument, note);
             else if (playSound && sound != null) p.playSound(location, sound, category, volume, pitch);
             else if (playSound) p.playSound(location, soundString, category, volume, pitch);
