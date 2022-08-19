@@ -1,11 +1,10 @@
 package se.fusion1013.plugin.cobaltmagick.spells;
 
 import org.bukkit.Location;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
+import se.fusion1013.plugin.cobaltcore.item.CustomItem;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
 import java.util.List;
@@ -38,8 +37,9 @@ public interface ISpell {
     String getInternalSpellName();
     String getSpellName();
     ItemStack getSpellItem();
+    CustomItem getSpellCustomItem();
     int getCustomModelData();
-    Spell.SpellType getSpellType();
+    SpellType getSpellType();
     boolean getConsumeOnUse();
     void setConsumeOnUse(boolean consume);
     int getCount();
@@ -53,6 +53,11 @@ public interface ISpell {
     Location getLocation();
     List<String> getTags();
     void setCaster(LivingEntity caster);
+    int[] getSpellTiers();
+    double[] getSpellTierWeights();
+    void setSpellTiers(int... spellTier);
+    void setSpellTierWeights(double... spellTierWeights);
+    String getHexIcon();
 
     /**
      * Performs operations that need to be done before a spell can be cast
@@ -61,7 +66,7 @@ public interface ISpell {
      * @param casts
      * @param spellPos
      */
-    void performPreCast(List<ISpell> wandSpells, int casts, int spellPos);
+    void performPreCast(LivingEntity caster, Wand wand, List<ISpell> wandSpells, int casts, int spellPos);
 
     Spell clone();
 }
