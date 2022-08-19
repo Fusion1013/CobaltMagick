@@ -28,7 +28,7 @@ public class SurfaceRuinRegister {
 
     // ----- LOOT TABLES -----
 
-    static CustomLootTable SURFACE_RUIN_LOOT_ROOM_LOOT = new CustomLootTable("chest",
+    static CustomLootTable SURFACE_RUIN_LOOT_ROOM_LOOT = new CustomLootTable(new CustomLootTable.LootTarget[] {CustomLootTable.LootTarget.CHEST, CustomLootTable.LootTarget.BARREL, CustomLootTable.LootTarget.SHULKER_BOX},
             new LootPool(7,
                     new LootEntry(ItemManager.SHINY_ORB.getItemStack(), 1, 1),
                     new LootEntry(new ItemStack(Material.GOLD_INGOT), 1, 27),
@@ -37,7 +37,7 @@ public class SurfaceRuinRegister {
             )
     );
 
-    static CustomLootTable SURFACE_RUIN_POTION_LOOT = new CustomLootTable("chest", // TODO: Add random potion
+    static CustomLootTable SURFACE_RUIN_POTION_LOOT = new CustomLootTable(new CustomLootTable.LootTarget[] {CustomLootTable.LootTarget.CHEST, CustomLootTable.LootTarget.BARREL, CustomLootTable.LootTarget.SHULKER_BOX}, // TODO: Add random potion
             new LootPool(5,
                     new LootEntry(new ItemStack(Material.BLAZE_POWDER), 2, 15),
                     new LootEntry(new ItemStack(Material.BLAZE_ROD), 1, 7),
@@ -48,7 +48,7 @@ public class SurfaceRuinRegister {
             )
     );
 
-    static CustomLootTable SURFACE_RUIN_BOOKSHELF_LOOT = new CustomLootTable("chest", // TODO: Add randomly enchanted book
+    static CustomLootTable SURFACE_RUIN_BOOKSHELF_LOOT = new CustomLootTable(new CustomLootTable.LootTarget[] {CustomLootTable.LootTarget.CHEST, CustomLootTable.LootTarget.BARREL, CustomLootTable.LootTarget.SHULKER_BOX}, // TODO: Add randomly enchanted book
             new LootPool(5,
                     new LootEntry(new ItemStack(Material.PAPER), 2, 15),
                     new LootEntry(new ItemStack(Material.BOOK), 1, 7)
