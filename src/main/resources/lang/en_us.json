@@ -31,6 +31,35 @@
   "commands.magick.update.updater_disabled": "&7Auto updates are disabled. Check config file",
   "commands.magick.update.updater_already_checking": "&7Already checking for an update",
 
+
+  "commands.magick.edit.item.custom_model_data.changed": "&7Changed model data of item &3%item% &7to &3%data%",
+  "commands.magick.edit.item.custom_model_data.failed": "&7Failed to set data of item &3%item%",
+
+  "commands.magick.edit.item.custom_name.changed": "&7Changed name of item &3%item% &7to &3\"&r%name%&3\"",
+  "commands.magick.edit.item.custom_name.failed": "&7Failed to set name of item &3%item%",
+
+  "commands.magick.edit.item.book.toggle_writable.success": "&7Toggled book to &3%book_type%",
+  "commands.magick.edit.item.book.toggle_writable.failed": "&7Could not toggle writable state of &3%item%",
+
+  "commands.magick.edit.item.book.failed": "&7Failed to edit book data of &3%item%",
+  "commands.magick.edit.item.book.author": "&7Set author of book to &3%author%",
+  "commands.magick.edit.item.book.generation": "&7Set generation of book &3%generation%",
+  "commands.magick.edit.item.book.generation.not_valid": "&3%generation% &7is not a valid generation",
+  "commands.magick.edit.item.book.text.success": "&7Updated book text",
+  "commands.magick.edit.item.book.text.failed": "&7Failed to update book text",
+
+  "commands.magick.edit.item.potion.failed": "&7Failed to edit potion",
+  "commands.magick.edit.item.potion.color": "&7Set potion color to r&3%r%&7, g&3%g%&7, b&3%b%",
+  "commands.magick.edit.item.potion.effect": "&7Set potion effect to &3%effect%&7, with amplifier &3%amplifier% &7and duration &3%duration%",
+
+
+  "commands.magick.advancement.grant_all.success": "&7Granted all advancements to &3%player%",
+  "commands.magick.advancement.grant_all.failed": "&7Failed to grant all advancements to &3%player%",
+
+  "commands.magick.advancement.grant.success": "&7Granted advancement &3%advancement%",
+  "commands.magick.advancement.grant.failed": "&7Failed to grant advancement &3%advancement% &7to &3%player%",
+
+
   "commands.magick.structure.remove": "&7Removed &3%structure% &7at location %location%",
   "commands.magick.structure.place": "&7Placed new &3%structure% &7at location %location%",
   "commands.magick.structure.not_found": "&7Structure not found",
@@ -55,6 +84,18 @@
   "commands.magick.structure.rune_lock.item": "&7 - [&3%id%&7] Item: &3%item%",
   "commands.magick.structure.rune_lock.list": "",
   "commands.magick.structure.rune_lock.add_item": "&7Added item &3%item% &7to rune lock with id &3%id%",
-  "commands.magick.structure.rune_lock.remove": "",
-  "commands.magick.structure.rune_lock.not_found": "Rune Lock with id &3%id% &7not found"
+  "commands.magick.structure.rune_lock.remove": "&7Removed rune lock with id &3%id%",
+  "commands.magick.structure.rune_lock.not_found": "Rune Lock with id &3%id% &7not found",
+
+  "commands.magick.structure.activatable.toggle.failed": "&7Could not toggle activatable with uuid &3%uuid%",
+  "commands.magick.structure.activatable.toggle.success": "&7Toggled activatable with uuid &3%uuid%",
+
+  "commands.magick.structure.hidden_object.place": "&7Placed new hidden object at &3%location%&7 with uuid &3%uuid%&7. Revealed on &3%reveal_method%",
+  "commands.magick.structure.hidden_object.remove": "&7Removed hidden object &3%uuid%",
+  "commands.magick.structure.hidden_object.reveal_method_not_found": "&7Reveal method &3%reveal_method%&7 not found",
+  "commands.magick.structure.hidden_object.set": "&7Set property &3%property% &7of hidden object &3%uuid%",
+
+  "commands.magick.structure.laser.place": "&7Placed new laser at &3%location%&7 with uuid &3%uuid%",
+  "commands.magick.structure.laser.remove": "&7Removed laser with uuid &3%uuid% &7at &3%location%",
+  "commands.magick.structure.laser.not_found": "&7Could not find laser with uuid &3%uuid%"
 }
