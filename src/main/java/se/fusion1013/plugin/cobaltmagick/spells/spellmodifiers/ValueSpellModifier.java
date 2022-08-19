@@ -1,5 +1,6 @@
 package se.fusion1013.plugin.cobaltmagick.spells.spellmodifiers;
 
+import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltmagick.spells.MovableSpell;
 import se.fusion1013.plugin.cobaltmagick.spells.ProjectileSpell;
 import se.fusion1013.plugin.cobaltmagick.spells.Spell;
@@ -9,6 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ValueSpellModifier extends AbstractSpellModifier<ValueSpellModifier> {
+
+    // ----- VARIABLES -----
+
+    // Projectile
 
     double addRadius;
     double addSpread;
@@ -20,10 +25,19 @@ public class ValueSpellModifier extends AbstractSpellModifier<ValueSpellModifier
     double multiplyVelocity = 1;
     double multiplyLifetime = 1;
 
+    // Movable
+
+    boolean setBounce = false;
+    boolean isBouncy;
+    Vector bounceFriction;
+    int maxBouncesIncrease = 0;
+
     public ValueSpellModifier(){ }
 
     public ValueSpellModifier(ValueSpellModifier target){
         super(target);
+
+        // Projectile
 
         this.multiplyRadius = target.multiplyRadius;
         this.multiplySpread = target.multiplySpread;
@@ -34,12 +48,30 @@ public class ValueSpellModifier extends AbstractSpellModifier<ValueSpellModifier
         this.addSpread = target.addSpread;
         this.addVelocity = target.addVelocity;
         this.addLifetime = target.addLifetime;
+
+        // Movable
+        this.setBounce = target.setBounce;
+        this.isBouncy = target.isBouncy;
+        this.bounceFriction = target.bounceFriction;
+        this.maxBouncesIncrease = target.maxBouncesIncrease;
     }
 
     // ----- VALUE OVERRIDES -----
 
-    // TODO
+    public ValueSpellModifier setIsBouncy(boolean isBouncy, Vector bounceFriction) {
+        this.setBounce = true;
+        this.isBouncy = isBouncy;
+        this.bounceFriction = bounceFriction;
+        return getThis();
+    }
 
+    public ValueSpellModifier setIsBouncy(boolean isBouncy, Vector bounceFriction, int maxBounces) {
+        this.setBounce = true;
+        this.isBouncy = isBouncy;
+        this.bounceFriction = bounceFriction;
+        this.maxBouncesIncrease = maxBounces;
+        return getThis();
+    }
     // ----- VALUE MULTIPLIERS -----
 
     public ValueSpellModifier addLifetimeMultiplier(double lifetimeMultiplier){
@@ -108,12 +140,18 @@ public class ValueSpellModifier extends AbstractSpellModifier<ValueSpellModifier
 
     @Override
     public void modifyMovableSpell(MovableSpell spellToModify) {
-
+        if (setBounce) {
+            spellToModify.setIsBouncy(isBouncy);
+            spellToModify.setBounceFriction(bounceFriction);
+            spellToModify.setMaxBounces(spellToModify.getMaxBounces() + maxBouncesIncrease);
+        }
     }
 
     @Override
     public List<String> getExtraLore() {
         List<String> extraLore = new ArrayList<>();
+
+        // Add operations
         if (addLifetime > 0) extraLore.add(Spell.colorizeValue("Lifetime: +", addLifetime, "s"));
         if (addLifetime < 0) extraLore.add(Spell.colorizeValue("Lifetime: ", addLifetime, "s"));
 
@@ -125,6 +163,13 @@ public class ValueSpellModifier extends AbstractSpellModifier<ValueSpellModifier
 
         if (addRadius > 0) extraLore.add(Spell.colorizeValue("Radius: +", addRadius, ""));
         if (addRadius < 0) extraLore.add(Spell.colorizeValue("Radius: ", addRadius, ""));
+
+        // Multiply operations
+        if (multiplyVelocity != 0) extraLore.add(Spell.colorizeValue("Velocity: x", multiplyVelocity, ""));
+
+        // Bounce operations
+        if (maxBouncesIncrease > 0) extraLore.add(Spell.colorizeValue("Bounces: +", maxBouncesIncrease, ""));
+        if (maxBouncesIncrease < 0) extraLore.add(Spell.colorizeValue("Bounces: -", maxBouncesIncrease, ""));
 
         return extraLore;
     }
