@@ -803,65 +803,6 @@ public class ItemManager extends Manager implements Listener {
 
     }
 
-    // ----- CUSTOM POTION RECIPE TEST -----
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void potionItemPlacer(final InventoryClickEvent e) {
-        if (e.getClickedInventory() == null)
-            return;
-        if (e.getClickedInventory().getType() != InventoryType.BREWING)
-            return;
-        if (!(e.getClick() == ClickType.LEFT)) //Make sure we are placing an item
-            return;
-        final ItemStack is = e.getCurrentItem(); //We want to get the item in the slot
-        final ItemStack is2 = e.getCursor().clone(); //And the item in the cursor
-        if(is2 == null) //We make sure we got something in the cursor
-            return;
-        if(is2.getType() == Material.AIR)
-            return;
-        Bukkit.getScheduler().scheduleSyncDelayedTask(CobaltMagick.getInstance(), () -> {
-            e.setCursor(is);//Now we make the switch
-            e.getClickedInventory().setItem(e.getSlot(), is2);
-        }, 1L);//(Delay in 1 tick)
-        ((Player)e.getWhoClicked()).updateInventory();//And we update the inventory
-    }
-
-    public static BrewingRecipe TEST_BREWING_RECIPE = new BrewingRecipe(new ItemStack(Material.WHITE_WOOL), (inventory, item, ingredient) -> {//Some lambda magic
-        if (!item.getType().toString().contains("LEATHER"))
-            return;
-        LeatherArmorMeta armorMeta = (LeatherArmorMeta) item.getItemMeta();
-        armorMeta.setColor(Color.BLUE);
-        item.setItemMeta(armorMeta);
-    }, true);
-
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void PotionListener(InventoryClickEvent e){
-        // CobaltMagick.getInstance().getLogger().info("Click");
-
-        if(e.getClickedInventory() == null)
-            return;
-
-        // CobaltMagick.getInstance().getLogger().info("Click2");
-
-        if(e.getClickedInventory().getType() != InventoryType.BREWING)
-            return;
-
-        // CobaltMagick.getInstance().getLogger().info("Click3");
-
-        if(((BrewerInventory)e.getInventory()).getIngredient() == null)
-            return;
-
-        // CobaltMagick.getInstance().getLogger().info("Click4");
-
-        BrewingRecipe recipe = BrewingRecipe.getRecipe((BrewerInventory) e.getClickedInventory());
-        if(recipe == null)
-            return;
-
-        // CobaltMagick.getInstance().getLogger().info("Click5");
-
-        recipe.startBrewing((BrewerInventory) e.getClickedInventory());
-    }
-
     // ----- INSTANCE VARIABLE & METHOD -----
 
     private static ItemManager INSTANCE = null;
