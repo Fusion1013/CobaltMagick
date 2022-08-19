@@ -3,13 +3,13 @@ package se.fusion1013.plugin.cobaltmagick.spells;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import se.fusion1013.plugin.cobaltcore.item.CustomItem;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
+import se.fusion1013.plugin.cobaltmagick.item.MagickItemCategory;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
 import java.util.ArrayList;
@@ -28,10 +28,15 @@ public abstract class Spell implements ISpell, Cloneable {
     int customModelData = 1;
     SpellType type;
     static NamespacedKey spellKey = new NamespacedKey(CobaltMagick.getInstance(), "spell");
+    int[] spellTiers;
+    double[] spellTierWeights;
 
     boolean hasCast = false;
 
     int count = 1; // The number of spells in the itemstack
+
+    // Spell Item
+    private CustomItem spellItem;
 
     // Shown Attributes
     boolean consumeOnUse;
@@ -81,13 +86,18 @@ public abstract class Spell implements ISpell, Cloneable {
         this.wand = spell.getWand();
 
         this.tags = spell.getTags();
+
+        this.spellItem = spell.spellItem;
+        this.spellTiers = spell.spellTiers;
     }
+
+    // ----- CASTING METHODS -----
 
     /**
      * Performs operations that need to be done before a spell can be cast
      */
     @Override
-    public void performPreCast(List<ISpell> wandSpells, int casts, int spellPos){
+    public void performPreCast(LivingEntity caster, Wand wand, List<ISpell> wandSpells, int casts, int spellPos){
     }
 
     @Override
@@ -142,7 +152,23 @@ public abstract class Spell implements ISpell, Cloneable {
      * @return a new <code>ItemStack</code> representing the spell
      */
     public ItemStack getSpellItem(){
-        return getSpellItem(getLore());
+        if (spellItem == null) {
+            spellItem = createSpellItem();
+        }
+        ItemStack stack = spellItem.getItemStack();
+        stack.setAmount(count);
+        return stack;
+    }
+
+    /**
+     * Gets the <code>CustomItem</code> representing this spell, or creates it if it does not yet exist.
+     *
+     * @return the <code>CustomItem</code> representing this spell.
+     */
+    @Override
+    public CustomItem getSpellCustomItem() {
+        if (spellItem == null) this.spellItem = createSpellItem();
+        return spellItem;
     }
 
     /**
@@ -280,6 +306,16 @@ public abstract class Spell implements ISpell, Cloneable {
             spellName = spellName.substring(0, spellName.length()-1);
         }
 
+        public B setSpellTiers(int... tier) {
+            obj.setSpellTiers(tier);
+            return getThis();
+        }
+
+        public B setSpellTierWeights(double... spellTierWeights) {
+            obj.setSpellTierWeights(spellTierWeights);
+            return getThis();
+        }
+
         public B addTag(String tag){
             obj.addTag(tag);
             return getThis();
@@ -287,6 +323,11 @@ public abstract class Spell implements ISpell, Cloneable {
 
         public B setRadius(double radius){
             obj.setRadius(radius);
+            return getThis();
+        }
+
+        public B overrideSpellName(String name) {
+            this.spellName = name;
             return getThis();
         }
 
@@ -447,29 +488,34 @@ public abstract class Spell implements ISpell, Cloneable {
     }
 
     @Override
+    public void setSpellTiers(int... spellTier) {
+        this.spellTiers = spellTier;
+    }
+
+    @Override
+    public void setSpellTierWeights(double... spellTierWeights) {
+        this.spellTierWeights = spellTierWeights;
+    }
+
+    @Override
+    public int[] getSpellTiers() {
+        if (spellTiers == null) return new int[0];
+        else return spellTiers;
+    }
+
+    @Override
+    public double[] getSpellTierWeights() {
+        if (spellTierWeights == null) return new double[0];
+        else return spellTierWeights;
+    }
+
+    @Override
     public double getTrueCastDelay(){
         int castDelay = 0;
         for (Spell.DelayedSpell ds : delayedSpells){
             castDelay += ds.getCastDelay();
         }
         return castDelay + getCastDelay();
-    }
-
-    public enum SpellType{
-        PROJECTILE(ChatColor.RED),
-        STATIC_PROJECTILE(ChatColor.YELLOW),
-        PASSIVE(ChatColor.GRAY),
-        UTILITY(ChatColor.DARK_PURPLE),
-        PROJECTILE_MODIFIER(ChatColor.BLUE),
-        MATERIAL(ChatColor.GREEN),
-        MULTICAST(ChatColor.AQUA),
-        OTHER(ChatColor.GOLD);
-
-        ChatColor spellColor;
-
-        SpellType(ChatColor spellColor){
-            this.spellColor = spellColor;
-        }
     }
 
     public enum TriggerType{
