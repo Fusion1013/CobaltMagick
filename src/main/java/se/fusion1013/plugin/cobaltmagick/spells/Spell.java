@@ -96,6 +96,28 @@ public abstract class Spell implements ISpell, Cloneable {
         this.caster = caster;
     }
 
+    // ----- ITEM CREATION -----
+
+    private CustomItem createSpellItem() {
+        List<String> lore = getLore();
+        lore.add("");
+        lore.add(type.spellColor + type.name().replaceAll("_", " "));
+
+        CustomItem.CustomItemBuilder itemBuilder = new CustomItem.CustomItemBuilder(internalSpellName, Material.CLOCK, count)
+                .setItemMetaEditor(itemMeta -> {
+                    itemMeta.getPersistentDataContainer().set(spellKey, PersistentDataType.INTEGER, id);
+                    return itemMeta;
+                })
+                .setLore(lore)
+                .setCustomModel(customModelData)
+                .setItemCategory(MagickItemCategory.SPELL);
+
+        if (consumeOnUse) itemBuilder.setCustomName(type.spellColor + spellName + " (-)");
+        else itemBuilder.setCustomName(type.spellColor + spellName);
+
+        return itemBuilder.build();
+    }
+
     // ----- GETTERS / SETTERS -----
 
     /**
