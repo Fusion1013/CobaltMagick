@@ -132,4 +132,33 @@ public class RuneLockCommand {
 
     // ----- REMOVE COMMAND -----
 
+    private static CommandAPICommand createRemoveCommand() {
+        return new CommandAPICommand("remove")
+                .withPermission("cobalt.magick.commands.structure.rune_lock.remove")
+                .withArguments(new IntegerArgument("id").replaceSuggestions(ArgumentSuggestions.strings(info -> WorldManager.getRuneLockIds())))
+                .executes(RuneLockCommand::removeRuneLock);
+    }
+
+    private static void removeRuneLock(CommandSender sender, Object[] args) {
+        int id = (Integer) args[0];
+        RuneLock runeLock = WorldManager.getRuneLock(id);
+
+        StringPlaceholders placeholders = StringPlaceholders.builder()
+                .addPlaceholder("id", id)
+                .build();
+
+        boolean removed = false;
+
+        if (runeLock != null) {
+            WorldManager.removeRuneLock(id);
+            removed = true;
+
+        }
+
+        if (sender instanceof Player player) {
+            if (removed) LocaleManager.getInstance().sendMessage(CobaltMagick.getInstance(), player, "commands.magick.structure.rune_lock.remove", placeholders);
+            else LocaleManager.getInstance().sendMessage(CobaltMagick.getInstance(), player, "commands.magick.structure.rune_lock.not_found", placeholders);
+        }
+    }
+
 }
