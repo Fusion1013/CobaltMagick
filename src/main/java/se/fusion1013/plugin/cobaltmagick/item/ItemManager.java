@@ -414,9 +414,8 @@ public class ItemManager extends Manager implements Listener {
             .build());
 
     public static final CustomItem DREAMGLASS = register(new CustomItem.CustomItemBuilder("dreamglass", Material.SPYGLASS, 1)
-            .setCustomName(ChatColor.RESET + "" + ChatColor.DARK_AQUA + "Dreamglass")
+            .setCustomName(HexUtils.colorify("<g:#20a9e8:#117cad>Dreamglass"))
             .addLoreLine(ChatColor.WHITE + "The lens distorts reality")
-            .setCustomModel(1)
             .setItemMetaEditor(itemMeta -> {
                 List<Component> currentLore = itemMeta.lore();
                 if (currentLore != null) {
