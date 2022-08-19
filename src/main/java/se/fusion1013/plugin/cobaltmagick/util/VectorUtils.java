@@ -5,6 +5,11 @@ import org.bukkit.util.Vector;
 
 public class VectorUtils {
 
+    public static Vector getRightVector(Vector vector){
+        Vector direction = vector.clone().normalize();
+        return new Vector(direction.getZ(), 0, -direction.getX()).normalize();
+    }
+
     /**
      * Not instantiable
      */
