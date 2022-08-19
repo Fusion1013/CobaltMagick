@@ -5,14 +5,18 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltcore.config.ConfigManager;
@@ -56,6 +60,7 @@ public class WandEvents implements Listener {
 
     @EventHandler
     public void onInventoryClickEvent(InventoryClickEvent event){
+        // Called when player clicks outside inventory
         if (event.getSlot() == -999) {
             uuidList.add(event.getWhoClicked().getUniqueId());
             CobaltMagick.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(CobaltMagick.getInstance(), () -> uuidList.remove(event.getWhoClicked().getUniqueId()), 1);
@@ -63,25 +68,27 @@ public class WandEvents implements Listener {
     }
 
     @EventHandler
+    public void onInventoryEvent(InventoryClickEvent event) {
+        uuidList.add(event.getWhoClicked().getUniqueId());
+        CobaltMagick.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(CobaltMagick.getInstance(), () -> uuidList.remove(event.getWhoClicked().getUniqueId()), 1);
+    }
+
+    @EventHandler
     public void onPlayerDrop(PlayerDropItemEvent event){
-        Player p = event.getPlayer();
-        if (p.isSneaking()) return;
+        Player player = event.getPlayer();
+
+        uuidList.add(player.getUniqueId());
+        CobaltMagick.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(CobaltMagick.getInstance(), () -> uuidList.remove(player.getUniqueId()), 1);
+
+        if (player.isSneaking()) return;
 
         ItemStack is = event.getItemDrop().getItemStack();
         if (is.getType() == Material.AIR) return;
 
         Wand wand = Wand.getWand(is);
-        if (wand == null || uuidList.contains(p.getUniqueId())) return;
+        if (wand == null) return;
 
-        Block b;
-        if (p.getGameMode() == GameMode.CREATIVE) {
-            b = p.getTargetBlockExact(5);
-        } else {
-            b = p.getTargetBlockExact(4);
-        }
-
-        if (b == null) uuidList.add(p.getUniqueId());
-        openWandInventory(wand, p);
+        openWandInventory(wand, player);
         event.setCancelled(true);
     }
 
@@ -91,19 +98,22 @@ public class WandEvents implements Listener {
      */
     @EventHandler
     public void onPlayerUse(PlayerInteractEvent event){
-        Player p = event.getPlayer();
+        Player player = event.getPlayer();
 
-        ItemStack is = p.getInventory().getItemInMainHand();
+        if (player.getOpenInventory().getType() != InventoryType.CRAFTING && player.getOpenInventory().getType() != InventoryType.CREATIVE) return;
+
+        ItemStack is = player.getInventory().getItemInMainHand();
         if (is.getType() == Material.AIR || event.getAction() == Action.PHYSICAL) return;
 
         Wand wand = Wand.getWand(is);
         if (wand == null) return;
-        if (uuidList.contains(p.getUniqueId())) {
-            uuidList.remove(p.getUniqueId());
+        if (uuidList.contains(player.getUniqueId())) {
+            CobaltMagick.getInstance().getLogger().info("!!");
+            uuidList.remove(player.getUniqueId());
             return;
         }
 
-        castSpells(wand, p, event.getAction());
+        castSpells(wand, player, event.getAction());
     }
 
     private void castSpells(Wand wand, Player p, Action action) {
