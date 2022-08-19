@@ -75,11 +75,11 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
     }
 
     @Override
-    public void performPreCast(List<ISpell> wandSpells, int casts, int spellPos) {
-        super.performPreCast(wandSpells, casts, spellPos);
+    public void performPreCast(LivingEntity caster, Wand wand, List<ISpell> wandSpells, int casts, int spellPos) {
+        super.performPreCast(caster, wand, wandSpells, casts, spellPos);
 
         for (TriggerType t : triggerTypes){
-            List<ISpell> spellsToCast = new CastParser(wandSpells, 1, spellPos+1).prepareCast();
+            List<ISpell> spellsToCast = new CastParser(caster, wand.getId(), wandSpells, 1, spellPos+1).prepareCast();
             DelayedSpell trigger = new DelayedSpell(spellsToCast, t);
             this.delayedSpells.add(trigger);
         }
@@ -267,10 +267,12 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
         }
     }
 
+    /*
     @Override
     public ItemStack getSpellItem(){
         return getSpellItem(getLore());
     }
+     */
 
     @Override
     public List<String> getLore() {
