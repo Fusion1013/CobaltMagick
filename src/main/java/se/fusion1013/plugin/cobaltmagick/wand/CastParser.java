@@ -1,5 +1,6 @@
 package se.fusion1013.plugin.cobaltmagick.wand;
 
+import org.bukkit.entity.LivingEntity;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
 import se.fusion1013.plugin.cobaltmagick.spells.ProjectileModifierSpell;
 
@@ -11,26 +12,30 @@ import java.util.List;
  */
 public class CastParser {
 
+    LivingEntity caster;
+    Wand wand;
     List<ISpell> spells;
     List<ISpell> clonedSpells;
     int casts;
     int startPos;
     List<ProjectileModifierSpell> modifierSpells = new ArrayList<>();
 
-    public CastParser(List<ISpell> spells, int casts){
+    public CastParser(LivingEntity caster, int wandId, List<ISpell> spells, int casts){
+        this.caster = caster;
+        this.wand = WandManager.getInstance().getWandFromCache(wandId);
         this.spells = spells;
         this.clonedSpells = cloneSpellList(spells);
         this.casts = casts;
         this.startPos = 0;
     }
 
-    public CastParser(List<ISpell> spells, int casts, int startPos){
-        this(spells, casts);
+    public CastParser(LivingEntity caster, int wandId, List<ISpell> spells, int casts, int startPos){
+        this(caster, wandId, spells, casts);
         this.startPos = startPos;
     }
 
     public CastParser addModifiers(List<ProjectileModifierSpell> modifierSpells){
-        this.modifierSpells = modifierSpells;
+        this.modifierSpells.addAll(modifierSpells);
         return this;
     }
 
@@ -44,28 +49,28 @@ public class CastParser {
 
         for (int i = startPos; i < clonedSpells.size(); i++){
 
-            ISpell cs = clonedSpells.get(i);
+            ISpell clonedSpell = clonedSpells.get(i);
             ISpell actualSpellInstance = spells.get(i);
 
             // Check if the spell is able to be cast
             if (!actualSpellInstance.getHasCast() && castSpells < casts && actualSpellInstance.getCount() > 0){
 
-                if (cs instanceof ProjectileModifierSpell){ // Adds projectile modifiers
-                    modifiers.add((ProjectileModifierSpell) cs);
+                if (clonedSpell instanceof ProjectileModifierSpell){ // Adds projectile modifiers
+                    modifiers.add((ProjectileModifierSpell) clonedSpell);
                 } else {
                     // Apply modifiers
                     for (ProjectileModifierSpell pms : modifiers){
-                        cs = pms.modifySpell(cs);
+                        clonedSpell = pms.modifySpell(clonedSpell);
                         spellsToCast.add(pms);
                     }
                     for (ProjectileModifierSpell pms : this.modifierSpells){
-                        cs = pms.modifySpell(cs);
+                        clonedSpell = pms.modifySpell(clonedSpell);
                         spellsToCast.add(pms);
                     }
                     modifiers.clear();
 
-                    cs.performPreCast(spells, casts, i);
-                    spellsToCast.add(cs);
+                    clonedSpell.performPreCast(caster, wand, spells, casts, i);
+                    spellsToCast.add(clonedSpell);
                     castSpells++;
                 }
 
