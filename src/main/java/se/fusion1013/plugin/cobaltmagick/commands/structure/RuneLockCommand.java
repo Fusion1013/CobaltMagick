@@ -34,15 +34,15 @@ public class RuneLockCommand {
         return new CommandAPICommand("place")
                 .withArguments(new LocationArgument("location", LocationType.BLOCK_POSITION))
                 .withArguments(new StringArgument("item").replaceSuggestions(ArgumentSuggestions.strings(info -> CustomItemManager.getItemNames())))
-                .withArguments(new GreedyStringArgument("door_id").replaceSuggestions(ArgumentSuggestions.strings(info -> WorldManager.getDoorKeys()))) // TODO: Replace with unlockable
+                .withArguments(new GreedyStringArgument("activatable_id").replaceSuggestions(ArgumentSuggestions.strings(info -> WorldManager.getActivatableStrings())))
                 .executes(RuneLockCommand::placeRuneLock);
     }
 
     private static void placeRuneLock(CommandSender sender, Object[] args) {
         Location location = (Location)args[0];
         String item = (String) args[1];
-        Unlockable unlockable = WorldManager.getDoor(UUID.fromString((String)args[2]));
-        WorldManager.registerRuneLock(location, unlockable, item);
+        IActivatable activatable = WorldManager.getActivatable(UUID.fromString((String)args[2]));
+        WorldManager.registerRuneLock(location, activatable, item);
 
         if (sender instanceof Player p) {
             StringPlaceholders placeholders = StringPlaceholders.builder()
