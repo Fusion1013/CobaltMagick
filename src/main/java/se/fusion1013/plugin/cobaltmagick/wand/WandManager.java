@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitTask;
 import se.fusion1013.plugin.cobaltcore.CobaltCore;
 import se.fusion1013.plugin.cobaltcore.database.system.DataManager;
 import se.fusion1013.plugin.cobaltcore.manager.Manager;
@@ -83,7 +84,10 @@ public class WandManager extends Manager implements Runnable {
      */
     private void insertWand(Wand wand) {
         // Set id of wand
-        wand.setId(WAND_CACHE.size());
+        int id = 0;
+        while (WAND_CACHE.get(id) != null) id++;
+
+        wand.setId(id);
 
         // Insert wand into cache
         WAND_CACHE.put(wand.getId(), wand);
@@ -94,17 +98,29 @@ public class WandManager extends Manager implements Runnable {
 
     // ----- WAND RECHARGING -----
 
-    // TODO: Replace with more performant system
+    // TODO: Replace with more performant system (Track wands that are in player inventories using events)
 
     @Override
     public void run() {
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            List<Wand> wandList = findWandsInPlayerInventory(p);
-            boolean rechargeAllowed = true;
-            if (WorldGuardManager.isEnabled()) rechargeAllowed = CustomWorldGuardFlags.isManaRechargeAllowed(p, p.getLocation());
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            List<Wand> wandList = findWandsInPlayerInventory(player);
 
+            // Check if mana recharge is allowed
+            boolean rechargeAllowed = true;
+            if (WorldGuardManager.isEnabled()) rechargeAllowed = CustomWorldGuardFlags.isManaRechargeAllowed(player, player.getLocation());
+
+            // Set mana recharge allowed
             for (Wand wand : wandList) {
                 wand.setRegionAllowsManaRecharge(rechargeAllowed);
+                wand.tick();
+            }
+
+            // Get held wand
+            ItemStack heldItemStack = player.getInventory().getItemInMainHand();
+            Wand heldWand = Wand.getWand(heldItemStack);
+            if (heldWand != null) {
+                heldWand.displayData(player);
+                heldWand.executePassiveSpells();
             }
         }
     }
@@ -137,6 +153,8 @@ public class WandManager extends Manager implements Runnable {
 
     // ----- RELOADING / DISABLING -----
 
+    BukkitTask wandTask;
+
     @Override
     public void reload() {
         // Load wands from database
@@ -146,11 +164,15 @@ public class WandManager extends Manager implements Runnable {
         }
 
         // Schedule wand task
-        Bukkit.getScheduler().runTaskTimerAsynchronously(CobaltMagick.getInstance(), this, 0, 20); // TODO: Track using events instead
+        wandTask = Bukkit.getScheduler().runTaskTimerAsynchronously(CobaltMagick.getInstance(), this, 0, 1); // TODO: Track using events instead
     }
 
     @Override
     public void disable() {
+        if (wandTask != null) {
+            wandTask.cancel();
+        }
+
         CobaltMagick.getInstance().getLogger().info("Saving wands...");
         DataManager.getInstance().getDao(IWandDao.class).updateWandSpellsSync(WAND_CACHE.values().toArray(new Wand[0]));
         // Wand.saveAllWandData();
