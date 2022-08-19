@@ -25,4 +25,16 @@ public class BookConstants { // TODO: Load from json instead
         return bookStack;
     }
 
+    public static ItemStack getDarkBook() {
+        ItemStack bookStack = new ItemStack(Material.WRITTEN_BOOK, 1);
+        BookMeta meta = (BookMeta) bookStack.getItemMeta();
+        meta.setAuthor("???");
+        meta.setGeneration(BookMeta.Generation.TATTERED);
+        meta.setTitle("Alchemist's Notebook");
+        meta.addPages(Component.text("\"The one below listens to my songs...\n\nE C B G# F\n\nG D# G E A\""));
+        meta.setCustomModelData(25);
+        bookStack.setItemMeta(meta);
+        return bookStack;
+    }
+
 }
