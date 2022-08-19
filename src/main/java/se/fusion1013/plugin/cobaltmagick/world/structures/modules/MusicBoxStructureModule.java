@@ -6,7 +6,7 @@ import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltcore.util.StructureUtil;
 import se.fusion1013.plugin.cobaltcore.world.structure.modules.StructureModule;
 import se.fusion1013.plugin.cobaltcore.world.structure.modules.StructureModuleType;
-import se.fusion1013.plugin.cobaltmagick.manager.WorldManager;
+import se.fusion1013.plugin.cobaltmagick.world.WorldManager;
 
 public class MusicBoxStructureModule extends StructureModule {
 
