@@ -10,9 +10,9 @@ import se.fusion1013.plugin.cobaltcore.item.CustomItemManager;
 import se.fusion1013.plugin.cobaltcore.locale.LocaleManager;
 import se.fusion1013.plugin.cobaltcore.util.StringPlaceholders;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
-import se.fusion1013.plugin.cobaltmagick.manager.WorldManager;
+import se.fusion1013.plugin.cobaltmagick.world.WorldManager;
 import se.fusion1013.plugin.cobaltmagick.world.structures.RuneLock;
-import se.fusion1013.plugin.cobaltmagick.world.structures.system.Unlockable;
+import se.fusion1013.plugin.cobaltmagick.world.structures.system.IActivatable;
 
 import java.util.List;
 import java.util.UUID;
