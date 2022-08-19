@@ -14,10 +14,11 @@ import se.fusion1013.plugin.cobaltcore.util.StructureUtil;
 import se.fusion1013.plugin.cobaltcore.world.structure.modules.IStructureModule;
 import se.fusion1013.plugin.cobaltcore.world.structure.modules.StructureModule;
 import se.fusion1013.plugin.cobaltcore.world.structure.modules.StructureModuleType;
-import se.fusion1013.plugin.cobaltmagick.manager.WorldManager;
-import se.fusion1013.plugin.cobaltmagick.world.structures.MagickChest;
-import se.fusion1013.plugin.cobaltmagick.world.structures.MagickStructureManager;
+import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
+import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
+import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MagickChestStructureModule extends StructureModule implements IStructureModule {
@@ -75,12 +76,21 @@ public class MagickChestStructureModule extends StructureModule implements IStru
         if (event instanceof PlayerDropItemEvent dropEvent) {
 
             // Check if the item was dropped within the structure radius
+            /*
             Location corner2 = location.clone().add(new Vector(holder.width, holder.height, holder.depth));
             if (!(location.getX() <= dropEvent.getItemDrop().getLocation().getX() && corner2.getX() >= dropEvent.getItemDrop().getLocation().getX() &&
                     location.getY() <= dropEvent.getItemDrop().getLocation().getY() && corner2.getY() >= dropEvent.getItemDrop().getLocation().getY() &&
                     location.getZ() <= dropEvent.getItemDrop().getLocation().getZ() && corner2.getZ() >= dropEvent.getItemDrop().getLocation().getZ())) {
                 return;
             }
+             */
+
+            if (dropEvent.getItemDrop().getWorld() != location.getWorld()) return;
+
+            /*
+            Location structureCenter = location.clone().add(new Vector(holder.width/2, holder.height/2, holder.depth/2));
+            if (dropEvent.getItemDrop().getLocation().distanceSquared(structureCenter) > (width+5)*(width+5)) return;
+             */
 
             // Check if the correct item was dropped
             ItemStack dropped = dropEvent.getItemDrop().getItemStack();
@@ -92,6 +102,9 @@ public class MagickChestStructureModule extends StructureModule implements IStru
                     for (int z = 0; z < holder.depth; z++) {
                         Location replaceLocation = location.clone().add(new Vector(x, y, z));
                         if (replaceLocation.getBlock().getType() == replaceMaterial) {
+
+                            // Check if the drop event was in range
+                            if (dropEvent.getItemDrop().getLocation().distanceSquared(replaceLocation) > (width+5)*(width+5)) break;
 
                             dropEvent.getItemDrop().remove();
 
@@ -116,6 +129,9 @@ public class MagickChestStructureModule extends StructureModule implements IStru
                             if (title != null) {
                                 dropEvent.getPlayer().sendTitle(ChatColor.GOLD + title, ChatColor.YELLOW + subtitle, 20, 70, 20);
                             }
+
+                            // Cast Water Spell
+                            SpellManager.SPHERE_OF_WATER.clone().castSpell(new Wand(false, 1, 1, 1, 1000, 1000, 1, 0, new ArrayList<>(), 10), null, new Vector(), replaceLocation);
 
                             // TODO: Remove structure from database
 
