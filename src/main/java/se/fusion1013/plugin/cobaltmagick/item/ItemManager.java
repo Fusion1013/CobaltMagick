@@ -447,6 +447,33 @@ public class ItemManager extends Manager implements Listener {
             .addTag("dream_item")
             .build());
 
+    // ----- BOTTLES / GLASSES / FLASKS -----
+
+    @EventHandler
+    public void onBucketFill(PlayerBucketFillEvent event) {
+        ICustomItem[] items = CustomItemManager.getPlayerHeldCustomItem(event.getPlayer());
+
+        for (ICustomItem item : items) {
+            if (item != null) {
+                if (item.compareTo(EMPTY_MARTINI_GLASS.getItemStack())) event.setItemStack(MARTINI_GLASS.getItemStack());
+                if (item.compareTo(EMPTY_DIAMOND_BOTTLE.getItemStack())) event.setItemStack(DIAMOND_BOTTLE.getItemStack());
+                if (item.compareTo(EMPTY_JAR.getItemStack())) event.setItemStack(JAR.getItemStack());
+                if (item.compareTo(EMPTY_ROCKS_GLASS_2.getItemStack())) event.setItemStack(ROCKS_GLASS_2.getItemStack());
+                if (item.compareTo(EMPTY_ROCKS_GLASS.getItemStack())) event.setItemStack(ROCKS_GLASS.getItemStack());
+                if (item.compareTo(EMPTY_PERFUME_BOTTLE.getItemStack())) event.setItemStack(PERFUME_BOTTLE.getItemStack());
+                if (item.compareTo(EMPTY_WINE_GLASS.getItemStack())) event.setItemStack(WINE_GLASS.getItemStack());
+                if (item.compareTo(EMPTY_ROUND_BOTTLE.getItemStack())) event.setItemStack(ROUND_BOTTLE.getItemStack());
+                if (item.compareTo(EMPTY_SHOT_GLASS.getItemStack())) event.setItemStack(SHOT_GLASS.getItemStack());
+                if (item.compareTo(EMPTY_FLASK.getItemStack())) event.setItemStack(FLASK.getItemStack());
+                if (item.compareTo(EMPTY_TRIANGLE_BOTTLE.getItemStack())) event.setItemStack(TRIANGLE_BOTTLE.getItemStack());
+                if (item.compareTo(EMPTY_CHAMPAGNE_GLASS.getItemStack())) event.setItemStack(CHAMPAGNE_GLASS.getItemStack());
+                if (item.compareTo(EMPTY_BOTTLE.getItemStack())) event.setItemStack(BOTTLE.getItemStack());
+                if (item.compareTo(EMPTY_LABELED_BOTTLE.getItemStack())) event.setItemStack(LABELED_BOTTLE.getItemStack());
+                if (item.compareTo(EMPTY_SKULL_BOTTLE.getItemStack())) event.setItemStack(SKULL_BOTTLE.getItemStack());
+            }
+        }
+    }
+
             .build());
 
     // ----- EMPTY BOTTLES / GLASSES / FLASKS -----
