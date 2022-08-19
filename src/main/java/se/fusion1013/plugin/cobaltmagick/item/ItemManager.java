@@ -340,6 +340,8 @@ public class ItemManager extends Manager implements Listener {
             )
             .build());
 
+    public static final CustomItem EXPERIENCE_ORB = CreateExperienceOrb.createExperienceOrb();
+
     // Battleaxe
     public static final CustomItem BATTLEAXE = register(new CustomItem.CustomItemBuilder("battle_axe", Material.NETHERITE_AXE, 1)
             .setCustomName(ChatColor.RESET + "Battle Axe")
