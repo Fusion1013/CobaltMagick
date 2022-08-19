@@ -1,0 +1,56 @@
+package se.fusion1013.plugin.cobaltmagick.item.create;
+
+import org.bukkit.Material;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
+import se.fusion1013.plugin.cobaltcore.item.CustomItem;
+import se.fusion1013.plugin.cobaltcore.item.CustomItemManager;
+import se.fusion1013.plugin.cobaltcore.item.ItemActivator;
+import se.fusion1013.plugin.cobaltcore.util.HexUtils;
+import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
+import se.fusion1013.plugin.cobaltmagick.item.MagickItemCategory;
+
+public class CreateSwords {
+
+    public static void create() {}
+
+    public static CustomItem HEAVY_NETHERITE_MACHETE = CustomItemManager.register(new CustomItem.CustomItemBuilder("heavy_netherite_machete", Material.NETHERITE_SWORD, 1)
+            .setCustomName(HexUtils.colorify("&8Heavy Netherite Machete"))
+            .addItemActivatorSync(ItemActivator.PLAYER_HIT_ENTITY, (iCustomItem, event, equipmentSlot) -> {
+                EntityDamageByEntityEvent entityDamageByEntityEvent = (EntityDamageByEntityEvent) event;
+
+                if (equipmentSlot != EquipmentSlot.HAND) return;
+
+                Entity hitEntity = entityDamageByEntityEvent.getEntity();
+                if (hitEntity instanceof LivingEntity living) {
+                    EntityEquipment equipment = living.getEquipment();
+                    if (equipment == null) return;
+
+                    ItemStack[] armorContent = equipment.getArmorContents();
+                    for (ItemStack item : armorContent) {
+                        if (item == null) continue;
+                        ItemMeta itemMeta = item.getItemMeta();
+                        if (itemMeta instanceof Damageable damageable) {
+                            CobaltMagick.getInstance().getLogger().info("Damage: " + damageable.getDamage());
+                            damageable.setDamage(damageable.getDamage()+1);
+                        }
+                        item.setItemMeta(itemMeta);
+                    }
+                    if (!(equipment instanceof PlayerInventory)) equipment.setArmorContents(armorContent);
+                }
+
+                // TODO: Armor Crunch particle effects
+            })
+            .addLoreLine(HexUtils.colorify("&7Armor Crunch I"))
+            .setCustomModel(11).setItemCategory(MagickItemCategory.TOOL)
+            .build());
+
+}
