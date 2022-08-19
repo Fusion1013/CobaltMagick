@@ -1,8 +1,16 @@
 package se.fusion1013.plugin.cobaltmagick.spells;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import org.apache.commons.io.IOUtils;
 import org.bukkit.*;
-import org.bukkit.entity.EntityType;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Levelled;
+import org.bukkit.entity.*;
+import org.bukkit.entity.minecart.ExplosiveMinecart;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -11,22 +19,31 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltcore.CobaltCore;
+import se.fusion1013.plugin.cobaltcore.item.CustomItemManager;
 import se.fusion1013.plugin.cobaltcore.manager.Manager;
 import se.fusion1013.plugin.cobaltcore.particle.styles.ParticleStyleCube;
 import se.fusion1013.plugin.cobaltcore.particle.styles.ParticleStyleLine;
 import se.fusion1013.plugin.cobaltcore.particle.styles.ParticleStylePoint;
 import se.fusion1013.plugin.cobaltcore.particle.styles.ParticleStyleSphere;
+import se.fusion1013.plugin.cobaltcore.util.FileUtil;
+import se.fusion1013.plugin.cobaltcore.util.shapegenerator.CubeGenerator;
+import se.fusion1013.plugin.cobaltcore.util.shapegenerator.SphereGenerator;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltcore.particle.ParticleGroup;
 import se.fusion1013.plugin.cobaltmagick.spells.movementmodifier.HomingMovementModifier;
 import se.fusion1013.plugin.cobaltmagick.spells.spellmodifiers.AddSpellModuleModifier;
 import se.fusion1013.plugin.cobaltmagick.spells.spellmodifiers.ValueSpellModifier;
 import se.fusion1013.plugin.cobaltmagick.spells.spellmodules.*;
+import se.fusion1013.plugin.cobaltmagick.util.GeometryUtil;
+import se.fusion1013.plugin.cobaltmagick.util.RandomCollection;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
 
 /**
  * Manages all spells.
@@ -50,7 +67,9 @@ public class SpellManager extends Manager {
             .setParticle(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStyleLine.ParticleStyleLineBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setExtra(new Particle.DustTransition(Color.PURPLE, Color.fromRGB(245, 66, 239), 1)).setCount(5).setOffset(new Vector(.1, .1, .1)).setDensity(5).build())
                     .build())
-            .setCustomModel(2)
+            .setCustomModel(100000)
+            .setSpellTiers(0,1,2)
+            .setSpellTierWeights(2, 1, 0.5)
             .build());
 
     public static final Spell BUBBLE_SPARK = register(new ProjectileSpell.ProjectileSpellBuilder(11, "bubble_spark")
@@ -61,7 +80,9 @@ public class SpellManager extends Manager {
             .setParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
                     new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.CLOUD).build()
             ).build())
-            .setCustomModel(3)
+            .setCustomModel(100001)
+            .setSpellTiers(0,1,2,3)
+            .setSpellTierWeights(1, 1, 1, 0.5)
             .build());
 
     public static final Spell BOUNCING_BURST = register(new ProjectileSpell.ProjectileSpellBuilder(12, "bouncing_burst")
@@ -74,7 +95,9 @@ public class SpellManager extends Manager {
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.VILLAGER_HAPPY).setCount(4).setOffset(new Vector(.1, .1, .1)).build())
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.FALLING_SPORE_BLOSSOM).setSpeed(0).setRadius(.3).setDensity(20).animateRadius(0, 10).build())
                     .build())
-            .setCustomModel(4)
+            .setCustomModel(100002)
+            .setSpellTiers(0,1,6)
+            .setSpellTierWeights(1, 1, 1)
             .build());
 
     public static final Spell FIREBOLT = register(new ProjectileSpell.ProjectileSpellBuilder(13, "firebolt")
@@ -87,7 +110,9 @@ public class SpellManager extends Manager {
             .setParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
                     new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.FLAME).setCount(3).setOffset(new Vector(.1, .1, .1)).build()
             ).build())
-            .setCustomModel(5)
+            .setCustomModel(100003)
+            .setSpellTiers(0,1,2,3,4)
+            .setSpellTierWeights(1, 1, 0.5, 0.25, 0.25)
             .build());
 
     public static final Spell BURST_OF_AIR = register(new ProjectileSpell.ProjectileSpellBuilder(14, "burst_of_air")
@@ -97,7 +122,9 @@ public class SpellManager extends Manager {
             .setParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
                     new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.CLOUD).setCount(2).build()
             ).build())
-            .setCustomModel(6)
+            .setCustomModel(100004)
+            .setSpellTiers(1,2)
+            .setSpellTierWeights(1, 1)
             .build());
 
     public static final Spell SPARK_BOLT_WITH_TRIGGER = register(new ProjectileSpell.ProjectileSpellBuilder(15, "spark_bolt_with_trigger")
@@ -108,7 +135,9 @@ public class SpellManager extends Manager {
                     new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setExtra(new Particle.DustTransition(Color.PURPLE, Color.fromRGB(245, 66, 239), 1)).setCount(5).setOffset(new Vector(.1, .1, .1)).build()
             ).build())
             .addTrigger(Spell.TriggerType.COLLISION)
-            .setCustomModel(8)
+            .setCustomModel(100005)
+            .setSpellTiers(0,1,2,3)
+            .setSpellTierWeights(1, 0.5, 0.5, 0.5)
             .build());
 
     public static final Spell SPARK_BOLT_WITH_DOUBLE_TRIGGER = register(new ProjectileSpell.ProjectileSpellBuilder(16, "spark_bolt_with_double_trigger")
@@ -122,7 +151,9 @@ public class SpellManager extends Manager {
             ).build())
             .addTrigger(Spell.TriggerType.COLLISION)
             .addTrigger(Spell.TriggerType.COLLISION)
-            .setCustomModel(22)
+            .setCustomModel(100006)
+            .setSpellTiers(2,3,5,6,10)
+            .setSpellTierWeights(1, 0.5, 1, 1, 0.2)
             .build());
 
     public static final Spell SPARK_BOLT_WITH_TIMER = register(new ProjectileSpell.ProjectileSpellBuilder(17, "spark_bolt_with_timer")
@@ -133,7 +164,9 @@ public class SpellManager extends Manager {
                     new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setExtra(new Particle.DustTransition(Color.PURPLE, Color.fromRGB(245, 66, 239), 1)).setCount(5).setOffset(new Vector(.1, .1, .1)).build()
             ).build())
             .addTrigger(Spell.TriggerType.TIMER)
-            .setCustomModel(23)
+            .setCustomModel(100007)
+            .setSpellTiers(1,2,3)
+            .setSpellTierWeights(0.5, 0.5, 0.5)
             .build());
 
     public static final Spell BLACK_HOLE = register(new ProjectileSpell.ProjectileSpellBuilder(18, "black_hole")
@@ -144,20 +177,24 @@ public class SpellManager extends Manager {
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.SQUID_INK).setRadius(4).setDensity(75).build())
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.CRIT_MAGIC).setRadius(4).setDensity(75).build())
                     .build())
-            .setCustomModel(24)
+            .setCustomModel(100008)
             .setCollidesWithBlocks(false).setCollidesWithEntities(false)
+            .setSpellTiers(0,2,4,5)
+            .setSpellTierWeights(0.8, 0.8, 0.8, 0.8)
             .build());
 
     public static final Spell DIGGING_BLAST = register(new ProjectileSpell.ProjectileSpellBuilder(19, "digging_blast")
             .addManaDrain(0).setRadius(1).setVelocity(.01).setLifetime(.01).addCastDelay(0.02).addRechargeTime(-0.17)
             .addExecuteOnEntityCollision(new DamageModule(3, true))
             .addExecuteOnTick(new ReplaceBlocksModule(Material.AIR, 1, false).setReplaceNonAir().setDropItems())
-            .addDescription("A weak but enchanting sparkling projectile")
+            .addDescription("More powerful digging")
             .setParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
                     new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.END_ROD).setCount(10).setOffset(new Vector(.1, .1, .1)).build())
                     .build())
-            .setCustomModel(25)
+            .setCustomModel(100009)
             .setCollidesWithBlocks(false).setCollidesWithEntities(false)
+            .setSpellTiers(2,3,4)
+            .setSpellTierWeights(0.5, 1, 1)
             .build());
 
     public static final Spell NUKE = register(new ProjectileSpell.ProjectileSpellBuilder(110, "nuke")
@@ -172,7 +209,9 @@ public class SpellManager extends Manager {
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.SMOKE_NORMAL).setRadius(.5).setDensity(10).build())
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.SMOKE_LARGE).setCount(2).setOffset(new Vector(.1, .1, .1)).build())
                     .build())
-            .setCustomModel(28)
+            .setCustomModel(100010)
+            .setSpellTiers(1,5,6,10)
+            .setSpellTierWeights(0.3, 1, 1, 0.2)
             .build());
 
     public static final Spell GIGA_NUKE = register(new ProjectileSpell.ProjectileSpellBuilder(111, "giga_nuke")
@@ -187,7 +226,9 @@ public class SpellManager extends Manager {
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.SMOKE_NORMAL).setRadius(.7).setDensity(20).build())
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.SMOKE_LARGE).setCount(4).setOffset(new Vector(.2, .2, .2)).build())
                     .build())
-            .setCustomModel(29)
+            .setCustomModel(100011)
+            .setSpellTiers(10)
+            .setSpellTierWeights(1)
             .build());
 
     public static final Spell ENERGY_ORB = register(new ProjectileSpell.ProjectileSpellBuilder(112, "energy_orb")
@@ -201,7 +242,9 @@ public class SpellManager extends Manager {
             .setParticle(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setExtra(new Particle.DustTransition(Color.BLUE, Color.SILVER, 1)).setDensity(60).setRadius(.2).animateRadius(0, 5).build()
             ).build())
-            .setCustomModel(35)
+            .setCustomModel(100012)
+            .setSpellTiers(1,2,3,4)
+            .setSpellTierWeights(1, 1, 1, 1)
             .build());
 
     public static final Spell TELEPORT_BOLT = register(new ProjectileSpell.ProjectileSpellBuilder(113, "teleport_bolt")
@@ -216,7 +259,9 @@ public class SpellManager extends Manager {
             .setParticle(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStyleLine.ParticleStyleLineBuilder().setParticle(Particle.END_ROD).setCount(5).setOffset(new Vector(.1, .1, .1)).setDensity(5).build())
                     .build())
-            .setCustomModel(36)
+            .setCustomModel(100013)
+            .setSpellTiers(3,4,5,6,7,8)
+            .setSpellTierWeights(0.6, 0.6, 0.6, 0.4, 0.4, 0.4)
             .build());
 
     public static final Spell RETURN = register(new ProjectileSpell.ProjectileSpellBuilder(114, "return")
@@ -229,7 +274,9 @@ public class SpellManager extends Manager {
             .setParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
                     new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.END_ROD).setCount(1).build()
             ).build())
-            .setCustomModel(37)
+            .setCustomModel(100014)
+            .setSpellTiers(0,1,2,4,5,6)
+            .setSpellTierWeights(0.6, 0.6, 0.6, 0.4, 0.4, 0.4)
             .build());
 
     public static final Spell SWAPPER = register(new ProjectileSpell.ProjectileSpellBuilder(115, "swapper")
@@ -241,7 +288,9 @@ public class SpellManager extends Manager {
             .setParticle(new ParticleGroup.ParticleGroupBuilder().addStyle(
                     new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.END_ROD).setCount(5).setOffset(new Vector(.1, .1, .1)).build()
             ).build())
-            .setCustomModel(38)
+            .setCustomModel(100015)
+            .setSpellTiers(0,1,2,4,5,6)
+            .setSpellTierWeights(0.05, 0.05, 0.05, 0.05, 0.05, 0.05)
             .build());
 
     public static final Spell FIREBALL = register(new ProjectileSpell.ProjectileSpellBuilder(116, "fireball")
@@ -257,17 +306,133 @@ public class SpellManager extends Manager {
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.SMOKE_NORMAL).setRadius(.4).setDensity(8).build())
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.SMOKE_LARGE).setCount(1).setOffset(new Vector(.1, .1, .1)).build())
                     .build())
+            .setCustomModel(100021)
+            .setSpellTiers(0,3,4,6)
+            .setSpellTierWeights(1, 1, 1, 1)
             .build());
 
+    // TODO: Make sure modifiers work on summoned entities
     public static final Spell ARROW = register(new ProjectileSpell.ProjectileSpellBuilder(117, "arrow")
             .addManaDrain(15).setRadius(.2).setVelocity(16).setLifetime(1).addCastDelay(.17).setSpread(.6)
             .addExecuteOnCast(new SoundSpellModule(Sound.ITEM_CROSSBOW_SHOOT, SoundCategory.PLAYERS, false))
-            .addExecuteOnCast(new EntitySpellModule(EntityType.ARROW, false).setKeepSpellVelocity())
+            .addExecuteOnCast(new EntitySpellModule<Arrow>(EntityType.ARROW, false).setKeepSpellVelocity())
             .addDescription("Summons an arrow")
             .setParticle(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.CLOUD).setCount(1).build())
                     .build())
+            .setCustomModel(100016)
+            .setSpellTiers(1,2,4,5)
+            .setSpellTierWeights(1, 1, 1, 1)
             .build());
+
+    // TODO: Make sure modifiers work on summoned entities
+    public static final Spell BOMB = register(new ProjectileSpell.ProjectileSpellBuilder(118, "bomb")
+            .addManaDrain(25).setRadius(.2).setVelocity(19).setLifetime(.5).addCastDelay(1.67).consumeOnUse(3)
+            .addExecuteOnCast(new SoundSpellModule(Sound.ENTITY_TNT_PRIMED, SoundCategory.PLAYERS, false))
+            .addExecuteOnCast(new EntitySpellModule<TNTPrimed>(EntityType.PRIMED_TNT, false).setKeepSpellVelocity())
+            .addDescription("Summons a bomb that destroys ground very efficiently")
+            .setParticle(new ParticleGroup.ParticleGroupBuilder()
+                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.SMOKE_NORMAL).setCount(10).setOffset(new Vector(.3, .3, .3)).build())
+                    .build())
+            .setCustomModel(100017)
+            .setSpellTiers(0,1,2,3,4,5,6)
+            .setSpellTierWeights(1, 1, 1, 1, 1, 1, 1)
+            .build());
+
+    // TODO: Make sure modifiers work on summoned entities
+    public static final Spell BOMB_CART = register(new ProjectileSpell.ProjectileSpellBuilder(119, "bomb_cart")
+            .addManaDrain(75).setRadius(.2).setVelocity(13).setLifetime(.5).addCastDelay(1).consumeOnUse(6)
+            .addExecuteOnCast(new SoundSpellModule(Sound.ENTITY_TNT_PRIMED, SoundCategory.PLAYERS, false))
+            .addExecuteOnCast(new EntitySpellModule<ExplosiveMinecart>(EntityType.MINECART_TNT, false).setKeepSpellVelocity())
+            .addDescription("Summons a self-propeled mine cart loaded with explosives")
+            .setParticle(new ParticleGroup.ParticleGroupBuilder()
+                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.SMOKE_LARGE).setCount(4).setOffset(new Vector(.3, .3, .3)).build())
+                    .build())
+            .setCustomModel(100018)
+            .setSpellTiers(0,1,2,3,4,5,6)
+            .setSpellTierWeights(0, 0, 0.6, 0.6, 0.6, 0.6, 0.6)
+            .build());
+
+    public static final Spell CURSED_SPHERE = register(new ProjectileSpell.ProjectileSpellBuilder(120, "cursed_sphere")
+            .addManaDrain(40).setRadius(.2).setSpread(8.6).setVelocity(1).setLifetime(2).addCastDelay(.33).setIsBouncy(true)
+            .addDescription("A projectile that brings bad luck to anyone it hits")
+            .addExecuteOnTick(new ValueModule(false).setAcceleration(1.2))
+            .addExecuteOnEntityCollision(new DamageModule(15, true))
+            .addExecuteOnEntityCollision(new EffectModule(false).setPotionEffect(new PotionEffect(PotionEffectType.UNLUCK, 9600, 1, false, true)))
+            .addExecuteOnEntityCollision(new MethodSpellModule(true).setRunForTicks(220)
+                    .addOnEntityHit(((wand, caster, spell, entityHit) -> {
+                        // Spawn an angry cloud when the spell hits an entity
+                        if (entityHit.isValid()) {
+                            Random r = new Random();
+                            entityHit.getWorld().spawnParticle(Particle.DUST_COLOR_TRANSITION, entityHit.getLocation().clone().add(new Vector(0, 1+entityHit.getHeight(), 0)), 20, .6, .3, .6, 0, new Particle.DustTransition(Color.RED, Color.ORANGE, 1));
+                            entityHit.getWorld().spawnParticle(Particle.FALLING_DRIPSTONE_LAVA, entityHit.getLocation().clone().add(new Vector(0, 1+entityHit.getHeight(), 0)), 10, .4, .1, .4, 0);
+                            if (r.nextDouble() > .99) {
+                                Vector point = GeometryUtil.getPointInSphere(2);
+                                entityHit.getWorld().spawnEntity(entityHit.getLocation().clone().add(point), EntityType.LIGHTNING);
+                            }
+                        }
+                    })))
+            // Particles
+            .addExecuteOnCast(new ParticleModule(new ParticleGroup.ParticleGroupBuilder()
+                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setCount(1).setRadius(.4).setDensity(100).setSpeed(0).setExtra(new Particle.DustTransition(Color.RED, Color.ORANGE, 1)).build())
+                    .build(), false))
+            .addExecuteOnEntityCollision(new ParticleModule(new ParticleGroup.ParticleGroupBuilder()
+                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setCount(1).setRadius(.4).setDensity(100).setSpeed(0).setExtra(new Particle.DustTransition(Color.RED, Color.ORANGE, 1)).build())
+                    .build(), false))
+            .setParticle(new ParticleGroup.ParticleGroupBuilder()
+                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setCount(10).setOffset(new Vector(.12, .12, .12)).setExtra(new Particle.DustTransition(Color.RED, Color.ORANGE, 2)).build())
+                    .build())
+            // Sounds
+            .addExecuteOnCast(new SoundSpellModule(Sound.BLOCK_BEACON_POWER_SELECT, SoundCategory.PLAYERS, false))
+            .addExecuteOnEntityCollision(new SoundSpellModule(Sound.BLOCK_BEACON_DEACTIVATE, SoundCategory.PLAYERS, false))
+            .setCustomModel(100020)
+            .setSpellTiers(1,2,3)
+            .setSpellTierWeights(0.3, 0.2, 0.1)
+            .build());
+
+    public static final Spell FIREWORKS = register(new ProjectileSpell.ProjectileSpellBuilder(121, "fireworks")
+            .addManaDrain(70).setRadius(.2).setVelocity(18).addCastDelay(1).setLifetime(.15).consumeOnUse(25)
+            .addDescription("A fiery, explosive projectile")
+            // Spawn firework projectile
+            .addExecuteOnCast(new EntitySpellModule<>(Firework.class, SpellManager::editFirework, false).setKeepSpellVelocity().setRandomVelocitySpread(5, 5))
+            .addExecuteOnCast(new EntitySpellModule<>(Firework.class, SpellManager::editFirework, false).setKeepSpellVelocity().setRandomVelocitySpread(5, 5))
+            .addExecuteOnCast(new EntitySpellModule<>(Firework.class, SpellManager::editFirework, false).setKeepSpellVelocity().setRandomVelocitySpread(5, 5))
+            // Sounds
+            .addExecuteOnCast(new SoundSpellModule(Sound.ENTITY_FIREWORK_ROCKET_SHOOT, SoundCategory.PLAYERS, false))
+            .setCustomModel(100019)
+            .setSpellTiers(1,2,3,4,5,6)
+            .setSpellTierWeights(1, 1, 1, 1, 1, 1)
+            .build());
+
+    private static void editFirework(Firework firework) {
+        Random r = new Random();
+        firework.setTicksToDetonate(r.nextInt(20, 40)); // Detonates after 1-2 seconds
+        // Create firework effect
+        FireworkEffect.Builder effect = FireworkEffect.builder();
+        double type = r.nextDouble();
+        if (type < .33) effect.with(FireworkEffect.Type.BALL_LARGE);
+        else if (type < .66) effect.with(FireworkEffect.Type.STAR);
+        else effect.with(FireworkEffect.Type.BURST);
+        // Color
+        int colorIterations = r.nextInt(1, 3);
+        for (int i = 0; i < colorIterations; i++) {
+            float hue = r.nextFloat();
+            java.awt.Color color = java.awt.Color.getHSBColor(hue, 1, 1);
+            effect.withColor(Color.fromRGB(color.getRed(), color.getGreen(), color.getBlue()));
+        }
+        // Extra
+        if (r.nextDouble() > .5) effect.trail(true);
+        if (r.nextDouble() > .5) effect.flicker(true);
+        if (r.nextDouble() > .5) effect.withFade(Color.YELLOW);
+        if (r.nextDouble() > .5) effect.withFade(Color.SILVER);
+        if (r.nextDouble() > .5) effect.withFade(Color.ORANGE);
+        // Add firework effect
+        FireworkMeta meta = firework.getFireworkMeta();
+        meta.addEffect(effect.build());
+        firework.setFireworkMeta(meta);
+        firework.setShotAtAngle(true);
+        // TODO: Set random spread for each firework
+    }
 
     // ----- STATIC PROJECTILE SPELLS ----- ID: 2+XXX
 
@@ -279,7 +444,9 @@ public class SpellManager extends Manager {
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(150).animateRadius(0, 10).build())
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(20).setInSphere().animateRadius(0, 10).build())
                     .build())
-            .setCustomModel(7)
+            .setCustomModel(200000)
+            .setSpellTiers(1,2,3,4)
+            .setSpellTierWeights(0.3, 0.6, 0.6, 0.3)
             .build());
 
     public static final Spell GIGA_BLACK_HOLE = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(21, "giga_black_hole")
@@ -290,8 +457,10 @@ public class SpellManager extends Manager {
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.SQUID_INK).setRadius(8).setDensity(150).animateRadius(0, 40).build())
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.CRIT_MAGIC).setRadius(8).setDensity(150).animateRadius(0, 40).build())
                     .build())
-            .setCustomModel(26)
+            .setCustomModel(200001)
             .setCollidesWithBlocks(false).setCollidesWithEntities(false)
+            .setSpellTiers(5,6,10)
+            .setSpellTierWeights(0.8, 0.8, 0.5)
             .build());
 
     public static final Spell OMEGA_BLACK_HOLE = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(22, "omega_black_hole")
@@ -302,8 +471,10 @@ public class SpellManager extends Manager {
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.SQUID_INK).setRadius(20).setDensity(300).animateRadius(0, 80).build())
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.CRIT_MAGIC).setRadius(20).setDensity(300).animateRadius(0, 80).build())
                     .build())
-            .setCustomModel(27)
+            .setCustomModel(200002)
             .setCollidesWithBlocks(false).setCollidesWithEntities(false)
+            .setSpellTiers(10)
+            .setSpellTierWeights(1)
             .build());
 
     public static final Spell SPHERE_OF_STILLNESS = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(23, "sphere_of_stillness")
@@ -316,19 +487,23 @@ public class SpellManager extends Manager {
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(20).setInSphere().animateRadius(0, 10).build())
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.SNOWFLAKE).setRadius(5).setDensity(10).setInSphere().animateRadius(0, 10).build())
                     .build())
-            .setCustomModel(32)
+            .setCustomModel(200003)
+            .setSpellTiers(0,2,4,5)
+            .setSpellTierWeights(0.3, 0.6, 0.7, 0.3)
             .build());
 
     public static final Spell SPHERE_OF_THUNDER = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(24, "sphere_of_thunder")
             .addManaDrain(60).addCastDelay(.25).setRadius(5).setLifetime(120).consumeOnUse(15)
             .addDescription("A field of electrifying magic")
-            .addExecuteOnTick(new EntitySpellModule(EntityType.LIGHTNING, false).setCooldown(15, 15).setSummonInSphere(5))
+            .addExecuteOnTick(new EntitySpellModule<LightningStrike>(EntityType.LIGHTNING, false).setSummonInSphere(5).setCooldown(15, 15))
             .addParticle(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(150).animateRadius(0, 10).build())
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.TOWN_AURA).setRadius(5).setDensity(20).setInSphere().animateRadius(0, 10).build())
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.ELECTRIC_SPARK).setRadius(5).setDensity(10).setInSphere().animateRadius(0, 10).setSpeed(.2).build())
                     .build())
-            .setCustomModel(33)
+            .setCustomModel(200004)
+            .setSpellTiers(1,3,5,6)
+            .setSpellTierWeights(0.3, 0.6, 0.8, 0.3)
             .build());
 
     public static final Spell SPHERE_OF_VIGOUR = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(25, "sphere_of_vigour")
@@ -342,7 +517,9 @@ public class SpellManager extends Manager {
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setRadius(5).setDensity(5).setInSphere().animateRadius(0, 10).setSpeed(.2).setExtra(new Particle.DustTransition(Color.PURPLE, Color.fromRGB(255,192,203), 1)).build())
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setRadius(5).setDensity(5).setInSphere().animateRadius(0, 10).setSpeed(.2).setExtra(new Particle.DustTransition(Color.GREEN, Color.LIME, 2)).build())
                     .build())
-            .setCustomModel(39)
+            .setCustomModel(200005)
+            .setSpellTiers(1,2,3,4)
+            .setSpellTierWeights(0.3, 0.3, 0.3, 0.3)
             .build());
 
     public static final Spell TEST_SPELL = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(26, "test_spell")
@@ -354,6 +531,21 @@ public class SpellManager extends Manager {
                     .build())
             .build());
 
+    public static final Spell EXPLOSION_OF_BRIMSTONE = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(27, "explosion_of_brimstone")
+            .addManaDrain(10).setRadius(3).addCastDelay(.05).setLifetime(.05)
+            .addExecuteOnCast(new ExplodeModule(true).destroysBlocks().setsFire())
+            .addDescription("A fiery explosion!")
+            .addParticle(new ParticleGroup.ParticleGroupBuilder()
+                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.LAVA).setCount(100).setOffset(new Vector(.3, .3, .3)).setSpeed(1).build())
+                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.FLAME).setCount(60).setSpeed(.5).build())
+                    .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.SMOKE_NORMAL).setRadius(2).setDensity(40).setSpeed(.5).build())
+                    .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.SMOKE_LARGE).setCount(50).setOffset(new Vector(.1, .1, .1)).build())
+                    .build())
+            .setCustomModel(200006)
+            .setSpellTiers(0,1,3,5)
+            .setSpellTierWeights(0.5, 0.5, 0.6, 0.6)
+            .build());
+
     // ----- PASSIVE SPELLS ----- ID: 3+XXX
 
     // ----- UTILITY SPELLS ----- ID: 4+XXX
@@ -362,16 +554,20 @@ public class SpellManager extends Manager {
             .addManaDrain(0).setRadius(2).setVelocity(34).setLifetime(0.01).addCastDelay(-.08)
             .addTrigger(Spell.TriggerType.EXPIRATION).setCollidesWithBlocks(false).setCollidesWithEntities(false)
             .addDescription("Casts a spell some distance away from the caster")
-            .overrideSpellType(Spell.SpellType.UTILITY)
-            .setCustomModel(42)
+            .overrideSpellType(SpellType.UTILITY)
+            .setCustomModel(400000)
+            .setSpellTiers(0,1,2,4,5,6)
+            .setSpellTierWeights(0.6, 0.6, 0.6, 0.6, 0.6, 0.6)
             .build());
 
     public static final Spell WARP_CAST = register(new ProjectileSpell.ProjectileSpellBuilder(42, "warp_cast")
             .addManaDrain(20).setRadius(2).setVelocity(44).setLifetime(0.01).addCastDelay(.17).setSpread(-6)
             .addTrigger(Spell.TriggerType.COLLISIONOREXPIRATION).setCollidesWithEntities(false) // TODO: Replace the trigger thing
             .addDescription("Makes a spell immediately jump a long distance, stopped by walls")
-            .overrideSpellType(Spell.SpellType.UTILITY)
-            .setCustomModel(59)
+            .overrideSpellType(SpellType.UTILITY)
+            .setCustomModel(400001)
+            .setSpellTiers(0,1,2,4,5,6)
+            .setSpellTierWeights(0.2, 0.2, 0.2, 0.6, 0.6, 0.6)
             .build());
 
     public static final Spell ALL_SEEING_EYE = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(43, "all-seeing_eye")
@@ -381,8 +577,10 @@ public class SpellManager extends Manager {
                     .addStyle(new ParticleStyleSphere.ParticleStyleSphereBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setRadius(20).animateRadius(0, 20).setDensity(200).setInSphere().setExtra(new Particle.DustTransition(Color.PURPLE, Color.fromRGB(255,192,203), 1)).build())
                     .build(), false))
             .addDescription("See into the unexplored. But not everywhere...")
-            .overrideSpellType(Spell.SpellType.UTILITY)
-            .setCustomModel(60)
+            .overrideSpellType(SpellType.UTILITY)
+            .setCustomModel(400002)
+            .setSpellTiers(0,1,2,3,4,5,6)
+            .setSpellTierWeights(0.8, 1, 1, 0.8, 0.6, 0.4, 0.2)
             .build());
 
     // ----- PROJECTILE MODIFIER SPELLS ----- ID: 5+XXX
@@ -390,7 +588,9 @@ public class SpellManager extends Manager {
     public static final Spell ADD_MANA = register(new ProjectileModifierSpell.ProjectileModifierSpellBuilder(51, "add_mana")
             .addManaDrain(-30).addCastDelay(.17)
             .addDescription("Immediately adds 30 mana to the wand")
-            .setCustomModel(30)
+            .setCustomModel(500000)
+            .setSpellTiers(1,2,3,4,5,6)
+            .setSpellTierWeights(1, 1, 1, 1, 1, 1)
             .build());
 
     public static final Spell FREEZE_CHARGE = register(new ProjectileModifierSpell.ProjectileModifierSpellBuilder(53, "freeze_charge")
@@ -408,7 +608,9 @@ public class SpellManager extends Manager {
                             .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.SPIT).build())
                             .build(), false)))
             .addDescription("Gives a projectile a frozen charge, that it will release on impact")
-            .setCustomModel(31)
+            .setCustomModel(500001)
+            .setSpellTiers(1,3,4,5)
+            .setSpellTierWeights(1, 1, 1, 1)
             .build());
 
     public static final Spell ELECTRIC_CHARGE = register(new ProjectileModifierSpell.ProjectileModifierSpellBuilder(54, "electric_charge")
@@ -425,28 +627,36 @@ public class SpellManager extends Manager {
                             .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.ELECTRIC_SPARK).build())
                             .build(), false)))
             .addDescription("Gives a projectile a electric charge, that it will release on impact")
-            .setCustomModel(34)
+            .setCustomModel(500002)
+            .setSpellTiers(1,2,4,5)
+            .setSpellTierWeights(1, 1, 1, 1)
             .build());
 
     public static final Spell REDUCE_LIFETIME = register(new ProjectileModifierSpell.ProjectileModifierSpellBuilder(55, "reduce_lifetime")
             .addManaDrain(10).addCastDelay(-.25)
             .addSpellModifier(new ValueSpellModifier().addLifetimeModifier(-1.8))
             .addDescription("Reduces the lifetime of a spell")
-            .setCustomModel(40)
+            .setCustomModel(500003)
+            .setSpellTiers(3,4,5,6,10)
+            .setSpellTierWeights(0.5, 0.5, 0.5, 0.5, 0.1)
             .build());
 
     public static final Spell INCREASE_LIFETIME = register(new ProjectileModifierSpell.ProjectileModifierSpellBuilder(56, "increase_lifetime")
             .addManaDrain(40).addCastDelay(.22)
             .addSpellModifier(new ValueSpellModifier().addLifetimeModifier(2.7))
             .addDescription("Increases the lifetime of a spell")
-            .setCustomModel(41)
+            .setCustomModel(500004)
+            .setSpellTiers(3,4,5,6,10)
+            .setSpellTierWeights(0.5, 0.5, 0.5, 0.5, 0.1)
             .build());
 
     public static final Spell SPEED_UP = register(new ProjectileModifierSpell.ProjectileModifierSpellBuilder(57, "speed_up")
             .addManaDrain(3)
             .addSpellModifier(new ValueSpellModifier().addVelocityMultiplier(2.5))
             .addDescription("Increases the rate at which a projectile flies through the air")
-            .setCustomModel(43)
+            .setCustomModel(500005)
+            .setSpellTiers(1,2,3)
+            .setSpellTierWeights(1, 0.5, 0.5)
             .build());
 
     public static final Spell EXPLOSIVE_PROJECTILE = register(new ProjectileModifierSpell.ProjectileModifierSpellBuilder(58, "explosive_projectile")
@@ -455,18 +665,177 @@ public class SpellManager extends Manager {
             .addSpellModifier(new ValueSpellModifier().addRadiusModifier(1.5))
             .addSpellModifier(new AddSpellModuleModifier().addOnCollision(new ExplodeModule(false).destroysBlocks()))
             .addDescription("Makes a projectile more destructive to the environment")
-            .setCustomModel(44)
+            .setCustomModel(500006)
+            .setSpellTiers(2,3,4)
+            .setSpellTierWeights(1, 1, 1)
             .build());
 
     public static final Spell REDUCE_RECHARGE_TIME = register(new ProjectileModifierSpell.ProjectileModifierSpellBuilder(59, "reduce_recharge_time")
             .addManaDrain(12).addCastDelay(-.17).addRechargeTime(-.33)
             .addDescription("Reduces the time between spellcasts")
-            .setCustomModel(45)
+            .setCustomModel(500007)
+            .setSpellTiers(1,2,3,4,5,6)
+            .setSpellTierWeights(1, 1, 1, 1, 1, 1)
+            .build());
+
+    public static final Spell HEAVY_SPREAD = register(new ProjectileModifierSpell.ProjectileModifierSpellBuilder(510, "heavy_spread")
+            .addManaDrain(2).addCastDelay(-.12).addRechargeTime(-.25)
+            .addDescription("Gives a projectile a much lower cast delay, but no respect for your aim")
+            .addSpellModifier(new ValueSpellModifier().addSpreadModifier(720))
+            .setCustomModel(500008)
+            .setSpellTiers(0,1,2,4,5,6)
+            .setSpellTierWeights(0.8, 0.8, 0.8, 0.8, 0.8, 0.8)
+            .build());
+
+    public static final Spell FIRE_TRAIL = register(new ProjectileModifierSpell.ProjectileModifierSpellBuilder(511, "fire_trail")
+            .addManaDrain(10)
+            .addDescription("Gives a projectile a trail of fiery particles")
+            .addSpellModifier(new AddSpellModuleModifier()
+                    .addOnTick(new TrailSpellModule(new ParticleGroup.ParticleGroupBuilder()
+                            .addStyle(new ParticleStylePoint.ParticleStylePointBuilder()
+                                    .setParticle(Particle.FALLING_LAVA).setCount(5).setOffset(new Vector(.08, .08, .08)).build())
+                            .addStyle(new ParticleStylePoint.ParticleStylePointBuilder()
+                                    .setParticle(Particle.FLAME).setCount(2).setOffset(new Vector(.07, .07, .07)).build())
+                            .build(), false).addDripBlock(Material.FIRE, 5)))
+            .addSpellModifier(new AddSpellModuleModifier()
+                    .addOnEntityCollision(new DamageModule(0, false).setsFire(60)))
+            .setCustomModel(500009)
+            .setSpellTiers(0,1,2,3,4)
+            .setSpellTierWeights(0.3, 0.3, 0.3, 0.3, 0.3)
+            .build());
+
+    public static final Spell RAINBOW_TRAIL = register(new ProjectileModifierSpell.ProjectileModifierSpellBuilder(512, "rainbow_trail")
+            .addManaDrain(0)
+            .addDescription("Gives a projectile a trail of rainbow")
+            .addSpellModifier(new AddSpellModuleModifier()
+                    .addOnTick(new TrailSpellModule(new ParticleGroup.ParticleGroupBuilder()
+                            .addStyle(new ParticleStylePoint.ParticleStylePointBuilder()
+                                    .setParticle(Particle.DUST_COLOR_TRANSITION).setCount(3).setOffset(new Vector(.1, .1, .1)).setExtra(new Particle.DustTransition(Color.BLUE, Color.AQUA, 1)).build())
+                            .addStyle(new ParticleStylePoint.ParticleStylePointBuilder()
+                                    .setParticle(Particle.DUST_COLOR_TRANSITION).setCount(3).setOffset(new Vector(.1, .1, .1)).setExtra(new Particle.DustTransition(Color.AQUA, Color.GREEN, 1)).build())
+                            .addStyle(new ParticleStylePoint.ParticleStylePointBuilder()
+                                    .setParticle(Particle.DUST_COLOR_TRANSITION).setCount(3).setOffset(new Vector(.1, .1, .1)).setExtra(new Particle.DustTransition(Color.GREEN, Color.YELLOW, 1)).build())
+                            .addStyle(new ParticleStylePoint.ParticleStylePointBuilder()
+                                    .setParticle(Particle.DUST_COLOR_TRANSITION).setCount(3).setOffset(new Vector(.1, .1, .1)).setExtra(new Particle.DustTransition(Color.YELLOW, Color.ORANGE, 1)).build())
+                            .addStyle(new ParticleStylePoint.ParticleStylePointBuilder()
+                                    .setParticle(Particle.DUST_COLOR_TRANSITION).setCount(3).setOffset(new Vector(.1, .1, .1)).setExtra(new Particle.DustTransition(Color.ORANGE, Color.RED, 1)).build())
+                            .build(), false)))
+            .setCustomModel(500010)
+            .setSpellTiers(10)
+            .setSpellTierWeights(0)
+            .build());
+
+    public static final Spell WATER_TRAIL = register(new ProjectileModifierSpell.ProjectileModifierSpellBuilder(513, "water_trail")
+            .addManaDrain(10)
+            .addDescription("Gives a projectile a trail of fiery particles")
+            .addSpellModifier(new AddSpellModuleModifier()
+                    .addOnTick(new TrailSpellModule(new ParticleGroup.ParticleGroupBuilder()
+                            .addStyle(new ParticleStylePoint.ParticleStylePointBuilder()
+                                    .setParticle(Particle.FALLING_WATER).setCount(10).setOffset(new Vector(.1, .1, .1)).build())
+                            .build(), false).addDripBlock(Material.WATER, 5)
+                            .addBlockStateEditor(blockData -> {
+                                if (blockData instanceof Levelled levelled) {
+                                    levelled.setLevel(1);
+                                    return levelled;
+                                }
+                                return blockData;
+                            })))
+            .setCustomModel(500011)
+            .setSpellTiers(1,2,3,4)
+            .setSpellTierWeights(0.3, 0.3, 0.3, 0.3)
+            .build());
+
+    public static final Spell BOUNCE = register(new ProjectileModifierSpell.ProjectileModifierSpellBuilder(514, "bounce")
+            .addManaDrain(0)
+            .addDescription("Makes a projectile bounce on impact")
+            .addSpellModifier(new ValueSpellModifier().setIsBouncy(true, new Vector(.99, .99, .99), 10))
+            .setCustomModel(500012)
+            .setSpellTiers(2,3,4,5,6)
+            .setSpellTierWeights(1, 1, 0.4, 0.2, 0.2)
+            .build());
+
+    public static final Spell REMOVE_BOUNCE = register(new ProjectileModifierSpell.ProjectileModifierSpellBuilder(515, "remove_bounce")
+            .addManaDrain(0)
+            .addDescription("A normally bouncy projectile stops doing so")
+            .addSpellModifier(new ValueSpellModifier().setIsBouncy(false, new Vector()))
+            .setCustomModel(500013)
+            .setSpellTiers(2,3,4,5,6)
+            .setSpellTierWeights(0.2, 0.2, 1, 1, 1)
             .build());
 
     // TODO: public static final Spell ROTATE_TOWARDS = register()
 
     // ----- MATERIAL SPELLS ----- ID: 6+XXX
+
+    public static final Spell SEA_OF_WATER = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(60, "sea_of_water")
+            .addManaDrain(140).consumeOnUse(3).setLifetime(.7).addCastDelay(.25)
+            .addDescription("Summons a large body of water below the caster")
+            .addExecuteOnCast(new BlockSpellModule(
+                    new CubeGenerator(21, 8, 21, Material.WATER).setOffset(new Vector(-10, -10, -10))
+                            .whitelistReplaceMaterials(Material.AIR, Material.CAVE_AIR), false)
+            )
+            .overrideSpellType(SpellType.MATERIAL)
+            .setCustomModel(600000)
+            .setSpellTiers(0,4,5,6)
+            .setSpellTierWeights(0.4, 0.4, 0.4, 0.4)
+            .build());
+
+    public static final Spell SPHERE_OF_WATER = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(61, "sphere_of_water")
+            .addManaDrain(20).consumeOnUse(15).setLifetime(3).addCastDelay(.33)
+            .addDescription("An expanding sphere of water")
+            .addExecuteOnTick(new BlockSpellModule(
+                    new SphereGenerator(2, Material.WATER)
+                            .whitelistReplaceMaterials(Material.AIR, Material.CAVE_AIR)
+                            .setExpandOnTick(.2)
+                            .setBlockData(() -> {
+                                BlockData data = Bukkit.createBlockData(Material.WATER);
+                                if (data instanceof Levelled levelled) {
+                                    levelled.setLevel(1);
+                                    return levelled;
+                                }
+                                return data;
+                            }), false)
+            )
+            .overrideSpellType(SpellType.MATERIAL)
+            .setCustomModel(600001)
+            .setSpellTiers(1,2,3,4)
+            .setSpellTierWeights(0.4, 0.4, 0.4, 0.4)
+            .build());
+
+    public static final Spell SPHERE_OF_LAVA = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(62, "sphere_of_lava")
+            .addManaDrain(20).consumeOnUse(15).setLifetime(2).addCastDelay(.33)
+            .addDescription("An expanding sphere of lava")
+            .addExecuteOnTick(new BlockSpellModule(
+                    new SphereGenerator(2, Material.LAVA)
+                            .whitelistReplaceMaterials(Material.AIR, Material.CAVE_AIR)
+                            .setExpandOnTick(.2)
+                            .setBlockData(() -> {
+                                BlockData data = Bukkit.createBlockData(Material.LAVA);
+                                if (data instanceof Levelled levelled) {
+                                    levelled.setLevel(1);
+                                    return levelled;
+                                }
+                                return data;
+                            }), false)
+            )
+            .overrideSpellType(SpellType.MATERIAL)
+            .setCustomModel(600002)
+            .setSpellTiers(1,2,3,4)
+            .setSpellTierWeights(0.4, 0.4, 0.4, 0.4)
+            .build());
+
+    public static final Spell CHUNK_OF_DIRT = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(63, "chunk_of_dirt")
+            .addManaDrain(5).setLifetime(.05)
+            .addDescription("Dirty spell")
+            .addExecuteOnTick(new BlockSpellModule(
+                    new SphereGenerator(3, Material.DIRT)
+                            .whitelistReplaceMaterials(Material.AIR, Material.CAVE_AIR), false)
+            )
+            .overrideSpellType(SpellType.MATERIAL)
+            .setCustomModel(600003)
+            .setSpellTiers(1,2,3,5)
+            .setSpellTierWeights(1, 1, 1, 1)
+            .build());
 
     // ----- MULTICAST SPELLS ----- ID: 7+XXX
 
@@ -474,253 +843,378 @@ public class SpellManager extends Manager {
             .addManaDrain(1)
             .addDescription("Simultaneously casts 2 spells")
             .setNumberSpellsToCast(2)
-            .setCustomModel(9)
+            .setCustomModel(700000)
+            .setSpellTiers(0,1,2,3,4,5,6)
+            .setSpellTierWeights(0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8)
             .build());
 
     public static final Spell TRIPLE_SPELL = register(new MulticastSpell.MulticastSpellBuilder(71, "triple_spell")
             .addManaDrain(2)
             .addDescription("Simultaneously casts 3 spells")
             .setNumberSpellsToCast(3)
-            .setCustomModel(10)
+            .setCustomModel(700001)
+            .setSpellTiers(1,2,3,4,5,6)
+            .setSpellTierWeights(0.7, 0.7, 0.7, 0.7, 0.7, 0.7)
             .build());
 
     public static final Spell QUADRUPLE_SPELL = register(new MulticastSpell.MulticastSpellBuilder(72, "quadruple_spell")
             .addManaDrain(5)
             .addDescription("Simultaneously casts 4 spells")
             .setNumberSpellsToCast(4)
-            .setCustomModel(11)
+            .setCustomModel(700002)
+            .setSpellTiers(2,3,4,5,6)
             .build());
 
     public static final Spell OCTUPLE_SPELL = register(new MulticastSpell.MulticastSpellBuilder(73, "octuple_spell")
             .addManaDrain(30)
             .addDescription("Simultaneously casts 8 spells")
             .setNumberSpellsToCast(8)
-            .setCustomModel(12)
+            .setCustomModel(700003)
+            .setSpellTiers(5,6,10)
+            .setSpellTierWeights(0.6, 0.6, 0.6, 0.6, 0.6)
             .build());
 
     public static final Spell TUPLE_SCATTER_SPELL = register(new MulticastSpell.MulticastSpellBuilder(74, "tuple_scatter_spell")
             .addManaDrain(1)
             .addDescription("Simultaneously casts 2 spells with low accuracy")
             .setNumberSpellsToCast(2)
-            .setCustomModel(13)
+            .setCustomModel(700004)
             .setIncreaseSpread(10)
+            .setSpellTiers(0,1,2)
+            .setSpellTierWeights(0.8, 0.8, 0.8)
             .build());
 
     public static final Spell TRIPLE_SCATTER_SPELL = register(new MulticastSpell.MulticastSpellBuilder(75, "triple_scatter_spell")
             .addManaDrain(2)
             .addDescription("Simultaneously casts 3 spells with low accuracy")
             .setNumberSpellsToCast(3)
-            .setCustomModel(14)
+            .setCustomModel(700005)
             .setIncreaseSpread(20)
+            .setSpellTiers(0,1,2,3)
+            .setSpellTierWeights(0.7, 0.7, 0.7, 0.8)
             .build());
 
     public static final Spell QUADRUPLE_SCATTER_SPELL = register(new MulticastSpell.MulticastSpellBuilder(76, "quadruple_scatter_spell")
             .addManaDrain(2)
             .addDescription("Simultaneously casts 4 spells with low accuracy")
             .setNumberSpellsToCast(4)
-            .setCustomModel(15)
+            .setCustomModel(700006)
             .setIncreaseSpread(40)
+            .setSpellTiers(1,2,3,4,5,6)
+            .setSpellTierWeights(0.6, 0.6, 0.7, 0.8, 0.8, 0.8)
             .build());
 
     public static final Spell BEHIND_YOUR_BACK = register(new MulticastSpell.MulticastSpellBuilder(77, "behind_your_back")
             .addManaDrain(1)
             .addDescription("Casts two spells: one ahead of and one behind the caster")
             .setFormation(MulticastSpell.Formation.BEHIND_BACK)
-            .setCustomModel(16)
+            .setCustomModel(700007)
+            .setSpellTiers(1,2,3,4)
+            .setSpellTierWeights(0.4, 0.4, 0.4, 0.4)
             .build());
 
     public static final Spell ABOVE_AND_BELOW = register(new MulticastSpell.MulticastSpellBuilder(78, "above_and_below")
             .addManaDrain(3)
             .addDescription("Casts 3 spells - ahead, above and below the caster")
             .setFormation(MulticastSpell.Formation.ABOVE_AND_BELOW)
-            .setCustomModel(17)
+            .setCustomModel(700008)
+            .setSpellTiers(1,2,3,4,5)
+            .setSpellTierWeights(0.4, 0.4, 0.4, 0.4, 0.4)
             .build());
 
     public static final Spell PENTAGON = register(new MulticastSpell.MulticastSpellBuilder(79, "pentagon")
             .addManaDrain(5)
             .addDescription("Casts 5 spells in a pentagonal pattern")
             .setFormation(MulticastSpell.Formation.PENTAGON)
-            .setCustomModel(18)
+            .setCustomModel(700009)
+            .setSpellTiers(1,2,3,4,5)
+            .setSpellTierWeights(0.4, 0.4, 0.3, 0.2, 0.1)
             .build());
 
     public static final Spell HEXAGON = register(new MulticastSpell.MulticastSpellBuilder(710, "hexagon")
             .addManaDrain(6)
             .addDescription("Casts 6 spells in a hexagonal pattern")
             .setFormation(MulticastSpell.Formation.HEXAGON)
-            .setCustomModel(19)
+            .setCustomModel(700010)
+            .setSpellTiers(1,2,3,4,5,6)
+            .setSpellTierWeights(0.1, 0.2, 0.3, 0.3, 0.3, 0.3)
             .build());
 
     public static final Spell BIFURCATED = register(new MulticastSpell.MulticastSpellBuilder(711, "bifurcated")
             .addManaDrain(2)
             .addDescription("Casts 2 spells in a bifurcated pattern")
             .setFormation(MulticastSpell.Formation.BIFURCATED)
-            .setCustomModel(20)
+            .setCustomModel(700011)
+            .setSpellTiers(0,1,2,3,4)
+            .setSpellTierWeights(0.8, 0.4, 0.4, 0.4, 0.4)
             .build());
 
     public static final Spell TRIFURCATED = register(new MulticastSpell.MulticastSpellBuilder(712, "trifurcated")
             .addManaDrain(3)
             .addDescription("Casts 3 spells in a trifurcated pattern")
             .setFormation(MulticastSpell.Formation.TRIFURCATED)
-            .setCustomModel(21)
+            .setCustomModel(700012)
+            .setSpellTiers(2,3,4,5,6)
+            .setSpellTierWeights(0.4, 0.3, 0.3, 0.3, 0.3)
             .build());
 
     // ----- OTHER SPELLS ----- ID: 8+XXX
 
     public static final Spell OCARINA_A = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(81, "ocarina_note_a")
             .addManaDrain(1).setLifetime(2).addCastDelay(.25)
-            .overrideSpellType(Spell.SpellType.OTHER)
+            .overrideSpellType(SpellType.OTHER)
             .addExecuteOnCast(new SoundSpellModule(Instrument.FLUTE, Note.flat(0, Note.Tone.A), false))
             //.addExecuteOnCast(new SoundSpellModule(Sound.BLOCK_NOTE_BLOCK_FLUTE, SoundCategory.PLAYERS, false).setPitch((float)Math.pow(2, 3f/12f)))
             .addExecuteOnCast(new ParticleModule(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.NOTE).build())
                     .build(), false))
             .addDescription("Music for your ears!")
-            .setCustomModel(46)
+            .setCustomModel(800000)
+            .setSpellTiers(10)
+            .setSpellTierWeights(0)
             .addTag("note")
             .build());
 
     public static final Spell OCARINA_B = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(82, "ocarina_note_b")
             .addManaDrain(1).setLifetime(2).addCastDelay(.25)
-            .overrideSpellType(Spell.SpellType.OTHER)
+            .overrideSpellType(SpellType.OTHER)
             .addExecuteOnCast(new SoundSpellModule(Instrument.FLUTE, Note.flat(0, Note.Tone.B), false))
             .addExecuteOnCast(new ParticleModule(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.NOTE).build())
                     .build(), false))
             .addDescription("Music for your ears!")
-            .setCustomModel(47)
+            .setCustomModel(800001)
+            .setSpellTiers(10)
+            .setSpellTierWeights(0)
             .addTag("note")
             .build());
 
     public static final Spell OCARINA_C = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(83, "ocarina_note_c")
             .addManaDrain(1).setLifetime(2).addCastDelay(.25)
-            .overrideSpellType(Spell.SpellType.OTHER)
+            .overrideSpellType(SpellType.OTHER)
             .addExecuteOnCast(new SoundSpellModule(Instrument.FLUTE, Note.flat(0, Note.Tone.C), false))
             .addExecuteOnCast(new ParticleModule(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.NOTE).build())
                     .build(), false))
             .addDescription("Music for your ears!")
-            .setCustomModel(48)
+            .setCustomModel(800002)
+            .setSpellTiers(10)
+            .setSpellTierWeights(0)
             .addTag("note")
             .build());
 
     public static final Spell OCARINA_D = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(84, "ocarina_note_d")
             .addManaDrain(1).setLifetime(2).addCastDelay(.25)
-            .overrideSpellType(Spell.SpellType.OTHER)
+            .overrideSpellType(SpellType.OTHER)
             .addExecuteOnCast(new SoundSpellModule(Instrument.FLUTE, Note.flat(0, Note.Tone.D), false))
             .addExecuteOnCast(new ParticleModule(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.NOTE).build())
                     .build(), false))
             .addDescription("Music for your ears!")
-            .setCustomModel(49)
+            .setCustomModel(800003)
+            .setSpellTiers(10)
+            .setSpellTierWeights(0)
             .addTag("note")
             .build());
 
     public static final Spell OCARINA_E = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(85, "ocarina_note_e")
             .addManaDrain(1).setLifetime(2).addCastDelay(.25)
-            .overrideSpellType(Spell.SpellType.OTHER)
+            .overrideSpellType(SpellType.OTHER)
             .addExecuteOnCast(new SoundSpellModule(Instrument.FLUTE, Note.flat(0, Note.Tone.E), false))
             .addExecuteOnCast(new ParticleModule(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.NOTE).build())
                     .build(), false))
             .addDescription("Music for your ears!")
-            .setCustomModel(50)
+            .setCustomModel(800004)
+            .setSpellTiers(10)
+            .setSpellTierWeights(0)
             .addTag("note")
             .build());
 
     public static final Spell OCARINA_F = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(86, "ocarina_note_f")
             .addManaDrain(1).setLifetime(2).addCastDelay(.25)
-            .overrideSpellType(Spell.SpellType.OTHER)
+            .overrideSpellType(SpellType.OTHER)
             .addExecuteOnCast(new SoundSpellModule(Instrument.FLUTE, Note.flat(0, Note.Tone.F), false))
             .addExecuteOnCast(new ParticleModule(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.NOTE).build())
                     .build(), false))
             .addDescription("Music for your ears!")
-            .setCustomModel(51)
+            .setCustomModel(800005)
+            .setSpellTiers(10)
+            .setSpellTierWeights(0)
             .addTag("note")
             .build());
 
-    public static final Spell OCARINA_G_SHARP = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(87, "ocarina_note_g#")
+    public static final Spell OCARINA_G_SHARP = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(87, "ocarina_note_g_sharp")
+            .overrideSpellName("Ocarina Note G#")
             .addManaDrain(1).setLifetime(2).addCastDelay(.25)
-            .overrideSpellType(Spell.SpellType.OTHER)
+            .overrideSpellType(SpellType.OTHER)
             .addExecuteOnCast(new SoundSpellModule(Instrument.FLUTE, Note.sharp(0, Note.Tone.G), false))
             .addExecuteOnCast(new ParticleModule(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.NOTE).build())
                     .build(), false))
             .addDescription("Music for your ears!")
-            .setCustomModel(52)
+            .setCustomModel(800006)
+            .setSpellTiers(10)
+            .setSpellTierWeights(0)
             .addTag("note")
             .build());
 
     public static final Spell OCARINA_A_TWO = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(88, "ocarina_note_a2")
             .addManaDrain(1).setLifetime(2).addCastDelay(.25)
-            .overrideSpellType(Spell.SpellType.OTHER)
+            .overrideSpellType(SpellType.OTHER)
             .addExecuteOnCast(new SoundSpellModule(Instrument.FLUTE, Note.flat(1, Note.Tone.A), false))
             .addExecuteOnCast(new ParticleModule(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.NOTE).build())
                     .build(), false))
             .addDescription("Music for your ears!")
-            .setCustomModel(53)
+            .setCustomModel(800007)
+            .setSpellTiers(10)
+            .setSpellTierWeights(0)
             .addTag("note")
             .build());
 
     public static final Spell KANTELE_A = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(89, "kantele_note_a")
             .addManaDrain(1).setLifetime(2).addCastDelay(.25)
-            .overrideSpellType(Spell.SpellType.OTHER)
+            .overrideSpellType(SpellType.OTHER)
             .addExecuteOnCast(new SoundSpellModule(Instrument.GUITAR, Note.flat(1, Note.Tone.A), false))
             .addExecuteOnCast(new ParticleModule(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.NOTE).build())
                     .build(), false))
             .addDescription("Music for your ears!")
-            .setCustomModel(54)
+            .setCustomModel(800008)
+            .setSpellTiers(10)
+            .setSpellTierWeights(0)
             .addTag("note")
             .build());
 
     public static final Spell KANTELE_D = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(810, "kantele_note_d")
             .addManaDrain(1).setLifetime(2).addCastDelay(.25)
-            .overrideSpellType(Spell.SpellType.OTHER)
+            .overrideSpellType(SpellType.OTHER)
             .addExecuteOnCast(new SoundSpellModule(Instrument.GUITAR, Note.flat(1, Note.Tone.D), false))
             .addExecuteOnCast(new ParticleModule(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.NOTE).build())
                     .build(), false))
             .addDescription("Music for your ears!")
-            .setCustomModel(55)
+            .setCustomModel(800009)
+            .setSpellTiers(10)
+            .setSpellTierWeights(0)
             .addTag("note")
             .build());
 
-    public static final Spell KANTELE_D_SHARP = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(811, "kantele_note_d#")
+    public static final Spell KANTELE_D_SHARP = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(811, "kantele_note_d_sharp")
+            .overrideSpellName("Ocarina Note D#")
             .addManaDrain(1).setLifetime(2).addCastDelay(.25)
-            .overrideSpellType(Spell.SpellType.OTHER)
+            .overrideSpellType(SpellType.OTHER)
             .addExecuteOnCast(new SoundSpellModule(Instrument.GUITAR, Note.sharp(1, Note.Tone.D), false))
             .addExecuteOnCast(new ParticleModule(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.NOTE).build())
                     .build(), false))
             .addDescription("Music for your ears!")
-            .setCustomModel(56)
+            .setCustomModel(800010)
+            .setSpellTiers(10)
+            .setSpellTierWeights(0)
             .addTag("note")
             .build());
 
     public static final Spell KANTELE_E = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(812, "kantele_note_e")
             .addManaDrain(1).setLifetime(2).addCastDelay(.25)
-            .overrideSpellType(Spell.SpellType.OTHER)
+            .overrideSpellType(SpellType.OTHER)
             .addExecuteOnCast(new SoundSpellModule(Instrument.GUITAR, Note.flat(1, Note.Tone.E), false))
             .addExecuteOnCast(new ParticleModule(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.NOTE).build())
                     .build(), false))
             .addDescription("Music for your ears!")
-            .setCustomModel(57)
+            .setCustomModel(800011)
+            .setSpellTiers(10)
+            .setSpellTierWeights(0)
             .addTag("note")
             .build());
 
     public static final Spell KANTELE_G = register(new StaticProjectileSpell.StaticProjectileSpellBuilder(813, "kantele_note_g")
             .addManaDrain(1).setLifetime(2).addCastDelay(.25)
-            .overrideSpellType(Spell.SpellType.OTHER)
+            .overrideSpellType(SpellType.OTHER)
             .addExecuteOnCast(new SoundSpellModule(Instrument.GUITAR, Note.flat(1, Note.Tone.G), false))
             .addExecuteOnCast(new ParticleModule(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStylePoint.ParticleStylePointBuilder().setParticle(Particle.NOTE).build())
                     .build(), false))
             .addDescription("Music for your ears!")
-            .setCustomModel(58)
+            .setCustomModel(800012)
+            .setSpellTiers(10)
+            .setSpellTierWeights(0)
             .addTag("note")
+            .build());
+
+    public static final Spell ALPHA = register(new InstantSpell.InstantSpellBuilder(814, "alpha", InstantSpell.CastMethod.ALPHA)
+            .addManaDrain(30).addCastDelay(.25)
+            .addDescription("Casts a copy of the first spell in your wand")
+            .setCustomModel(800013)
+            .setSpellTiers(5,6,10)
+            .setSpellTierWeights(0.1, 0.1, 1)
+            .build());
+
+    public static final Spell GAMMA = register(new InstantSpell.InstantSpellBuilder(815, "gamma", InstantSpell.CastMethod.GAMMA)
+            .addManaDrain(30).addCastDelay(.25)
+            .addDescription("Casts a copy of the last spell in your wand")
+            .setCustomModel(800014)
+            .setSpellTiers(5,6,10)
+            .setSpellTierWeights(0.1, 0.1, 1)
+            .build());
+
+    public static final Spell MU = register(new InstantSpell.InstantSpellBuilder(816, "mu", InstantSpell.CastMethod.MU)
+            .addManaDrain(120).addCastDelay(.83)
+            .addDescription("Every modifier-type spell in the current wand is applied to a projectile")
+            .setCustomModel(800015)
+            .setSpellTiers(5,6,10)
+            .setSpellTierWeights(0.1, 0.1, 1)
+            .build());
+
+    public static final Spell OMEGA = register(new InstantSpell.InstantSpellBuilder(817, "omega", InstantSpell.CastMethod.OMEGA)
+            .addManaDrain(300).addCastDelay(.83)
+            .addDescription("Casts copies of every spell in your wand")
+            .setCustomModel(800016)
+            .setSpellTiers(5,6,10)
+            .setSpellTierWeights(0.1, 0.1, 1)
+            .build());
+
+    public static final Spell PHI = register(new InstantSpell.InstantSpellBuilder(818, "phi", InstantSpell.CastMethod.PHI)
+            .addManaDrain(120).addCastDelay(.83)
+            .addDescription("Casts a copy of every projectile-type spell in the current wand")
+            .setCustomModel(800017)
+            .setSpellTiers(5,6,10)
+            .setSpellTierWeights(0.1, 0.1, 1)
+            .build());
+
+    public static final Spell SIGMA = register(new InstantSpell.InstantSpellBuilder(819, "sigma", InstantSpell.CastMethod.SIGMA)
+            .addManaDrain(120).addCastDelay(.5)
+            .addDescription("Copies every static projectile-type spell in the wand when cast")
+            .setCustomModel(800018)
+            .setSpellTiers(4,5,10)
+            .setSpellTierWeights(0.1, 0.1, 1)
+            .build());
+
+    public static final Spell TAU = register(new InstantSpell.InstantSpellBuilder(820, "tau", InstantSpell.CastMethod.TAU)
+            .addManaDrain(80).addCastDelay(.58)
+            .addDescription("Copies the two following spells in the wand when cast")
+            .setCustomModel(800019)
+            .setSpellTiers(5,6,10)
+            .setSpellTierWeights(0.1, 0.1, 1)
+            .build());
+
+    public static final Spell ZETA = register(new InstantSpell.InstantSpellBuilder(821, "zeta", InstantSpell.CastMethod.ZETA)
+            .addManaDrain(10)
+            .addDescription("Copies a random spell in another wand you're carrying")
+            .setCustomModel(800020)
+            .setSpellTiers(1,2,3,10)
+            .setSpellTierWeights(0.2, 0.8, 0.6, 0.1)
+            .build());
+
+    public static final Spell RANDOM_SPELL = register(new InstantSpell.InstantSpellBuilder(822, "random_spell", InstantSpell.CastMethod.RANDOM_ANY)
+            .addManaDrain(5)
+            .addDescription("Casts a spell, any spell, at random!")
+            .setCustomModel(800021)
+            .setSpellTiers(3,4,5,6,10)
+            .setSpellTierWeights(0.2, 0.3, 0.1, 0.1, 0.5)
             .build());
 
     // ----- CUSTOM SPELLS ----- ID: 9+XXX // TODO: Make a spell type and make it not appear in cgive list
@@ -892,9 +1386,148 @@ public class SpellManager extends Manager {
         return nSpells;
     }
 
+    // ----- SPELL JSON PARSING -----
+
+    private static void loadSpellsFromJson() {
+        String[] spellFileNames = FileUtil.getResources(CobaltMagick.class, "spells");
+        for (String s : spellFileNames) {
+            File fileToDelete = FileUtil.getOrCreateFileFromResource(CobaltMagick.getInstance(), "spells/" + s);
+            if (fileToDelete.exists()) fileToDelete.delete();
+
+            loadSpell(FileUtil.getOrCreateFileFromResource(CobaltMagick.getInstance(), "spells/" + s));
+        }
+    }
+
+    private static void loadSpell(File file) {
+        CobaltMagick.getInstance().getLogger().info("Loading spell " + file.getAbsolutePath() + " from file...");
+
+        if (!file.exists()) return;
+
+        try (
+                InputStream is = new FileInputStream(file.getPath());
+                Reader reader = Files.newBufferedReader(Paths.get(file.getPath()))
+        ) {
+            // Create gson instance
+            Gson gson = new Gson();
+
+            // Convert JSON file to a map
+            Map<?, ?> jsonMap = gson.fromJson(reader, Map.class);
+
+            // Print map entries
+            for (Map.Entry<?, ?> entry : jsonMap.entrySet()) {
+                CobaltMagick.getInstance().getLogger().info(entry.getKey() + "=" + entry.getValue());
+            }
+
+            String jsonText = IOUtils.toString(is, "UTF-8");
+            // Convert JSON file to JSONObject
+            JsonObject rootObject = new Gson().fromJson(jsonText, JsonObject.class);
+
+            // Load basic spell information // TODO: Move to abstract spell class
+
+            int id = rootObject.get("id").getAsInt();
+            String spellType = rootObject.get("spell_type").getAsString();
+            String internalSpellName = rootObject.get("spell_name").getAsString();
+            String description = rootObject.get("description").getAsString();
+            int customModel = rootObject.get("custom_model").getAsInt();
+
+            // Create the spell builder
+            Spell.SpellBuilder<?, ?> builder;
+            switch (spellType) {
+                case "projectile" -> {
+                    builder = new ProjectileSpell.ProjectileSpellBuilder(id, internalSpellName);
+
+                    // Set projectile specific stats
+                    double velocity = rootObject.get("velocity").getAsDouble();
+                    double lifetime = rootObject.get("lifetime").getAsDouble();
+                    double spread = rootObject.get("spread").getAsDouble();
+                    ((ProjectileSpell.ProjectileSpellBuilder) builder)
+                            .setVelocity(velocity)
+                            .setLifetime(lifetime)
+                            .setSpread(spread);
+                }
+                case "static_projectile" -> builder = new StaticProjectileSpell.StaticProjectileSpellBuilder(id, internalSpellName);
+                case "projectile_modifier" -> {
+                    builder = new ProjectileModifierSpell.ProjectileModifierSpellBuilder(id, internalSpellName);
+                }
+                default -> builder = new ProjectileSpell.ProjectileSpellBuilder(id, internalSpellName);
+            }
+
+            // Cosmetic settings
+            if (description != null) builder.addDescription(description);
+            builder.setCustomModel(customModel);
+
+            // Generic spell settings
+            int manaDrain = rootObject.get("mana_drain").getAsInt();
+            double radius = rootObject.get("radius").getAsDouble();
+            double castDelay = rootObject.get("cast_delay").getAsDouble();
+
+            // Spell tiers
+            JsonArray spellTiers = rootObject.get("spell_tiers").getAsJsonArray();
+            int[] spellTiersArray = new int[spellTiers.size()];
+            for (int i = 0; i < spellTiers.size(); i++) spellTiersArray[i] = spellTiers.get(i).getAsInt();
+            builder.setSpellTiers(spellTiersArray);
+
+            builder.addManaDrain(manaDrain);
+            builder.setRadius(radius);
+            builder.addCastDelay(castDelay);
+
+            // Register spell
+            register(builder.build());
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
     // ----- GETTERS / SETTERS -----
 
-    public static ISpell[] getSpellsOfType(Spell.SpellType type) {
+    /**
+     * Gets a <code>RandomCollection</code> of <code>ISpell</code>'s with the given spell tier.
+     *
+     * @param spellTier the tier of the spells to get.
+     * @return a <code>RandomCollection</code>.
+     */
+    public static RandomCollection<ISpell> getWeightedSpellCollection(int spellTier) {
+        RandomCollection<ISpell> randomCollection = new RandomCollection<>();
+        for (ISpell spell : INBUILT_SPELLS.values()) {
+            for (int i = 0; i < spell.getSpellTiers().length; i++) {
+                int currentTier = spell.getSpellTiers()[i];
+                if (spell.getSpellTierWeights().length > i && currentTier == spellTier) {
+                    double weight = spell.getSpellTierWeights()[i];
+
+                    if (weight != 0) randomCollection.add(weight, spell);
+                } else {
+                    randomCollection.add(1, spell);
+                }
+            }
+        }
+
+        return randomCollection;
+    }
+
+    /**
+     * Gets an array of all <code>ISpell</code>'s of the specified tier.
+     *
+     * @param spellTier the tier to get the <code>ISpell</code>'s of.
+     * @return an array of <code>ISpell</code>'s.
+     */
+    public static ISpell[] getSpellsOfTier(int spellTier) {
+        List<ISpell> spellsOfTier = new ArrayList<>();
+        for (ISpell spell : INBUILT_SPELLS.values()) {
+            for (int i : spell.getSpellTiers()) {
+                if (i == spellTier) spellsOfTier.add(spell.clone());
+            }
+        }
+        return spellsOfTier.toArray(new ISpell[0]);
+    }
+
+    /**
+     * Gets an array of all <code>ISpell</code>'s of the specified type.
+     *
+     * @param type the type to get the <code>ISpell</code>'s of.
+     * @return an array of <code>ISpell</code>'s.
+     */
+    public static ISpell[] getSpellsOfType(SpellType type) {
         List<ISpell> spellsOfType = new ArrayList<>();
         for (ISpell spell : INBUILT_SPELLS.values()) {
             if (spell.getSpellType() == type) spellsOfType.add(spell.clone());
@@ -908,10 +1541,10 @@ public class SpellManager extends Manager {
      * @return a list of all spell type names.
      */
     public static String[] getTypeNames() {
-        Spell.SpellType[] types = Spell.SpellType.values();
+        SpellType[] types = SpellType.values();
         String[] typeNames = new String[types.length];
         for (int i = 0; i < types.length; i++){
-            Spell.SpellType type = types[i];
+            SpellType type = types[i];
             typeNames[i] = type.toString().toLowerCase();
         }
         return typeNames;
@@ -1014,6 +1647,11 @@ public class SpellManager extends Manager {
 
     @Override
     public void reload() {
+        // Load spells from json
+        // TODO: loadSpellsFromJson();
+
+        // Register all spell items as custom items
+        for (ISpell spell : getAllSpells()) CustomItemManager.register(spell.getSpellCustomItem());
     }
 
     @Override
