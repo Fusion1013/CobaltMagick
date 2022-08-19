@@ -56,12 +56,16 @@ public class ProjectileModifierSpell extends Spell implements Cloneable {
             for (ISpellModifier sm : spellModifiers) sm.modifyStaticProjectileSpell(staticProjectileSpell);
         }
 
+        if (spellToModify instanceof InstantSpell instantSpell) {
+            instantSpell.addModifier(this);
+        }
+
         return spellToModify;
     }
 
     @Override
-    public void performPreCast(List<ISpell> wandSpells, int casts, int spellPos) {
-        super.performPreCast(wandSpells, casts, spellPos);
+    public void performPreCast(LivingEntity caster, Wand wand, List<ISpell> wandSpells, int casts, int spellPos) {
+        super.performPreCast(caster, wand, wandSpells, casts, spellPos);
     }
 
     @Override
@@ -82,7 +86,7 @@ public class ProjectileModifierSpell extends Spell implements Cloneable {
     }
 
     @Override
-    public Spell clone() {
+    public ProjectileModifierSpell clone() {
         return new ProjectileModifierSpell(this);
     }
 
