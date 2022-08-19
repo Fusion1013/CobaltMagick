@@ -1,5 +1,10 @@
 package se.fusion1013.plugin.cobaltmagick.item;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
@@ -9,22 +14,21 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerInteractAtEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.*;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.inventory.meta.CompassMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionType;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltcore.CobaltCore;
 import se.fusion1013.plugin.cobaltcore.item.*;
@@ -32,11 +36,15 @@ import se.fusion1013.plugin.cobaltcore.manager.Manager;
 import se.fusion1013.plugin.cobaltcore.util.HexUtils;
 import se.fusion1013.plugin.cobaltcore.util.PlayerUtil;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
-import se.fusion1013.plugin.cobaltmagick.item.brewing.BrewingRecipe;
-import se.fusion1013.plugin.cobaltmagick.item.create.ShinyOrb;
+import se.fusion1013.plugin.cobaltmagick.item.create.*;
 import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
+import se.fusion1013.plugin.cobaltmagick.util.constants.ItemConstants;
 import se.fusion1013.plugin.cobaltmagick.util.constants.MerchantRecipeConstants;
+import se.fusion1013.plugin.cobaltmagick.world.structures.MagickStructureManager;
 
+import javax.naming.Name;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static se.fusion1013.plugin.cobaltcore.item.CustomItemManager.register;
@@ -58,14 +66,14 @@ public class ItemManager extends Manager implements Listener {
     public static final CustomItem BROKEN_SPELL = register(new CustomItem.CustomItemBuilder("broken_spell", Material.CLOCK, 1)
             .setCustomName(ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "Broken Spell")
             .addLoreLine("A malfunctioning spell")
-            .setCustomModel(61)
+            .setCustomModel(61).setItemCategory(MagickItemCategory.SPELL)
             .build());
 
     public static final CustomItem BROKEN_WAND = register(new CustomItem.CustomItemBuilder("broken_wand", Material.EMERALD, 1)
             .setCustomName(ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "Broken Wand")
             .addLoreLine("This wand has snapped in half")
             .addLoreLine("but it still crackles with magical energy")
-            .setCustomModel(15)
+            .setCustomModel(15).setItemCategory(MagickItemCategory.WAND)
             .build());
 
     public static final CustomItem INVISIBLE_ITEM_FRAME = register(new CustomItem.CustomItemBuilder("invisible_item_frame", Material.ITEM_FRAME, 1)
@@ -116,7 +124,7 @@ public class ItemManager extends Manager implements Listener {
                     new AbstractCustomItem.ShapedIngredient('*', new ItemStack(Material.GLOWSTONE_DUST)))
             .build());
 
-    public static final CustomItem SHINY_ORB = ShinyOrb.create();
+    public static final CustomItem SHINY_ORB = CreateShinyOrb.create();
 
     // ----- COINS -----
 
@@ -135,31 +143,32 @@ public class ItemManager extends Manager implements Listener {
     // ----- MATERIALS -----
 
     public static final CustomItem ECHO_INGOT = register(new CustomItem.CustomItemBuilder("echo_ingot", Material.EMERALD, 1)
-            .setCustomName(HexUtils.colorify("&rEcho Ingot")).setCustomModel(40).build());
+            .setCustomName(HexUtils.colorify("&rEcho Ingot")).setCustomModel(40).setItemCategory(MagickItemCategory.MATERIAL).addTag("dream_item").build());
 
     public static final CustomItem CRYSTAL_LENS = register(new CustomItem.CustomItemBuilder("crystal_lens", Material.EMERALD, 1)
-            .setCustomName(HexUtils.colorify("&5Crystal Lens")).addLoreLine(HexUtils.colorify("&dLight shifts and distorts")).setCustomModel(4).build());
+            .setCustomName(HexUtils.colorify("&5Crystal Lens")).addLoreLine(HexUtils.colorify("&dLight shifts and distorts")).setCustomModel(4).setItemCategory(MagickItemCategory.MATERIAL).build());
 
     public static final CustomItem DRAGONSTONE = register(new CustomItem.CustomItemBuilder("dragonstone", Material.EMERALD, 1)
-            .setCustomName(HexUtils.colorify("&dDragonstone")).setCustomModel(5).build());
+            .setCustomName(HexUtils.colorify("&dDragonstone")).setCustomModel(5).setItemCategory(MagickItemCategory.MATERIAL).build());
 
     public static final CustomItem MANA_DIAMOND = register(new CustomItem.CustomItemBuilder("mana_diamond", Material.EMERALD, 1)
-            .setCustomName(HexUtils.colorify("&fMana Diamond")).setCustomModel(6).build());
+            .setCustomName(HexUtils.colorify("&fMana Diamond")).setCustomModel(6).setItemCategory(MagickItemCategory.MATERIAL).build());
 
     public static final CustomItem MANA_PEARL = register(new CustomItem.CustomItemBuilder("mana_pearl", Material.EMERALD, 1)
-            .setCustomName(HexUtils.colorify("&fMana Pearl")).setCustomModel(7).build());
+            .setCustomName(HexUtils.colorify("&fMana Pearl")).setCustomModel(7).setItemCategory(MagickItemCategory.MATERIAL).build());
 
     public static final CustomItem MANA_POWDER = register(new CustomItem.CustomItemBuilder("mana_powder", Material.EMERALD, 1)
-            .setCustomName(HexUtils.colorify("&fMana Powder")).setCustomModel(8).build());
+            .setCustomName(HexUtils.colorify("&fMana Powder")).setCustomModel(8).setItemCategory(MagickItemCategory.MATERIAL).build());
 
     public static final CustomItem RAINBOW_ROD = register(new CustomItem.CustomItemBuilder("rainbow_rod", Material.EMERALD, 1)
-            .setCustomName(HexUtils.colorify("<r:.5:1>Rainbow Rod")).setCustomModel(9).build());
+            .setCustomName(HexUtils.colorify("<r:.5:1>Rainbow Rod")).setCustomModel(9).setItemCategory(MagickItemCategory.MATERIAL).build());
 
     public static final CustomItem AQUAMARINE = register(new CustomItem.CustomItemBuilder("aquamarine", Material.EMERALD, 1)
-            .setCustomName(HexUtils.colorify("&fAquamarine")).setCustomModel(10).build());
+            .setCustomName(HexUtils.colorify("&fAquamarine")).setCustomModel(10).setItemCategory(MagickItemCategory.MATERIAL).build());
 
     public static final CustomItem CRYSTAL_SHARDS = register(new CustomItem.CustomItemBuilder("crystal_shards", Material.EMERALD, 1)
-            .setCustomName(HexUtils.colorify("&dCrystal Shards")).setCustomModel(42).build());
+            .setCustomName(HexUtils.colorify("&dCrystal Shards")).setCustomModel(42).setItemCategory(MagickItemCategory.MATERIAL).build());
+
     // ----- CAULDRON THINGS -----
 
     public static final CustomItem OUR_MATTER = register(new CustomItem.CustomItemBuilder("our_matter", Material.EMERALD, 1)
@@ -202,75 +211,75 @@ public class ItemManager extends Manager implements Listener {
     // ----- RUNES -----
 
     public static final CustomItem RUNE_OF_AIR = register(new CustomItem.CustomItemBuilder("rune_of_air", Material.CLOCK, 1)
-            .setCustomName(ChatColor.RESET + "" + ChatColor.AQUA + "Rune of Air").setCustomModel(1001).addTag("rune").build());
+            .setCustomName(ChatColor.RESET + "" + ChatColor.AQUA + "Rune of Air").setCustomModel(1001).addTag("rune").setItemCategory(MagickItemCategory.RUNE).build());
 
     public static final CustomItem RUNE_OF_AUTUMN = register(new CustomItem.CustomItemBuilder("rune_of_autumn", Material.CLOCK, 1)
-            .setCustomName(ChatColor.RESET + "" + ChatColor.GOLD + "Rune of Autumn").setCustomModel(1002).addTag("rune").build());
+            .setCustomName(ChatColor.RESET + "" + ChatColor.GOLD + "Rune of Autumn").setCustomModel(1002).addTag("rune").setItemCategory(MagickItemCategory.RUNE).build());
 
     public static final CustomItem RUNE_OF_EARTH = register(new CustomItem.CustomItemBuilder("rune_of_earth", Material.CLOCK, 1)
-            .setCustomName(ChatColor.RESET + "" + ChatColor.DARK_GREEN + "Rune of Earth").setCustomModel(1003).addTag("rune").build());
+            .setCustomName(ChatColor.RESET + "" + ChatColor.DARK_GREEN + "Rune of Earth").setCustomModel(1003).addTag("rune").setItemCategory(MagickItemCategory.RUNE).build());
 
     public static final CustomItem RUNE_OF_ENVY = register(new CustomItem.CustomItemBuilder("rune_of_envy", Material.CLOCK, 1)
-            .setCustomName(ChatColor.RESET + "" + ChatColor.DARK_PURPLE + "Rune of Envy").setCustomModel(1004).addTag("rune").build());
+            .setCustomName(ChatColor.RESET + "" + ChatColor.DARK_PURPLE + "Rune of Envy").setCustomModel(1004).addTag("rune").setItemCategory(MagickItemCategory.RUNE).build());
 
     public static final CustomItem RUNE_OF_FIRE = register(new CustomItem.CustomItemBuilder("rune_of_fire", Material.CLOCK, 1)
-            .setCustomName(ChatColor.RESET + "" + ChatColor.DARK_RED + "Rune of Fire").setCustomModel(1005).addTag("rune").build());
+            .setCustomName(ChatColor.RESET + "" + ChatColor.DARK_RED + "Rune of Fire").setCustomModel(1005).addTag("rune").setItemCategory(MagickItemCategory.RUNE).build());
 
     public static final CustomItem RUNE_OF_GLUTTONY = register(new CustomItem.CustomItemBuilder("rune_of_gluttony", Material.CLOCK, 1)
-            .setCustomName(ChatColor.RESET + "" + ChatColor.RED + "Rune of Gluttony").setCustomModel(1006).addTag("rune").build());
+            .setCustomName(ChatColor.RESET + "" + ChatColor.RED + "Rune of Gluttony").setCustomModel(1006).addTag("rune").setItemCategory(MagickItemCategory.RUNE).build());
 
     public static final CustomItem RUNE_OF_GREED = register(new CustomItem.CustomItemBuilder("rune_of_greed", Material.CLOCK, 1)
-            .setCustomName(ChatColor.RESET + "" + ChatColor.GREEN + "Rune of Greed").setCustomModel(1007).addTag("rune").build());
+            .setCustomName(ChatColor.RESET + "" + ChatColor.GREEN + "Rune of Greed").setCustomModel(1007).addTag("rune").setItemCategory(MagickItemCategory.RUNE).build());
 
     public static final CustomItem RUNE_OF_LUST = register(new CustomItem.CustomItemBuilder("rune_of_lust", Material.CLOCK, 1)
-            .setCustomName(ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "Rune of Lust").setCustomModel(1008).addTag("rune").build());
+            .setCustomName(ChatColor.RESET + "" + ChatColor.LIGHT_PURPLE + "Rune of Lust").setCustomModel(1008).addTag("rune").setItemCategory(MagickItemCategory.RUNE).build());
 
     public static final CustomItem RUNE_OF_MANA = register(new CustomItem.CustomItemBuilder("rune_of_mana", Material.CLOCK, 1)
-            .setCustomName(ChatColor.RESET + "" + ChatColor.DARK_AQUA + "Rune of Mana").setCustomModel(1009).addTag("rune").build());
+            .setCustomName(ChatColor.RESET + "" + ChatColor.DARK_AQUA + "Rune of Mana").setCustomModel(1009).addTag("rune").setItemCategory(MagickItemCategory.RUNE).build());
 
     public static final CustomItem RUNE_OF_PRIDE = register(new CustomItem.CustomItemBuilder("rune_of_pride", Material.CLOCK, 1)
-            .setCustomName(ChatColor.RESET + "" + ChatColor.GOLD + "Rune of Pride").setCustomModel(1010).addTag("rune").build());
+            .setCustomName(ChatColor.RESET + "" + ChatColor.GOLD + "Rune of Pride").setCustomModel(1010).addTag("rune").setItemCategory(MagickItemCategory.RUNE).build());
 
     public static final CustomItem RUNE_OF_SLOTH = register(new CustomItem.CustomItemBuilder("rune_of_sloth", Material.CLOCK, 1)
-            .setCustomName(ChatColor.RESET + "" + ChatColor.BLUE + "Rune of Sloth").setCustomModel(1011).addTag("rune").build());
+            .setCustomName(ChatColor.RESET + "" + ChatColor.BLUE + "Rune of Sloth").setCustomModel(1011).addTag("rune").setItemCategory(MagickItemCategory.RUNE).build());
 
     public static final CustomItem RUNE_OF_SPRING = register(new CustomItem.CustomItemBuilder("rune_of_spring", Material.CLOCK, 1)
-            .setCustomName(ChatColor.RESET + "" + ChatColor.DARK_GREEN + "Rune of Spring").setCustomModel(1012).addTag("rune").build());
+            .setCustomName(ChatColor.RESET + "" + ChatColor.DARK_GREEN + "Rune of Spring").setCustomModel(1012).addTag("rune").setItemCategory(MagickItemCategory.RUNE).build());
 
     public static final CustomItem RUNE_OF_SUMMER = register(new CustomItem.CustomItemBuilder("rune_of_summer", Material.CLOCK, 1)
-            .setCustomName(ChatColor.RESET + "" + ChatColor.YELLOW + "Rune of Summer").setCustomModel(1013).addTag("rune").build());
+            .setCustomName(ChatColor.RESET + "" + ChatColor.YELLOW + "Rune of Summer").setCustomModel(1013).addTag("rune").setItemCategory(MagickItemCategory.RUNE).build());
 
     public static final CustomItem RUNE_OF_WATER = register(new CustomItem.CustomItemBuilder("rune_of_water", Material.CLOCK, 1)
-            .setCustomName(ChatColor.RESET + "" + ChatColor.DARK_BLUE + "Rune of Water").setCustomModel(1014).addTag("rune").build());
+            .setCustomName(ChatColor.RESET + "" + ChatColor.DARK_BLUE + "Rune of Water").setCustomModel(1014).addTag("rune").setItemCategory(MagickItemCategory.RUNE).build());
 
     public static final CustomItem RUNE_OF_WINTER = register(new CustomItem.CustomItemBuilder("rune_of_winter", Material.CLOCK, 1)
-            .setCustomName(ChatColor.RESET + "" + ChatColor.WHITE + "Rune of Winter").setCustomModel(1015).addTag("rune").build());
+            .setCustomName(ChatColor.RESET + "" + ChatColor.WHITE + "Rune of Winter").setCustomModel(1015).addTag("rune").setItemCategory(MagickItemCategory.RUNE).build());
 
     public static final CustomItem RUNE_OF_WRATH = register(new CustomItem.CustomItemBuilder("rune_of_wrath", Material.CLOCK, 1)
-            .setCustomName(ChatColor.RESET + "" + ChatColor.RED + "Rune of Wrath").setCustomModel(1016).addTag("rune").build());
+            .setCustomName(ChatColor.RESET + "" + ChatColor.RED + "Rune of Wrath").setCustomModel(1016).addTag("rune").setItemCategory(MagickItemCategory.RUNE).build());
 
     // ----- HATS -----
 
     public static final CustomItem HAT_YODA = register(new CustomItem.CustomItemBuilder("hat_yoda", Material.CLOCK, 1)
-            .setCustomName(HexUtils.colorify("&rYoda")).setCustomModel(-107).build());
+            .setCustomName(HexUtils.colorify("&rYoda")).setCustomModel(-107).setItemCategory(MagickItemCategory.HAT).build());
 
     public static final CustomItem HAT_MONOCLE = register(new CustomItem.CustomItemBuilder("hat_monocle", Material.CLOCK, 1)
-            .setCustomName(HexUtils.colorify("&rMonocle")).setCustomModel(-97).build());
+            .setCustomName(HexUtils.colorify("&rMonocle")).setCustomModel(-97).setItemCategory(MagickItemCategory.HAT).build());
 
     public static final CustomItem HAT_DEER_HEAD = register(new CustomItem.CustomItemBuilder("hat_deer_head", Material.CLOCK, 1)
-            .setCustomName(HexUtils.colorify("&rDeer Head")).setCustomModel(-93).build());
+            .setCustomName(HexUtils.colorify("&rDeer Head")).setCustomModel(-93).setItemCategory(MagickItemCategory.HAT).build());
 
     public static final CustomItem HAT_CIGAR = register(new CustomItem.CustomItemBuilder("hat_cigar", Material.CLOCK, 1)
-            .setCustomName(HexUtils.colorify("&rCigar")).setCustomModel(-92).build());
+            .setCustomName(HexUtils.colorify("&rCigar")).setCustomModel(-92).setItemCategory(MagickItemCategory.HAT).build());
 
     public static final CustomItem HAT_TINY_HAT = register(new CustomItem.CustomItemBuilder("hat_tiny_hat", Material.CLOCK, 1)
-            .setCustomName(HexUtils.colorify("&rTiny Hat")).setCustomModel(-91).build());
+            .setCustomName(HexUtils.colorify("&rTiny Hat")).setCustomModel(-91).setItemCategory(MagickItemCategory.HAT).build());
 
     public static final CustomItem HAT_SPONGEBOB = register(new CustomItem.CustomItemBuilder("hat_spongebob", Material.CLOCK, 1)
-            .setCustomName(HexUtils.colorify("&rSpongebob")).setCustomModel(-88).build());
+            .setCustomName(HexUtils.colorify("&rSpongebob")).setCustomModel(-88).setItemCategory(MagickItemCategory.HAT).build());
 
     public static final CustomItem HAT_BIRD_MASTER = register(new CustomItem.CustomItemBuilder("hat_bird_master", Material.CLOCK, 1)
-            .setCustomName(HexUtils.colorify("&rBird Master")).setCustomModel(-4).build());
+            .setCustomName(HexUtils.colorify("&rBird Master")).setCustomModel(-4).setItemCategory(MagickItemCategory.HAT).build());
 
     public static final CustomItem VILLAGER_CONVERTER_HAT = register(new CustomItem.CustomItemBuilder("villager_converter_hat", Material.EMERALD, 1)
             .setCustomName(HexUtils.colorify("&rVillager Converter"))
@@ -307,6 +316,7 @@ public class ItemManager extends Manager implements Listener {
                     new AbstractCustomItem.ShapedIngredient('%', MANA_PEARL.getItemStack()),
                     new AbstractCustomItem.ShapedIngredient('*', CRYSTAL_SHARDS.getItemStack()),
                     new AbstractCustomItem.ShapedIngredient('-', AQUAMARINE.getItemStack()))
+            .setItemCategory(MagickItemCategory.HAT)
             .build());
 
     // ----- TOOLS -----
@@ -362,7 +372,7 @@ public class ItemManager extends Manager implements Listener {
                 skullItem.setItemMeta(skullMeta);
                 killEvent.getEntity().getWorld().dropItemNaturally(killEvent.getEntity().getLocation(), skullItem);
             })
-            .setCustomModel(5)
+            .setCustomModel(5).setItemCategory(MagickItemCategory.TOOL)
             .build());
 
     public static final CustomItem POISON_BLADE = register(new CustomItem.CustomItemBuilder("poison_blade", Material.NETHERITE_SWORD, 1)
@@ -377,13 +387,13 @@ public class ItemManager extends Manager implements Listener {
                     }
                 }
             })
-            .setCustomModel(3)
+            .setCustomModel(3).setItemCategory(MagickItemCategory.TOOL)
             .build());
 
     public static final CustomItem CRYSTAL_KEY = register(new CustomItem.CustomItemBuilder("crystal_key", Material.EMERALD, 1)
             .setCustomName(ChatColor.RESET + "" + ChatColor.GREEN + "Crystal Key")
             .addLoreLine(ChatColor.WHITE + "The key is voiceless")
-            .setCustomModel(3)
+            .setCustomModel(3).setItemCategory(MagickItemCategory.TOOL)
             .build());
 
     public static final CustomItem CRYSTAL_KEY_LIGHT_ACTIVE = register(new CustomItem.CustomItemBuilder("crystal_key_light_active", Material.EMERALD, 1)
@@ -394,7 +404,7 @@ public class ItemManager extends Manager implements Listener {
                 meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                 return meta;
             }))
-            .setCustomModel(3)
+            .setCustomModel(3).setItemCategory(MagickItemCategory.TOOL)
             .build());
 
     public static final CustomItem CRYSTAL_KEY_DARK_ACTIVE = register(new CustomItem.CustomItemBuilder("crystal_key_dark_active", Material.EMERALD, 1)
@@ -405,7 +415,7 @@ public class ItemManager extends Manager implements Listener {
                 meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                 return meta;
             }))
-            .setCustomModel(3)
+            .setCustomModel(3).setItemCategory(MagickItemCategory.TOOL)
             .build());
 
     public static final CustomItem DUNGEON_COIN = register(new CustomItem.CustomItemBuilder("dungeon_coin", Material.EMERALD, 1)
