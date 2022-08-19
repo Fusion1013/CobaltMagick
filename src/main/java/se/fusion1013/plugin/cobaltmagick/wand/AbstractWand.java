@@ -13,6 +13,10 @@ import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.database.DatabaseHook;
 import se.fusion1013.plugin.cobaltmagick.database.wand.IWandDao;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
+import se.fusion1013.plugin.cobaltmagick.spells.MovableSpell;
+import se.fusion1013.plugin.cobaltmagick.spells.ProjectileSpell;
+import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
+import se.fusion1013.plugin.cobaltmagick.util.RandomCollection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +42,6 @@ public abstract class AbstractWand {
     // Hidden Properties
     int id;
     int wandTier;
-    int wandId; // This should be unique to all wands
 
     // Stored Spells
     List<ISpell> spells = new ArrayList<>();
@@ -79,6 +82,8 @@ public abstract class AbstractWand {
 
         this.spells = new ArrayList<>(target.getSpells());
         this.alwaysCast = new ArrayList<>(target.getAlwaysCast());
+
+        this.id = target.id;
     }
 
     private void generateRandomWand(int cost, int level, boolean forceUnshuffle){
@@ -184,6 +189,25 @@ public abstract class AbstractWand {
         this.alwaysCast = new ArrayList<>();
         this.wandTier = level;
         this.currentMana = wandStructure.manaMax;
+
+        // Select random spells to add to the wand
+        RandomCollection<ISpell> randomSpellCollection = SpellManager.getWeightedSpellCollection(level-1);
+
+        int nSpellsToAdd = r.nextInt(0, capacity);
+        List<ISpell> modifierSpells = new ArrayList<>();
+        List<ISpell> projectileSpells = new ArrayList<>();
+        for (int i = 0; i < nSpellsToAdd; i++) {
+            ISpell spellToAdd = randomSpellCollection.next();
+            if (spellToAdd == null) continue;
+
+            if (spellToAdd instanceof MovableSpell) projectileSpells.add(spellToAdd);
+            else modifierSpells.add(spellToAdd);
+        }
+
+        // Insert spells into the wand
+        // Make sure modifier spells are put before projectile spells
+        this.spells.addAll(modifierSpells);
+        this.spells.addAll(projectileSpells);
     }
 
     private void randomAddActionsPerRound(WandStructure gun){
@@ -329,7 +353,7 @@ public abstract class AbstractWand {
         return Math.max(min, Math.min(max, v));
     }
 
-    private static class WandStructure{
+    private static class WandStructure {
         public double cost;
         public int deckCapacity = 0;
         public int actionsPerRound = 0;
@@ -435,6 +459,16 @@ public abstract class AbstractWand {
     public List<String> getLore(){
         List<String> lore = new ArrayList<>();
 
+        // TODO: Add always casts
+
+        // TODO: Find a way to display the spells that are currently in the wand (Could probably use bundles in the future)
+
+        // TODO: Replace with components
+
+        lore.add("");
+        lore.add(ChatColor.WHITE + getSpellString());
+        // lore.add(ChatColor.BLACK + "--------------------");
+
         if (shuffle) lore.add(ChatColor.WHITE + "Shuffle: " + ChatColor.BLUE + "Yes");
         else lore.add(ChatColor.WHITE + "Shuffle: " + ChatColor.BLUE + "No");
         lore.add(ChatColor.WHITE + "Spells/Cast: " + ChatColor.BLUE + spellsPerCast);
@@ -446,11 +480,16 @@ public abstract class AbstractWand {
         lore.add(ChatColor.WHITE + "Spread: " + ChatColor.BLUE + (double)Math.round(spread * 10) / 10 + ChatColor.WHITE + " DEG");
 
         lore.add(ChatColor.GRAY + "id#" + id);
-        // TODO: Add always casts
-
-        // TODO: Find a way to display the spells that are currently in the wand (Could probably use bundles in the future)
 
         return lore;
+    }
+
+    private String getSpellString() {
+        StringBuilder spellString = new StringBuilder();
+        for (ISpell spell : spells) {
+            spellString.append(spell.getHexIcon()).append(" ");
+        }
+        return spellString.toString();
     }
 
     public void setSpells(List<ISpell> spells){
@@ -509,10 +548,6 @@ public abstract class AbstractWand {
 
     public int getWandTier() {
         return wandTier;
-    }
-
-    public int getWandId() {
-        return wandId;
     }
 
     public void setRegionAllowsManaRecharge(boolean isAllowed) {
