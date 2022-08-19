@@ -28,8 +28,8 @@ public class CrystalSong implements Listener {
 
     private final Map<UUID, List<String>> noteList = new HashMap<>();
 
-    private final static String[] songOfKeysPart1 = new String[]{"ocarina_note_e", "ocarina_note_c", "ocarina_note_b", "ocarina_note_g#", "ocarina_note_f"};
-    private final static String[] songOfKeysPart2 = new String[]{"kantele_note_g", "kantele_note_d#", "kantele_note_g", "kantele_note_e", "kantele_note_a"};
+    private final static String[] songOfKeysPart1 = new String[]{"ocarina_note_e", "ocarina_note_c", "ocarina_note_b", "ocarina_note_g_sharp", "ocarina_note_f"};
+    private final static String[] songOfKeysPart2 = new String[]{"kantele_note_g", "kantele_note_d_sharp", "kantele_note_g", "kantele_note_e", "kantele_note_a"};
 
     @EventHandler
     public void onSpellCastEvent(SpellCastEvent event){
