@@ -120,6 +120,21 @@ public abstract class Spell implements ISpell, Cloneable {
 
     // ----- GETTERS / SETTERS -----
 
+    public String getHexIcon() {
+
+        String reducedId = String.valueOf(id);
+        reducedId = reducedId.substring(1);
+
+        String typeId = String.valueOf(id);
+        typeId = typeId.substring(0, 1);
+
+        int hexCode = 57344 + Integer.parseInt(reducedId) + (256 * (Integer.parseInt(typeId) - 1));
+        char[] chars = Character.toChars(hexCode);
+        StringBuilder hexString = new StringBuilder();
+        for (char c : chars) hexString.append(c);
+        return hexString.toString();
+    }
+
     /**
      * Gets a new <code>ItemStack</code> representing a castable spell
      * Automatically generates the lore for the spell
