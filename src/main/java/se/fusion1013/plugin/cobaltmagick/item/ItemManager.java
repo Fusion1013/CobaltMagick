@@ -796,6 +796,12 @@ public class ItemManager extends Manager implements Listener {
     @Override
     public void reload() {
         Bukkit.getServer().getPluginManager().registerEvents(this, CobaltMagick.getInstance());
+
+        // Create external items
+        CreateMaterialIngots.create();
+        CreateKeyItems.create();
+        CreateTools.create();
+        CreateSwords.create();
     }
 
     @Override
