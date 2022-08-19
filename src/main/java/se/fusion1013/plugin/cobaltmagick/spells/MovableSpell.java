@@ -48,6 +48,7 @@ public abstract class MovableSpell extends Spell implements Cloneable {
     // Bounce Variables
     boolean isBouncy;
     Vector bounceFriction; // Values should be between 0 & 1
+    int maxBounces = 0; // Set to -1 to allow infinite bounces. TODO: Add to builder
 
     // Movement Modifiers
     List<IMovementModifier> movementModifiers = new ArrayList<>();
@@ -83,6 +84,7 @@ public abstract class MovableSpell extends Spell implements Cloneable {
 
         this.isBouncy = movableSpell.isBouncy();
         this.bounceFriction = movableSpell.getBounceFriction();
+        this.maxBounces = movableSpell.maxBounces;
 
         this.movementModifiers = new ArrayList<>(movableSpell.movementModifiers);
     }
@@ -203,12 +205,13 @@ public abstract class MovableSpell extends Spell implements Cloneable {
      * @param hitBlockFace the block face that was hit
      */
     public void onBlockCollide(Block hitBlock, BlockFace hitBlockFace){
-        if (isBouncy){
+        if (isBouncy && (maxBounces > 0 || maxBounces == -1)){
             Vector n = hitBlockFace.getDirection();
             Vector d = velocityVector.clone();
             double dot = d.dot(n);
             velocityVector = d.subtract(n.multiply(2*dot));
             velocityVector.multiply(bounceFriction);
+            if (maxBounces > 0) maxBounces--;
         } else {
             movementStopped = true;
         }
@@ -459,10 +462,19 @@ public abstract class MovableSpell extends Spell implements Cloneable {
 
     public void setIsBouncy(boolean isBouncy){
         this.isBouncy = isBouncy;
+        this.maxBounces = -1;
     }
 
     public void setBounceFriction(Vector bounceFriction){
         this.bounceFriction = bounceFriction;
+    }
+
+    public void setMaxBounces(int maxBounces) {
+        this.maxBounces = maxBounces;
+    }
+
+    public void addMaxBounces(int bounces) {
+        if (maxBounces != -1) maxBounces+=bounces;
     }
 
     public boolean getMoves() {
@@ -505,9 +517,18 @@ public abstract class MovableSpell extends Spell implements Cloneable {
         return bounceFriction.clone();
     }
 
+    public int getMaxBounces() {
+        return maxBounces;
+    }
+
     public Vector getVelocityVector() {
         if (velocityVector != null) return velocityVector.clone();
         else return  null;
+    }
+
+    public Vector getVelocityVectorNoClone() {
+        if (velocityVector != null) return velocityVector;
+        else return null;
     }
 
     @Override
