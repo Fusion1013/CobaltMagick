@@ -24,4 +24,11 @@ public class SceneEvent {
         }
     }
 
+    public double getStartTime() {
+        return startTime;
+    }
+
+    public double getEndTime() {
+        return endTime;
+    }
 }
