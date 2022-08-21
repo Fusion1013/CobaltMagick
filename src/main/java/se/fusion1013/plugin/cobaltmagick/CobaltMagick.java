@@ -93,6 +93,7 @@ public final class CobaltMagick extends JavaPlugin implements CobaltPlugin {
         CobaltCore.getInstance().getManager(this, WorldManager.class);
         CobaltCore.getInstance().getManager(this, SceneManager.class);
         CobaltCore.getInstance().getManager(this, MagickStructureManager.class);
+        CobaltCore.getInstance().getManager(this, CauldronManager.class);
 
         CobaltCore.getInstance().reloadPluginIntegrationManager("CrazyAdvancementsAPI", this, MagickAdvancementManager.class);
     }
