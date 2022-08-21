@@ -202,6 +202,7 @@ public class ItemManager extends Manager implements Listener {
 
                 // Play effects
                 player.playSound(player.getLocation(), "cobalt.brain", 1000000, 1);
+                player.sendMessage(HexUtils.colorify("&7&oYou feel a tether attach your soul to the amulet..."));
 
             })))
             .addShapelessRecipe(new AbstractCustomItem.ShapelessIngredient(1, DEATH_BOUND_AMULET_DEACTIVATED.getItemStack()),
