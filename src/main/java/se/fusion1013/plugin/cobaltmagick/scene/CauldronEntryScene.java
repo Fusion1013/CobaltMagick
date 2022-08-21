@@ -548,7 +548,7 @@ public class CauldronEntryScene {
 
     public static void startMusicEvent(Location location) {
         for (Player p : Bukkit.getOnlinePlayers()) {
-            if (p.getLocation().distanceSquared(location) <= affectedPlayerRadius*affectedPlayerRadius) p.playSound(location, "cobalt.only_the_beginning", 10, 1); // TODO: Only play for players within radius
+            if (p.getLocation().distanceSquared(location) <= affectedPlayerRadius*affectedPlayerRadius) p.playSound(location, "cobalt.only_the_beginning", 10, 1);
         }
     }
 
