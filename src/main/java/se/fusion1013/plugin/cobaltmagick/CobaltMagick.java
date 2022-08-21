@@ -12,6 +12,7 @@ import se.fusion1013.plugin.cobaltmagick.entity.EntityManager;
 import se.fusion1013.plugin.cobaltmagick.eyes.CrystalSong;
 import se.fusion1013.plugin.cobaltmagick.gui.AbstractGUIListener;
 import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
+import se.fusion1013.plugin.cobaltmagick.world.structures.cauldron.CauldronManager;
 import se.fusion1013.plugin.cobaltmagick.world.structures.laser.LaserManager;
 import se.fusion1013.plugin.cobaltmagick.manager.*;
 import se.fusion1013.plugin.cobaltmagick.scene.SceneManager;
@@ -67,6 +68,7 @@ public final class CobaltMagick extends JavaPlugin implements CobaltPlugin {
         KillSpellsCommand.register();
         MagickCommand.register();
         DirectionalPersonalParticle.register();
+        ArmorStandTestCommand.register();
     }
 
     // ----- MANAGERS -----
