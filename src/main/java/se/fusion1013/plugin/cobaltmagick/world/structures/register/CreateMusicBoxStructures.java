@@ -8,7 +8,7 @@ import se.fusion1013.plugin.cobaltcore.world.structure.criteria.HeightStructureC
 import se.fusion1013.plugin.cobaltcore.world.structure.structure.IStructure;
 import se.fusion1013.plugin.cobaltcore.world.structure.structure.SimpleStructure;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
-import se.fusion1013.plugin.cobaltmagick.world.structures.modules.MusicBoxStructureModule;
+import se.fusion1013.plugin.cobaltmagick.world.structures.system.modules.MusicBoxStructureModule;
 
 public class CreateMusicBoxStructures {
 
@@ -17,7 +17,7 @@ public class CreateMusicBoxStructures {
     public static final IStructure MUSIC_BOX_DESERT = StructureManager.register(new SimpleStructure.SimpleStructureBuilder(CobaltMagick.getInstance(), 15, "music_box_desert", "structures/music_box.json")
             .setNaturalGeneration(true)
             .addStructureModule(new MusicBoxStructureModule("cobalt.ancient_getaway", Material.RED_WOOL))
-            .setGenerationThreshold(.5)
+            .setGenerationThreshold(.61)
             .setMinDistance(1000)
             .setOnGround(true)
             .addGenerationCriteria(new HeightStructureCriteria(319, 100))
