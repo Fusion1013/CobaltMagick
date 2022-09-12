@@ -30,6 +30,9 @@ public class MagickAdvancementManager extends Manager implements Listener {
     private AdvancementManager SPELL_ADVANCEMENT_MANAGER;
     private final Map<String, Advancement> SPELL_ADVANCEMENTS = new HashMap<>();
 
+    private AdvancementManager PROGRESSION_ADVANCEMENT_MANAGER;
+    private final Map<String, Advancement> PROGRESSION_ADVANCEMENTS = new HashMap<>();
+
     // ----- CONSTRUCTORS -----
 
     public MagickAdvancementManager(CobaltCore cobaltCore) {
