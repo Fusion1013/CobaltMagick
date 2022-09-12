@@ -119,6 +119,5 @@ public final class CobaltMagick extends JavaPlugin implements CobaltPlugin {
 
     @Override
     public void initDatabaseTables() {
-        DatabaseHook.instantiateTables();
     }
 }
