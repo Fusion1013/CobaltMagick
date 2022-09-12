@@ -471,6 +471,33 @@ public abstract class AbstractWand {
         return data;
     }
 
+    public List<Component> getLore() {
+        List<Component> lore = new ArrayList<>();
+
+        lore.add(Component.text(""));
+
+        lore.add(
+                Component.text(getSpellString())
+                        .color(NamedTextColor.WHITE)
+                        .font(Key.key("minecraft:spells"))
+                        .decoration(TextDecoration.ITALIC, false)
+        );
+
+        if (shuffle) lore.add(Component.text("Shuffle: ").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.WHITE).append(Component.text("Yes").color(NamedTextColor.BLUE)));
+        else lore.add(Component.text("Shuffle: ").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.WHITE).append(Component.text("No").color(NamedTextColor.BLUE)));
+
+        lore.add(Component.text("Spells/Cast: ").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.WHITE).append(Component.text(spellsPerCast).color(NamedTextColor.BLUE)));
+        lore.add(Component.text("Cast Delay: ").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.WHITE).append(Component.text((double)Math.round(castDelay * 100) / 100).color(NamedTextColor.BLUE).append(Component.text("s").color(NamedTextColor.WHITE))));
+        lore.add(Component.text("Recharge Time: ").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.WHITE).append(Component.text((double)Math.round(rechargeTime * 100) / 100).color(NamedTextColor.BLUE).append(Component.text("s").color(NamedTextColor.WHITE))));
+        lore.add(Component.text("Mana Max: ").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.WHITE).append(Component.text(manaMax).color(NamedTextColor.BLUE)));
+        lore.add(Component.text("Mana Charge Speed: ").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.WHITE).append(Component.text(manaChargeSpeed).color(NamedTextColor.BLUE)));
+        lore.add(Component.text("Capacity: ").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.WHITE).append(Component.text(capacity).color(NamedTextColor.BLUE)));
+        lore.add(Component.text("Spread: ").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.WHITE).append(Component.text((double)Math.round(spread * 10) / 10).color(NamedTextColor.BLUE).append(Component.text(" DEG").color(NamedTextColor.WHITE))));
+        lore.add(Component.text("id# ").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.WHITE).append(Component.text(id).color(NamedTextColor.BLUE)));
+
+        return lore;
+    }
+
     /**
      * Gets the lore for the wand
      *
