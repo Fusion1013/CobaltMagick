@@ -15,6 +15,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.yaml.snakeyaml.util.EnumUtils;
 import se.fusion1013.plugin.cobaltcore.locale.LocaleManager;
 import se.fusion1013.plugin.cobaltcore.util.HexUtils;
+import se.fusion1013.plugin.cobaltcore.util.ItemUtil;
 import se.fusion1013.plugin.cobaltcore.util.StringPlaceholders;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 
@@ -30,7 +31,30 @@ public class EditItemCommand {
                 .withSubcommand(createBookGenerationCommand())
                 .withSubcommand(createBookAuthorCommand())
                 .withSubcommand(createPotionEffectCommand())
-                .withSubcommand(createPotionColorCommand());
+                .withSubcommand(createPotionColorCommand())
+                .withSubcommand(createWeightedEnchantmentCommand());
+    }
+
+    // ----- ENCHANTMENTS -----
+
+    private static CommandAPICommand createWeightedEnchantmentCommand() {
+        return new CommandAPICommand("weighted_enchantment")
+                .withPermission("cobalt.magick.commands.cedit.item.weighted_enchantment")
+                .withArguments(new IntegerArgument("tier"))
+                .executesPlayer(EditItemCommand::addWeightedEnchantment);
+    }
+
+    private static void addWeightedEnchantment(Player player, Object[] args) {
+        ItemStack stack = player.getInventory().getItemInMainHand();
+        int tier = (int) args[0];
+        ItemUtil.addWeightedEnchantment(stack, tier);
+
+        StringPlaceholders placeholders = StringPlaceholders.builder()
+                .addPlaceholder("item", stack.getType().toString())
+                .addPlaceholder("tier", tier)
+                .build();
+
+        LocaleManager.getInstance().sendMessage(CobaltMagick.getInstance(), player, "commands.magick.edit.item.enchantment.weighted", placeholders);
     }
 
     // ----- POTION COLOR -----
