@@ -277,6 +277,11 @@ public class MagickAdvancementManager extends Manager implements Listener {
 
     // ----- EVENTS -----
 
+     @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        Bukkit.getScheduler().runTaskLater(CobaltMagick.getInstance(), () -> grantAdvancement(event.getPlayer(), "progression", "root"), 10);
+     }
+
     @EventHandler
     public void onSpellCast(SpellCastEvent event) {
         String internalSpellName = event.getSpell().getInternalSpellName();
@@ -296,6 +301,7 @@ public class MagickAdvancementManager extends Manager implements Listener {
      * Grant an advancement to a <code>Player</code>.
      *
      * @param player the <code>Player</code> to give the advancement to.
+     * @param managerName the name of the manager.
      * @param advancementName the name of the advancement.
      * @return true if the advancement was successfully granted.
      */
