@@ -1,5 +1,10 @@
 package se.fusion1013.plugin.cobaltmagick.wand;
 
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -8,13 +13,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.persistence.PersistentDataType;
-import se.fusion1013.plugin.cobaltcore.database.system.DataManager;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
-import se.fusion1013.plugin.cobaltmagick.database.DatabaseHook;
-import se.fusion1013.plugin.cobaltmagick.database.wand.IWandDao;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
 import se.fusion1013.plugin.cobaltmagick.spells.MovableSpell;
-import se.fusion1013.plugin.cobaltmagick.spells.ProjectileSpell;
 import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
 import se.fusion1013.plugin.cobaltmagick.util.RandomCollection;
 
@@ -39,6 +40,8 @@ public abstract class AbstractWand {
     double castCooldown;
     double rechargeCooldown;
 
+    double lastRechargeMax;
+
     // Hidden Properties
     int id;
     int wandTier;
@@ -48,6 +51,9 @@ public abstract class AbstractWand {
 
     // Protection
     boolean regionAllowsManaRecharge = true;
+
+    // Value override
+    int modelDataOverride = 0;
 
     public AbstractWand(boolean shuffle, int spellsPerCast, double castDelay, double rechargeTime, int manaMax, int manaChargeSpeed, int capacity, double spread, List<ISpell> alwaysCast, int wandTier){
         this.shuffle = shuffle;
@@ -61,6 +67,8 @@ public abstract class AbstractWand {
         this.alwaysCast = alwaysCast;
         this.wandTier = wandTier;
         this.currentMana = manaMax;
+
+        this.lastRechargeMax = rechargeTime;
     }
 
     public AbstractWand(int cost, int level, boolean forceUnshuffle){
@@ -80,10 +88,13 @@ public abstract class AbstractWand {
         this.wandTier = target.wandTier;
         this.currentMana = target.manaMax;
 
+        this.lastRechargeMax = target.lastRechargeMax;
+
         this.spells = new ArrayList<>(target.getSpells());
         this.alwaysCast = new ArrayList<>(target.getAlwaysCast());
 
         this.id = target.id;
+        this.modelDataOverride = target.modelDataOverride;
     }
 
     private void generateRandomWand(int cost, int level, boolean forceUnshuffle){
@@ -96,7 +107,7 @@ public abstract class AbstractWand {
         int manaChargeSpeed = 50 * level + r.nextInt(-5, 5*level + 1);
         int manaMax = 50 + (150 * level) + (r.nextInt(-5, 6) * 10);
 
-        WandStructure wandStructure = new WandStructure(cost, manaChargeSpeed, manaMax);
+        WandStructure wandStructure = new WandStructure(cost, manaChargeSpeed, manaMax, forceUnshuffle);
 
         int p;
 
@@ -374,6 +385,13 @@ public abstract class AbstractWand {
             this.manaChargeSpeed = manaChargeSpeed;
             this.manaMax = manaMax;
         }
+
+        public WandStructure(int cost, int manaChargeSpeed, int manaMax, boolean forceUnshuffle) {
+            this.cost = cost;
+            this.manaChargeSpeed = manaChargeSpeed;
+            this.manaMax = manaMax;
+            if (forceUnshuffle) shuffleDeckWhenEmpty = false;
+        }
     }
 
     // ----- WAND CACHE -----
@@ -417,7 +435,7 @@ public abstract class AbstractWand {
         meta.getPersistentDataContainer().set(namespacedKey, PersistentDataType.INTEGER, id);
 
         meta.setDisplayName(ChatColor.WHITE + "" + ChatColor.BOLD + "Wand");
-        meta.setLore(getLore());
+        meta.lore(getLore());
 
         meta.setCustomModelData(getWandModelData());
 
@@ -436,6 +454,8 @@ public abstract class AbstractWand {
      * @return model id for this wand
      */
     public int getWandModelData(){
+        if (modelDataOverride != 0) return modelDataOverride;
+
         int data = 1110;
 
         if (shuffle) data += 1000;
@@ -456,7 +476,8 @@ public abstract class AbstractWand {
      *
      * @return a list of strings representing the lore
      */
-    public List<String> getLore(){
+    /*
+    public List<String> getLore() {
         List<String> lore = new ArrayList<>();
 
         // TODO: Add always casts
@@ -483,6 +504,7 @@ public abstract class AbstractWand {
 
         return lore;
     }
+     */
 
     private String getSpellString() {
         StringBuilder spellString = new StringBuilder();
@@ -496,6 +518,21 @@ public abstract class AbstractWand {
         this.spells = spells;
     }
     public List<ISpell> getSpells() { return this.spells; }
+
+    public AbstractWand addSpell(ISpell spell) {
+        this.spells.add(spell);
+        return this;
+    }
+
+    public AbstractWand addSpells(ISpell... spells) {
+        this.spells.addAll(List.of(spells));
+        return this;
+    }
+
+    public AbstractWand overrideModelData(int data) {
+        this.modelDataOverride = data;
+        return this;
+    }
 
     public void setId(int id) { this.id = id; }
     public int getId() { return id; }
