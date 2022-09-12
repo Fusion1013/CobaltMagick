@@ -15,6 +15,7 @@ import org.bukkit.persistence.PersistentDataType;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
+import se.fusion1013.plugin.cobaltmagick.wand.AbstractWand;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
 import java.util.ArrayList;
@@ -103,7 +104,8 @@ public class AbstractGUIListener implements Listener {
 
         // Set the new lore of the wand
         ItemMeta wandMeta = player.getInventory().getItemInMainHand().getItemMeta();
-        wandMeta.setLore(wand.getLore());
+        if (!wandMeta.getPersistentDataContainer().has(AbstractWand.getWandKey())) return; // Prevent other items from getting wand lore
+        wandMeta.lore(wand.getLore());
         player.getInventory().getItemInMainHand().setItemMeta(wandMeta);
     }
 }
