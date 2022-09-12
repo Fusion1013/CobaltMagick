@@ -52,8 +52,8 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.ow2.asm:asm-tree:9.2" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.ow2.asm:asm-analysis:9.2" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains:annotations:16.0.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: dev.jorel:commandapi-core:8.2.1" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: dev.jorel:commandapi-preprocessor:8.2.1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: dev.jorel:commandapi-core:8.5.1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: dev.jorel:commandapi-preprocessor:8.5.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.sk89q.worldguard:worldguard-bukkit:7.0.6" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.sk89q.worldguard:worldguard-core:7.0.6" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.sk89q.worldguard.worldguard-libs:core:7.0.6" level="project" />
