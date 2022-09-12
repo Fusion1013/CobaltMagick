@@ -126,6 +126,7 @@ public abstract class AbstractLaser implements IChunkBound<AbstractLaser> {
 
     private void splitLaser(Color laserColor, Location startLocation, Vector direction) {
         Location nextLocation = findNextBlock(startLocation, direction);
+        if (nextLocation == null) return;
         createLaserGroup(laserColor).display(startLocation.clone().add(.5, .5, .5), nextLocation.clone().add(.5, .5, .5));
         if (!isWithinBounds(nextLocation)) return;
         performLaserStep(laserColor, nextLocation, direction);
@@ -138,6 +139,8 @@ public abstract class AbstractLaser implements IChunkBound<AbstractLaser> {
             currentStepLocation.add(direction);
             step++;
         }
+
+        if (step >= 200) return null;
 
         return currentStepLocation;
     }
