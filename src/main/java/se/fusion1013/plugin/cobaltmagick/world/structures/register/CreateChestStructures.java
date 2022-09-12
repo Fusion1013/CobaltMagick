@@ -15,10 +15,11 @@ import se.fusion1013.plugin.cobaltcore.world.structure.modules.ReplaceBlocksStru
 import se.fusion1013.plugin.cobaltcore.world.structure.structure.IStructure;
 import se.fusion1013.plugin.cobaltcore.world.structure.structure.SimpleStructure;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
+import se.fusion1013.plugin.cobaltmagick.advancement.AdvancementGranter;
 import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
 import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
 import se.fusion1013.plugin.cobaltmagick.util.constants.BookConstants;
-import se.fusion1013.plugin.cobaltmagick.world.structures.modules.MagickChestStructureModule;
+import se.fusion1013.plugin.cobaltmagick.world.structures.system.modules.MagickChestStructureModule;
 
 public class CreateChestStructures {
 
@@ -26,26 +27,21 @@ public class CreateChestStructures {
 
     static CustomLootTable light_chest = new CustomLootTable(new CustomLootTable.LootTarget[] {CustomLootTable.LootTarget.CHEST, CustomLootTable.LootTarget.BARREL, CustomLootTable.LootTarget.SHULKER_BOX},
             new LootPool(1,
-                    new LootEntry(BookConstants.getLightBook(), 1, 1)
+                    new LootEntry(BookConstants.getCunningContraptionBook(), 1, 1)
             )
     );
 
     static CustomLootTable light_chest_insides = new CustomLootTable(new CustomLootTable.LootTarget[] {CustomLootTable.LootTarget.DROP},
-            new LootPool(4,
-                    new LootEntry(SpellManager.ALPHA.getSpellItem(), 1, 1),
-                    new LootEntry(SpellManager.GAMMA.getSpellItem(), 1, 1),
-                    new LootEntry(SpellManager.MU.getSpellItem(), 1, 1),
-                    new LootEntry(SpellManager.OMEGA.getSpellItem(), 1, 1),
-                    new LootEntry(SpellManager.PHI.getSpellItem(), 1, 1),
-                    new LootEntry(SpellManager.SIGMA.getSpellItem(), 1, 1),
-                    new LootEntry(SpellManager.TAU.getSpellItem(), 1, 1),
-                    new LootEntry(SpellManager.ZETA.getSpellItem(), 1, 1)
+            new LootPool(1,
+                    new LootEntry(ItemManager.EVIL_EYE.getItemStack(), 1, 1),
+                    new LootEntry(SpellManager.OMEGA.getSpellItem(), 1, 1)
             )
     );
 
     static CustomLootTable dark_chest_insides = new CustomLootTable(new CustomLootTable.LootTarget[] {CustomLootTable.LootTarget.DROP},
             new LootPool(1,
-                    new LootEntry(SpellManager.OCTUPLE_SPELL.getSpellItem(), 1, 1)
+                    new LootEntry(ItemManager.DEATH_BOUND_AMULET_DEACTIVATED.getItemStack(), 1, 1),
+                    new LootEntry(SpellManager.RANDOM_SPELL.getSpellItem(), 1, 1)
             )
     );
 
@@ -59,7 +55,7 @@ public class CreateChestStructures {
             .addStructureModule(new MagickChestStructureModule(Material.STRUCTURE_BLOCK, 2, ItemManager.CRYSTAL_KEY_LIGHT_ACTIVE,
                     light_chest_insides,
                     "The chest opens!", "But the key might have other stories to tell..."
-            ))
+            ).addAdvancement(new AdvancementGranter("progression", "light_chest_open", 20)))
             .setGenerationThreshold(-1)
             .addGenerationCriteria(new EnvironmentStructureCriteria(World.Environment.NORMAL))
             .build(), new Vector(0, 288, 0));
@@ -73,7 +69,7 @@ public class CreateChestStructures {
             .addStructureModule(new MagickChestStructureModule(Material.STRUCTURE_BLOCK, 2, ItemManager.CRYSTAL_KEY_DARK_ACTIVE,
                     dark_chest_insides,
                     "The glass key speaks!", "The chest listens"
-            ))
+            ).addAdvancement(new AdvancementGranter("progression", "dark_chest_open", 20)).setSpawnWaterSphere(false))
             .setGenerationThreshold(-1)
             .addGenerationCriteria(new EnvironmentStructureCriteria(World.Environment.NORMAL))
             .build(), new Vector(0, -64, 0));
