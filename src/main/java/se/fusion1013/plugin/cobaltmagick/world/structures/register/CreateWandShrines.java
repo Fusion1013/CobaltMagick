@@ -12,9 +12,8 @@ import se.fusion1013.plugin.cobaltcore.world.structure.structure.IStructure;
 import se.fusion1013.plugin.cobaltcore.world.structure.structure.SimpleStructure;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
-import se.fusion1013.plugin.cobaltmagick.util.constants.BookConstants;
 import se.fusion1013.plugin.cobaltmagick.world.structures.hidden.RevealMethod;
-import se.fusion1013.plugin.cobaltmagick.world.structures.modules.HiddenObjectStructureModule;
+import se.fusion1013.plugin.cobaltmagick.world.structures.system.modules.HiddenObjectStructureModule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +22,7 @@ public class CreateWandShrines {
 
     static CustomLootTable SHRINE_2_LOOT = new CustomLootTable(new CustomLootTable.LootTarget[] {CustomLootTable.LootTarget.CHEST, CustomLootTable.LootTarget.BARREL, CustomLootTable.LootTarget.SHULKER_BOX},
             new LootPool(1,
-                    new LootEntry(BookConstants.getDarkBook(), 1, 1),
+                    // new LootEntry(BookConstants.getDarkBook(), 1, 1),
                     new LootEntry(ItemManager.AQUAMARINE.getItemStack(), 1, 3),
                     new LootEntry(ItemManager.AQUAMARINE.getItemStack(), 1, 3),
                     new LootEntry(ItemManager.MANA_POWDER.getItemStack(), 1, 2)
