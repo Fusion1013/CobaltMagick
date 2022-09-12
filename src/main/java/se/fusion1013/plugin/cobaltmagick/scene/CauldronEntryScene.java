@@ -9,14 +9,11 @@ import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltcore.particle.ParticleGroup;
 import se.fusion1013.plugin.cobaltcore.particle.styles.*;
 import se.fusion1013.plugin.cobaltcore.particle.styles.glyph.*;
-import se.fusion1013.plugin.cobaltcore.util.Laser;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import static net.royawesome.jlibnoise.MathHelper.clamp;
 
 public class CauldronEntryScene {
 
