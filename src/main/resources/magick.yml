@@ -5,10 +5,10 @@
 disable-wand-editing: false
 #
 # Weather or not nether portals should explode upon creation
-unstable-nether-portals: true
+unstable-nether-portals: false
 #
 # Weather or not end portals should work
-unstable-end-portals: true
+unstable-end-portals: false
 #
 # Disables wand mana recharging
 disable-wand-recharging: false
@@ -25,4 +25,4 @@ breakable-amethyst-buds: true
 #
 #
 # Disable structure generation entirely
-disable-natural-structure-generation: true
+disable-natural-structure-generation: false
