@@ -1,13 +1,9 @@
 package se.fusion1013.plugin.cobaltmagick.item;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.LivingEntity;
@@ -23,7 +19,6 @@ import org.bukkit.inventory.meta.CompassMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
@@ -36,16 +31,15 @@ import se.fusion1013.plugin.cobaltcore.manager.Manager;
 import se.fusion1013.plugin.cobaltcore.util.HexUtils;
 import se.fusion1013.plugin.cobaltcore.util.PlayerUtil;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
+import se.fusion1013.plugin.cobaltmagick.advancement.MagickAdvancementManager;
 import se.fusion1013.plugin.cobaltmagick.item.create.*;
 import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
 import se.fusion1013.plugin.cobaltmagick.util.constants.ItemConstants;
 import se.fusion1013.plugin.cobaltmagick.util.constants.MerchantRecipeConstants;
 import se.fusion1013.plugin.cobaltmagick.world.structures.MagickStructureManager;
 
-import javax.naming.Name;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static se.fusion1013.plugin.cobaltcore.item.CustomItemManager.register;
 
@@ -171,8 +165,15 @@ public class ItemManager extends Manager implements Listener {
 
     // ----- CAULDRON THINGS -----
 
+    public static final CustomItem SUNSEED = register(new CustomItem.CustomItemBuilder("sunseed", Material.EMERALD, 1)
+            .setCustomName(HexUtils.colorify("<g:#b93b0b:#baba57>Sunseed"))
+            .addLoreLine(HexUtils.colorify("&7&oA seed of great promise...")).setCustomModel(1013).setItemCategory(MagickItemCategory.MATERIAL)
+            .build());
+
     public static final CustomItem OUR_MATTER = register(new CustomItem.CustomItemBuilder("our_matter", Material.EMERALD, 1)
-            .setCustomName(HexUtils.colorify("<g:#969696:#1a1a1a>Our Matter")).setCustomModel(1001).setItemCategory(MagickItemCategory.MATERIAL).build());
+            .setCustomName(HexUtils.colorify("<g:#969696:#1a1a1a>Our Matter"))
+            .addLoreLine(HexUtils.colorify("&7&oInfinite possibilities pulse within..."))
+            .setCustomModel(1001).setItemCategory(MagickItemCategory.MATERIAL).build());
 
     public static final CustomItem EVIL_EYE = register(new CustomItem.CustomItemBuilder("evil_eye", Material.EMERALD, 1)
             .setCustomName(HexUtils.colorify("<g:#172373:#2442a3>Evil Eye")).setCustomModel(1012).setItemCategory(MagickItemCategory.MATERIAL).build());
@@ -202,7 +203,7 @@ public class ItemManager extends Manager implements Listener {
 
                 // Play effects
                 player.playSound(player.getLocation(), "cobalt.brain", 1000000, 1);
-                player.sendMessage(HexUtils.colorify("&7&oYou feel a tether attach your soul to the amulet..."));
+                player.sendMessage(HexUtils.colorify("&7&oThe amulet binds to your soul..."));
 
             })))
             .addShapelessRecipe(new AbstractCustomItem.ShapelessIngredient(1, DEATH_BOUND_AMULET_DEACTIVATED.getItemStack()),
@@ -324,6 +325,7 @@ public class ItemManager extends Manager implements Listener {
 
     public static final CustomItem DUNGEON_LOCATOR = register(new CustomItem.CustomItemBuilder("dungeon_locator", Material.COMPASS, 1)
             .setCustomName(HexUtils.colorify("&fDungeon Locator"))
+            .addLoreLine(HexUtils.colorify("&7&oReveals the location of two hidden structures..."))
             .addItemActivatorSync(ItemActivator.PLAYER_RIGHT_CLICK, ((iCustomItem, event, equipmentSlot) -> {
                 PlayerInteractEvent interactEvent = (PlayerInteractEvent) event;
 
@@ -339,15 +341,20 @@ public class ItemManager extends Manager implements Listener {
 
                     interactEvent.getItem().setItemMeta(compassMeta);
 
+                    // Grant advancement
+                    MagickAdvancementManager advancementManager = CobaltCore.getInstance().getSafeManager(CobaltMagick.getInstance(), MagickAdvancementManager.class);
+                    if (advancementManager != null) advancementManager.grantAdvancement(interactEvent.getPlayer(), "progression", "locate_high_alchemist");
+
                     CobaltMagick.getInstance().getLogger().info("Set compass location to: " + MagickStructureManager.highAlchemistDungeonLocation + ", in world: " + MagickStructureManager.highAlchemistWorld.getName());
                 }
             }))
+            .setCustomModel(1)
             .addShapedRecipe(
                     "-e-",
                     "ece",
                     "-e-",
-                    new AbstractCustomItem.ShapedIngredient('c', Material.RECOVERY_COMPASS),
-                    new AbstractCustomItem.ShapedIngredient('e', Material.ECHO_SHARD)
+                    new AbstractCustomItem.ShapedIngredient('c', Material.COMPASS),
+                    new AbstractCustomItem.ShapedIngredient('e', Material.NETHERITE_INGOT)
             )
             .build());
 
@@ -812,6 +819,7 @@ public class ItemManager extends Manager implements Listener {
         CreateKeyItems.create();
         CreateTools.create();
         CreateSwords.create();
+        CreateEssenceStones.create();
     }
 
     @Override
