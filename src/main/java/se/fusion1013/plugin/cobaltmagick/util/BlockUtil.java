@@ -147,7 +147,7 @@ public class BlockUtil {
      * @return the number of blocks in the sphere
      */
     public static int setBlocksInSphere(Location centerBlock, Material setBlock, int radius, boolean dropItems, boolean slowReplace, boolean replaceNonAir, boolean hollow, boolean noSound){
-        WorldGuardManager manager = CobaltCore.getInstance().getManager(CobaltCore.getInstance(), WorldGuardManager.class);
+        WorldGuardManager manager = CobaltCore.getInstance().getSafeManager(CobaltCore.getInstance(), WorldGuardManager.class);
         if (manager != null) if (!manager.isBlockBreakAllowed(centerBlock)) return 0;
 
         if (slowReplace) return setBlocksInSphereSlowly(centerBlock, setBlock, radius, dropItems, replaceNonAir, hollow, noSound);
