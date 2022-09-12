@@ -10,9 +10,11 @@ import se.fusion1013.plugin.cobaltcore.entity.modules.ability.AbilityModule;
 import se.fusion1013.plugin.cobaltcore.entity.modules.ability.IAbilityModule;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
 import se.fusion1013.plugin.cobaltmagick.util.AIUtil;
+import se.fusion1013.plugin.cobaltmagick.wand.CastParser;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CasterAbility extends AbilityModule implements IAbilityModule {
@@ -61,9 +63,12 @@ public class CasterAbility extends AbilityModule implements IAbilityModule {
             Vector delta = new Vector(target.getX() - castLocation.getX(), target.getY() - castLocation.getY() + 1, target.getZ() - castLocation.getZ()).normalize();
             if (summonedEntity instanceof LivingEntity living) {
                 // Cast Spells
-                for (ISpell spell : spells) {
+                CastParser parser = new CastParser(living, -1, Arrays.asList(spells), 1);
+                List<ISpell> spellsToCast = parser.prepareCast();
+                for (ISpell spell : spellsToCast) {
                     spell.clone().castSpell(null, living, delta, castLocation); // TODO: Make sure that setting wand to null does not cause problems
                 }
+                for (ISpell spell : spells) spell.setHasCast(false);
             }
         }
     }
