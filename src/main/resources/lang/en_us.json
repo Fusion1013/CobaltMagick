@@ -52,6 +52,8 @@
   "commands.magick.edit.item.potion.color": "&7Set potion color to r&3%r%&7, g&3%g%&7, b&3%b%",
   "commands.magick.edit.item.potion.effect": "&7Set potion effect to &3%effect%&7, with amplifier &3%amplifier% &7and duration &3%duration%",
 
+  "commands.magick.edit.item.enchantment.weighted": "&7Added weighted enchantment to item &3%item% &7with tier &3%tier%",
+
 
   "commands.magick.advancement.grant_all.success": "&7Granted all advancements to &3%player%",
   "commands.magick.advancement.grant_all.failed": "&7Failed to grant all advancements to &3%player%",
