@@ -122,27 +122,28 @@ public class WandDaoSQLite extends Dao implements IWandDao {
         double spread = wand.getSpread();
         int wandTier = wand.getWandTier();
 
-        try (
-                Connection conn = DataManager.getInstance().getSqliteDb().getSQLConnection();
-                PreparedStatement st = conn.prepareStatement("INSERT INTO wands(id, shuffle, spells_per_cast, cast_delay, recharge_time, mana_max, mana_charge_speed, capacity, spread, wand_tier) VALUES(?,?,?,?,?,?,?,?,?,?)");
-        ) {
-            st.setInt(1, wand.getId());
-            st.setBoolean(2, shuffle);
-            st.setInt(3, spellsPerCast);
-            st.setDouble(4, castDelay);
-            st.setDouble(5, rechargeTime);
-            st.setInt(6, manaMax);
-            st.setInt(7, manaChargeSpeed);
-            st.setInt(8, capacity);
-            st.setDouble(9, spread);
-            st.setInt(10, wandTier);
-            st.execute();
+        getDataManager().performThreadSafeSQLiteOperations(conn -> {
+            try (
+                    PreparedStatement st = conn.prepareStatement("INSERT INTO wands(id, shuffle, spells_per_cast, cast_delay, recharge_time, mana_max, mana_charge_speed, capacity, spread, wand_tier) VALUES(?,?,?,?,?,?,?,?,?,?)");
+            ) {
+                st.setInt(1, wand.getId());
+                st.setBoolean(2, shuffle);
+                st.setInt(3, spellsPerCast);
+                st.setDouble(4, castDelay);
+                st.setDouble(5, rechargeTime);
+                st.setInt(6, manaMax);
+                st.setInt(7, manaChargeSpeed);
+                st.setInt(8, capacity);
+                st.setDouble(9, spread);
+                st.setInt(10, wandTier);
+                st.execute();
 
-            updateWandSpellsAsync(wand);
+                updateWandSpellsAsync(wand);
 
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        });
     }
 
     @Override
@@ -154,44 +155,45 @@ public class WandDaoSQLite extends Dao implements IWandDao {
 
     @Override
     public void updateWandSpellsSync(Wand... wands) {
-        try (
-                Connection conn = DataManager.getInstance().getSqliteDb().getSQLConnection();
-                PreparedStatement pstmt1 = conn.prepareStatement("DELETE FROM wand_spells WHERE wand_id = ?");
-                PreparedStatement pstmt2 = conn.prepareStatement("INSERT INTO wand_spells(wand_id, spell_id, is_always_cast, slot, count) VALUES(?,?,?,?, ?)");
-        ) {
-            conn.setAutoCommit(false);
+        getDataManager().performThreadSafeSQLiteOperations(conn -> {
+            try (
+                    PreparedStatement pstmt1 = conn.prepareStatement("DELETE FROM wand_spells WHERE wand_id = ?");
+                    PreparedStatement pstmt2 = conn.prepareStatement("INSERT INTO wand_spells(wand_id, spell_id, is_always_cast, slot, count) VALUES(?,?,?,?, ?)");
+            ) {
+                conn.setAutoCommit(false);
 
-            for (Wand wand : wands){
-                // Delete old data
-                pstmt1.setInt(1, wand.getId());
-                int rowsAffected = pstmt1.executeUpdate();
+                for (Wand wand : wands) {
+                    // Delete old data
+                    pstmt1.setInt(1, wand.getId());
+                    int rowsAffected = pstmt1.executeUpdate();
 
-                // Insert new data
-                for (int i = 0; i < wand.getAlwaysCast().size(); i++){ // Always cast spells
-                    ISpell currentSpell = wand.getSpells().get(i);
-                    pstmt2.setInt(1, wand.getId());
-                    pstmt2.setInt(2, currentSpell.getId());
-                    pstmt2.setBoolean(3, true);
-                    pstmt2.setInt(4, i);
-                    pstmt2.setInt(5, currentSpell.getCount());
-                    rowsAffected += pstmt2.executeUpdate();
+                    // Insert new data
+                    for (int i = 0; i < wand.getAlwaysCast().size(); i++) { // Always cast spells
+                        ISpell currentSpell = wand.getSpells().get(i);
+                        pstmt2.setInt(1, wand.getId());
+                        pstmt2.setInt(2, currentSpell.getId());
+                        pstmt2.setBoolean(3, true);
+                        pstmt2.setInt(4, i);
+                        pstmt2.setInt(5, currentSpell.getCount());
+                        rowsAffected += pstmt2.executeUpdate();
+                    }
+                    for (int i = 0; i < wand.getSpells().size(); i++) {
+                        ISpell currentSpell = wand.getSpells().get(i);
+                        pstmt2.setInt(1, wand.getId());
+                        pstmt2.setInt(2, currentSpell.getId());
+                        pstmt2.setBoolean(3, false);
+                        pstmt2.setInt(4, i);
+                        pstmt2.setInt(5, currentSpell.getCount());
+                        rowsAffected += pstmt2.executeUpdate();
+                    }
                 }
-                for (int i = 0; i < wand.getSpells().size(); i++){
-                    ISpell currentSpell = wand.getSpells().get(i);
-                    pstmt2.setInt(1, wand.getId());
-                    pstmt2.setInt(2, currentSpell.getId());
-                    pstmt2.setBoolean(3, false);
-                    pstmt2.setInt(4, i);
-                    pstmt2.setInt(5, currentSpell.getCount());
-                    rowsAffected += pstmt2.executeUpdate();
-                }
+
+                conn.commit();
+
+            } catch (SQLException ex) {
+                ex.printStackTrace();
             }
-
-            conn.commit();
-
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
+        });
     }
 
     @Override

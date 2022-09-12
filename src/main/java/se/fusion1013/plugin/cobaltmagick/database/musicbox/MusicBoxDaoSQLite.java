@@ -42,16 +42,17 @@ public class MusicBoxDaoSQLite extends Dao implements IMusicBoxDao {
 
     @Override
     public void updateMusicBoxMessageSync(int boxId, String msg) {
-        try (
-                Connection conn = DataManager.getInstance().getSqliteDb().getSQLConnection();
-                PreparedStatement ps = conn.prepareStatement("UPDATE music_boxes SET message = ? WHERE id = ?")
-        ) {
-            ps.setString(1, msg);
-            ps.setInt(2, boxId);
-            ps.executeUpdate();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
+        getDataManager().performThreadSafeSQLiteOperations(conn -> {
+            try (
+                    PreparedStatement ps = conn.prepareStatement("UPDATE music_boxes SET message = ? WHERE id = ?")
+            ) {
+                ps.setString(1, msg);
+                ps.setInt(2, boxId);
+                ps.executeUpdate();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        });
     }
 
     @Override
@@ -106,21 +107,22 @@ public class MusicBoxDaoSQLite extends Dao implements IMusicBoxDao {
         String sound = musicBox.getSound();
         int id = musicBox.getId();
 
-        try (
-                Connection conn = DataManager.getInstance().getSqliteDb().getSQLConnection();
-                PreparedStatement st = conn.prepareStatement("INSERT INTO music_boxes(world, pos_x, pos_y, pos_z, sound, id, message) VALUES(?,?,?,?,?,?,?)")
-        ) {
-            st.setString(1, worldName);
-            st.setDouble(2, xPos);
-            st.setDouble(3, yPos);
-            st.setDouble(4, zPos);
-            st.setString(5, sound);
-            st.setInt(6, id);
-            st.setString(7, musicBox.getMessage());
-            st.executeUpdate();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
+        getDataManager().performThreadSafeSQLiteOperations(conn -> {
+            try (
+                    PreparedStatement st = conn.prepareStatement("INSERT INTO music_boxes(world, pos_x, pos_y, pos_z, sound, id, message) VALUES(?,?,?,?,?,?,?)")
+            ) {
+                st.setString(1, worldName);
+                st.setDouble(2, xPos);
+                st.setDouble(3, yPos);
+                st.setDouble(4, zPos);
+                st.setString(5, sound);
+                st.setInt(6, id);
+                st.setString(7, musicBox.getMessage());
+                st.executeUpdate();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        });
     }
 
     @Override
@@ -132,15 +134,16 @@ public class MusicBoxDaoSQLite extends Dao implements IMusicBoxDao {
 
     @Override
     public void removeMusicBoxSync(MusicBox musicBox) {
-        try (
-                Connection conn = DataManager.getInstance().getSqliteDb().getSQLConnection();
-                PreparedStatement ps = conn.prepareStatement("DELETE FROM music_boxes WHERE id = ?")
-        ) {
-            ps.setInt(1, musicBox.getId());
-            ps.executeUpdate();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
+        getDataManager().performThreadSafeSQLiteOperations(conn -> {
+            try (
+                    PreparedStatement ps = conn.prepareStatement("DELETE FROM music_boxes WHERE id = ?")
+            ) {
+                ps.setInt(1, musicBox.getId());
+                ps.executeUpdate();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        });
     }
 
     @Override
