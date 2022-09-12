@@ -2,14 +2,23 @@ package se.fusion1013.plugin.cobaltmagick.commands;
 
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.*;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import se.fusion1013.plugin.cobaltcore.CobaltCore;
+import se.fusion1013.plugin.cobaltcore.entity.CustomEntityManager;
+import se.fusion1013.plugin.cobaltcore.entity.ICustomEntity;
+import se.fusion1013.plugin.cobaltcore.storage.ObjectManager;
 import se.fusion1013.plugin.cobaltcore.util.HexUtils;
 import se.fusion1013.plugin.cobaltcore.util.VersionUtil;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.commands.advancement.AdvancementCommand;
 import se.fusion1013.plugin.cobaltmagick.commands.edit.EditCommand;
 import se.fusion1013.plugin.cobaltmagick.commands.structure.StructureCommand;
+import se.fusion1013.plugin.cobaltmagick.entity.EntityManager;
+import se.fusion1013.plugin.cobaltmagick.world.structures.trap.TrappedChestEntity;
 
 public class MagickCommand {
 
@@ -25,6 +34,15 @@ public class MagickCommand {
                 .withSubcommand(createVersionCommand())
                 .withSubcommand(createColorizeCommand())
                 .withSubcommand(createUpdateCommand())
+                .withSubcommand(new CommandAPICommand("test_font")
+                        .withArguments(new TextArgument("font"))
+                        .withArguments(new TextArgument("text"))
+                        .executes(((sender, args) -> {
+                            CobaltCore.getInstance().getServer().sendMessage(
+                                    Component.text((String) args[1])
+                                            .font(Key.key((String) args[0]))
+                            );
+                        })))
                 .register();
     }
 
