@@ -1,6 +1,8 @@
 package se.fusion1013.plugin.cobaltmagick.wand;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -13,10 +15,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
+import se.fusion1013.plugin.cobaltcore.bar.actionbar.ActionBarManager;
 import se.fusion1013.plugin.cobaltcore.config.ConfigManager;
+import se.fusion1013.plugin.cobaltcore.settings.SettingsManager;
+import se.fusion1013.plugin.cobaltcore.util.ActionBarUtil;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.event.SpellCastEvent;
 import se.fusion1013.plugin.cobaltmagick.manager.MagickConfigManager;
+import se.fusion1013.plugin.cobaltmagick.manager.MagickSettingsManager;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
 
 import java.util.ArrayList;
@@ -110,12 +116,15 @@ public class Wand extends AbstractWand {
 
         currentMana = Math.max(0, currentMana - manaUsed);
         currentMana = Math.min(currentMana, manaMax);
-        castCooldown = Math.max(0, castDelayInduced);
 
         // Check if all spells in the wand has been cast. If they have, start recharge cooldown
         if (allSpellsCast()) recharge();
+        else castCooldown = Math.max(0, castDelayInduced); // Do not induce cast delay if all spells have been cast
 
-        if (caster instanceof Player p) p.setCooldown(getWandItem().getType(), (int)Math.ceil(Math.max(rechargeCooldown, castCooldown) * 20));
+        if (caster instanceof Player p) {
+            p.setCooldown(getWandItem().getType(), (int)Math.ceil(Math.max(rechargeCooldown, castCooldown) * 20));
+            lastRechargeMax = Math.max(rechargeCooldown, castCooldown);
+        }
 
         return CastResult.SUCCESS;
     }
@@ -187,14 +196,74 @@ public class Wand extends AbstractWand {
     /**
      * Displays wand data (Recharge & Mana) to the player
      *
-     * @param p player to display the data to
+     * @param player player to display the data to
      */
-    public void displayData(Player p){
+    public void displayData(Player player) {
+
         double recharge = Math.max(rechargeCooldown, castCooldown);
 
-        String message = ChatColor.RED + "Recharge" + ChatColor.GRAY + ": " + ChatColor.RED + Math.round(recharge*10)/10.0 + ChatColor.GRAY + "s" + "          " + ChatColor.AQUA + "Mana" + ChatColor.GRAY + ": " + ChatColor.AQUA + Math.round(currentMana);
-        // p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(message));
+        // Add mana bar
+        double manaPercent = (currentMana / manaMax) * 10;
+        ActionBarUtil.ActionBarBuilder builder = new ActionBarUtil.ActionBarBuilder();
+        addProgressBar(builder, "\uE001", "\uE003", "\uE002", "\uE004", "\uE006", "\uE005", -41, manaPercent);
 
-        p.sendActionBar(Component.text(message));
+        // Add recharge time bar
+        double rechargePercent = (1 - (recharge / lastRechargeMax)) * 10;
+        addProgressBar(builder, "\uE001", "\uE003", "\uE002", "\uE007", "\uE009", "\uE008", 59, rechargePercent);
+
+        // Construct text bar
+        String message = ChatColor.RED + "Recharge" + ChatColor.GRAY + ": " + ChatColor.RED + Math.round(recharge*10)/10.0 + ChatColor.GRAY + "s" + "          " + ChatColor.AQUA + "Mana" + ChatColor.GRAY + ": " + ChatColor.AQUA + Math.round(currentMana);
+
+        switch (SettingsManager.getPlayerSetting(player, MagickSettingsManager.WAND_HUD_APPEARANCE)) {
+            case "text" -> player.sendActionBar(Component.text(message));
+            case "bars_only" -> ActionBarManager.subscribe(player, "magick:wand", builder.getComponents());
+        }
+
+        // Send action bar
+        // TODO: player.sendActionBar(builder.getComponent());
+
+        /*
+        // Add recharge time bar
+        double rechargePercent = 1 - (recharge / lastRechargeMax);
+        String rechargeChar;
+        if (rechargePercent >= 1) rechargeChar = "\uE91A";
+        else if (rechargePercent >= .9) rechargeChar = "\uE919";
+        else if (rechargePercent >= .8) rechargeChar = "\uE918";
+        else if (rechargePercent >= .7) rechargeChar = "\uE917";
+        else if (rechargePercent >= .6) rechargeChar = "\uE916";
+        else if (rechargePercent >= .5) rechargeChar = "\uE915";
+        else if (rechargePercent >= .4) rechargeChar = "\uE914";
+        else if (rechargePercent >= .3) rechargeChar = "\uE913";
+        else if (rechargePercent >= .2) rechargeChar = "\uE912";
+        else if (rechargePercent >= .1) rechargeChar = "\uE911";
+        else rechargeChar = "\uE910";
+
+        /*
+        player.sendActionBar(
+                Component.text(Math.round(currentMana)).color(NamedTextColor.BLUE)
+                        .append(Component.text(manaChar).color(NamedTextColor.WHITE))
+                        .append(Component.text("    "))
+                        .append(Component.text(Math.round(recharge*10)/10.0).color(NamedTextColor.RED))
+                        .append(Component.text("s").color(NamedTextColor.GRAY))
+                        .append(Component.text(rechargeChar).color(NamedTextColor.WHITE))
+        );
+         */
+
+        // player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(message));
+
+        // player.sendActionBar(Component.text(message));
+    }
+
+    private static void addProgressBar(ActionBarUtil.ActionBarBuilder builder, String emptyChar, String emptyLeftChar, String emptyRightChar, String fullChar, String fullLeftChar, String fullRightChar, int offset, double progress) {
+        if (progress > 0) builder.addComponent(new ActionBarUtil.ActionBarComponent(fullLeftChar, 9, offset));
+        else builder.addComponent(new ActionBarUtil.ActionBarComponent(emptyLeftChar, 9, offset));
+
+        for (int i = 1; i < 9; i++) {
+            if (progress >= i) builder.addComponent(new ActionBarUtil.ActionBarComponent(fullChar, 9, (8*i) + offset));
+            else builder.addComponent(new ActionBarUtil.ActionBarComponent(emptyChar, 9, (8*i) + offset));
+        }
+
+        if (progress >= 10) builder.addComponent(new ActionBarUtil.ActionBarComponent(fullRightChar, 9, (8*9) + offset));
+        else builder.addComponent(new ActionBarUtil.ActionBarComponent(emptyRightChar, 9, (8*9) + offset));
     }
 }
