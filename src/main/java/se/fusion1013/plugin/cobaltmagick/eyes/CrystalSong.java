@@ -10,7 +10,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import se.fusion1013.plugin.cobaltcore.CobaltCore;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
+import se.fusion1013.plugin.cobaltmagick.advancement.MagickAdvancementManager;
 import se.fusion1013.plugin.cobaltmagick.event.MusicBoxEvent;
 import se.fusion1013.plugin.cobaltmagick.event.SpellCastEvent;
 import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
@@ -122,6 +124,10 @@ public class CrystalSong implements Listener {
                                 event.getPlayer().sendTitle(ChatColor.GOLD + "The Key Takes in the Music", ChatColor.YELLOW + "It is ready", 20, 70, 20);
 
                                 item.setItemStack(ItemManager.CRYSTAL_KEY_LIGHT_ACTIVE.getItemStack());
+
+                                // Advancement
+                                MagickAdvancementManager advancementManager = CobaltCore.getInstance().getSafeManager(CobaltMagick.getInstance(), MagickAdvancementManager.class);
+                                if (advancementManager != null) advancementManager.grantAdvancement(event.getPlayer(), "progression", "attune_key_light");
                             }
                         }
                         meta.setLore(newLore);
@@ -155,6 +161,11 @@ public class CrystalSong implements Listener {
                             // Key Is Ready
                             player.sendTitle(ChatColor.GOLD + "The Key Begins to Whisper!", ChatColor.YELLOW + "I can give you so much in exchange for...", 20, 70, 20);
                             item.setItemStack(ItemManager.CRYSTAL_KEY_DARK_ACTIVE.getItemStack());
+
+                            // Advancement
+                            MagickAdvancementManager advancementManager = CobaltCore.getInstance().getSafeManager(CobaltMagick.getInstance(), MagickAdvancementManager.class);
+                            if (advancementManager != null) advancementManager.grantAdvancement(player, "progression", "attune_key_dark");
+
                             return;
                         }
                         else {
