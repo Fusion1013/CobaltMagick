@@ -37,6 +37,10 @@ public class EntityManager extends Manager implements Listener {
     public static final ICustomEntity SENTIENT_WAND = SentientWand.register();
     public static final ICustomEntity HIGH_ALCHEMIST = HighAlchemist.register();
     public static final ICustomEntity APPRENTICE = Apprentice.register();
+    public static final ICustomEntity CURSE_MAGE = CurseMage.register();
+    public static final ICustomEntity TELEPORT_MAGE = TeleportMage.register();
+
+    public static final ICustomEntity MIMIC = Mimic.register();
 
     // ----- LISTENERS ----- // TODO: Move into Core
 
