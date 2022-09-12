@@ -19,7 +19,10 @@ import se.fusion1013.plugin.cobaltcore.util.PlayerUtil;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
 import se.fusion1013.plugin.cobaltmagick.util.constants.ItemConstants;
+import se.fusion1013.plugin.cobaltmagick.world.structures.cauldron.scenes.Albedo;
+import se.fusion1013.plugin.cobaltmagick.world.structures.cauldron.scenes.Citrinitas;
 import se.fusion1013.plugin.cobaltmagick.world.structures.cauldron.scenes.Nigredo;
+import se.fusion1013.plugin.cobaltmagick.world.structures.cauldron.scenes.Rubedo;
 
 import java.util.UUID;
 
@@ -43,10 +46,13 @@ public class CauldronManager extends Manager implements Listener {
         if (ItemManager.DEATH_BOUND_AMULET.compareTo(event.getPlayer().getInventory().getItemInMainHand())) executeNigredo(event.getPlayer());
 
         // Trigger cauldron stage 2 (Albedo)
+        if (ItemManager.OUR_MATTER.compareTo(event.getPlayer().getInventory().getItemInMainHand())) executeAlbedo(event.getPlayer());
 
         // Trigger cauldron stage 3 (Citrinitas)
+        if (false) executeCitrinitas(event.getPlayer());
 
         // Trigger cauldron stage 4 (Rubedo)
+        if (false) executeRubedo(event.getPlayer());
     }
 
     // ----- CAULDRON STAGES -----
@@ -72,6 +78,33 @@ public class CauldronManager extends Manager implements Listener {
 
         // Initiate Nigredo Scene
         Nigredo.start(CAULDRON_LOCATION, amuletOwner);
+    }
+
+    private static void executeAlbedo(Player player) {
+        PlayerUtil.reduceHeldItemStack(player, 1);
+
+        Player amuletOwner = Bukkit.getPlayer("Fusion1013");
+        if (amuletOwner == null) return;
+
+        Albedo.start(CAULDRON_LOCATION, amuletOwner);
+    }
+
+    private static void executeCitrinitas(Player player) {
+        PlayerUtil.reduceHeldItemStack(player, 1);
+
+        Player amuletOwner = Bukkit.getPlayer("Fusion1013");
+        if (amuletOwner == null) return;
+
+        Citrinitas.start(CAULDRON_LOCATION, amuletOwner);
+    }
+
+    private static void executeRubedo(Player player) {
+        PlayerUtil.reduceHeldItemStack(player, 1);
+
+        Player amuletOwner = Bukkit.getPlayer("Fusion1013");
+        if (amuletOwner == null) return;
+
+        Rubedo.start(CAULDRON_LOCATION, amuletOwner);
     }
 
     // ----- CONSTRUCTORS -----
