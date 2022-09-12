@@ -7,16 +7,23 @@ import eu.endercentral.crazy_advancements.advancement.AdvancementDisplay;
 import eu.endercentral.crazy_advancements.advancement.AdvancementFlag;
 import eu.endercentral.crazy_advancements.advancement.AdvancementVisibility;
 import eu.endercentral.crazy_advancements.manager.AdvancementManager;
+import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import se.fusion1013.plugin.cobaltcore.CobaltCore;
 import se.fusion1013.plugin.cobaltcore.advancement.CobaltAdvancementManager;
 import se.fusion1013.plugin.cobaltcore.manager.Manager;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
+import se.fusion1013.plugin.cobaltmagick.entity.create.TeleportMage;
 import se.fusion1013.plugin.cobaltmagick.event.SpellCastEvent;
+import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
 import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
 import se.fusion1013.plugin.cobaltmagick.spells.SpellType;
@@ -186,6 +193,14 @@ public class MagickAdvancementManager extends Manager implements Listener {
         return manager;
     }
 
+    private static AdvancementDisplay createDisplay(ItemStack icon, String title, String description, AdvancementDisplay.AdvancementFrame frame, AdvancementVisibility visibility) {
+        return new AdvancementDisplay(icon, new JSONMessage(new TextComponent(title)), new JSONMessage(new TextComponent(description)), frame, visibility);
+    }
+
+    private static AdvancementDisplay createDisplay(ItemStack icon, TextComponent title, TextComponent description, AdvancementDisplay.AdvancementFrame frame, AdvancementVisibility visibility) {
+        return new AdvancementDisplay(icon, new JSONMessage(title), new JSONMessage(description), frame, visibility);
+    }
+
     private AdvancementManager createSpellAdvancements() {
 
         int spellSectionHeight = 4;
@@ -284,11 +299,29 @@ public class MagickAdvancementManager extends Manager implements Listener {
      * @param advancementName the name of the advancement.
      * @return true if the advancement was successfully granted.
      */
-    public boolean grantAdvancement(Player player, String advancementName) {
-        Advancement advancement = SPELL_ADVANCEMENTS.get(advancementName);
+    public boolean grantAdvancement(Player player, String managerName, String advancementName) {
+
+        Map<String, Advancement> advancementMap = null;
+        AdvancementManager manager = null;
+
+        switch (managerName) {
+            case "progression" -> {
+                advancementMap = PROGRESSION_ADVANCEMENTS;
+                manager = PROGRESSION_ADVANCEMENT_MANAGER;
+            }
+            case "spell" -> {
+                advancementMap = SPELL_ADVANCEMENTS;
+                manager = SPELL_ADVANCEMENT_MANAGER;
+            }
+        }
+
+        if (advancementMap == null || manager == null) return false;
+
+        Advancement advancement = advancementMap.get(advancementName);
         if (advancement == null) return false;
 
-        SPELL_ADVANCEMENT_MANAGER.grantAdvancement(player, advancement);
+        manager.addPlayer(player);
+        manager.grantAdvancement(player, advancement);
         return true;
     }
 
@@ -296,6 +329,10 @@ public class MagickAdvancementManager extends Manager implements Listener {
         SPELL_ADVANCEMENT_MANAGER.addPlayer(player);
         for (Advancement advancement : SPELL_ADVANCEMENT_MANAGER.getAdvancements()) {
             SPELL_ADVANCEMENT_MANAGER.grantAdvancement(player, advancement);
+        }
+        PROGRESSION_ADVANCEMENT_MANAGER.addPlayer(player);
+        for (Advancement advancement : PROGRESSION_ADVANCEMENT_MANAGER.getAdvancements()) {
+            PROGRESSION_ADVANCEMENT_MANAGER.grantAdvancement(player, advancement);
         }
     }
 
@@ -307,14 +344,33 @@ public class MagickAdvancementManager extends Manager implements Listener {
 
     // ----- GETTERS / SETTERS -----
 
+    public Advancement getAdvancement(String managerName, String advancement) {
+        switch (managerName) {
+            case "progression" -> { return PROGRESSION_ADVANCEMENTS.get(advancement); }
+            case "spell" -> { return SPELL_ADVANCEMENTS.get(advancement); }
+        }
+
+        return null;
+    }
+
     /**
      * Get all advancement names.
      *
      * @return an array of advancement names.
      */
-    public String[] getAdvancementNames() {
-        List<String> advancements = new ArrayList<>(SPELL_ADVANCEMENTS.keySet());
-        return advancements.toArray(new String[0]);
+    public String[] getAdvancementNames(String managerName) {
+        return switch (managerName) {
+            case "spell" -> (new ArrayList<>(SPELL_ADVANCEMENTS.keySet())).toArray(new String[0]);
+            case "progression" -> (new ArrayList<>(PROGRESSION_ADVANCEMENTS.keySet())).toArray(new String[0]);
+            default -> new String[0];
+        };
+    }
+
+    public static String[] getManagerNames() {
+        List<String> managerNames = new ArrayList();
+        managerNames.add("spell");
+        managerNames.add("progression");
+        return managerNames.toArray(new String[0]);
     }
 
     // ----- RELOADING / DISABLING -----
@@ -323,6 +379,7 @@ public class MagickAdvancementManager extends Manager implements Listener {
     public void reload() {
         CobaltMagick.getInstance().getServer().getPluginManager().registerEvents(this, CobaltMagick.getInstance());
         CobaltCore.getInstance().getManager(CobaltCore.getInstance(), CobaltAdvancementManager.class).addAdvancementManager(createSpellAdvancements());
+        CobaltCore.getInstance().getManager(CobaltCore.getInstance(), CobaltAdvancementManager.class).addAdvancementManager(createProgressionAdvancements());
     }
 
     @Override
