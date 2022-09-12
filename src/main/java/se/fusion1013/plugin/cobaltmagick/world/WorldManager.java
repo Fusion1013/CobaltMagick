@@ -28,11 +28,13 @@ import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
 import se.fusion1013.plugin.cobaltmagick.world.structures.*;
 import se.fusion1013.plugin.cobaltmagick.world.structures.hidden.HiddenObject;
 import se.fusion1013.plugin.cobaltmagick.world.structures.hidden.RevealMethod;
+import se.fusion1013.plugin.cobaltmagick.world.structures.lock.ItemLock;
+import se.fusion1013.plugin.cobaltmagick.world.structures.lock.RuneLock;
 import se.fusion1013.plugin.cobaltmagick.world.structures.system.IActivatable;
 
 import java.util.*;
 
-public class WorldManager extends Manager implements Listener, Runnable {
+public class WorldManager extends Manager implements Listener {
 
     // ----- VARIABLES -----
 
@@ -46,17 +48,6 @@ public class WorldManager extends Manager implements Listener, Runnable {
 
     // Magick Door
     private static Map<UUID, MagickDoor> doorMap = new HashMap<>();
-
-    // Item Lock
-    private static Map<UUID, ItemLock> itemLockMap = new HashMap<>();
-
-    // Rune Lock
-    private static Map<Integer, RuneLock> runeLockMap = new HashMap<>();
-    private static final Map<Location, RuneLock> runeLockLocations = new HashMap<>();
-    private static int currentRuneLockId = 0;
-
-    // Hidden Particles
-    private static final Map<UUID, HiddenObject> HIDDEN_OBJECT_MAP = new HashMap<>();
 
     // ----- CONSTRUCTOR -----
 
@@ -95,42 +86,29 @@ public class WorldManager extends Manager implements Listener, Runnable {
                 if (!boxEvent.isCancelled()) box.playMusic();
             }
         }
-
-        // ----- LOCKS -----
-
-        for (ItemLock lock : itemLockMap.values()) {
-            if (lock.getLocation().getBlock().getLocation().equals(location) && event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                if (lock.onClick(event.getPlayer())) event.setCancelled(true);
-            }
-        }
-
-        // ----- RUNE LOCK -----
-
-        RuneLock runeLock = runeLockLocations.get(location);
-        if (runeLock != null) {
-            if (runeLock.onClick(event.getPlayer())) event.setCancelled(true);
-        }
-
-    }
-
-    // ----- RUNNABLE -----
-
-    @Override
-    public void run() {
-        for (IChunkBound<?> chunkBound : ChunkBoundObjectManager.getLoadedOfType(HiddenObject.class)) {
-            if (chunkBound instanceof HiddenObject message) {
-                if (message.isActive()) message.tick();
-            }
-        }
-
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            if (p.getWorld().getEnvironment().equals(World.Environment.NETHER) && (p.getGameMode().equals(GameMode.SURVIVAL) || p.getGameMode().equals(GameMode.ADVENTURE))) {
-                p.setFireTicks(100);
-            }
-        }
     }
 
     // ----- ACTIVATABLE -----
+
+    /**
+     * Adds an <code>IActivatable</code> to the map.
+     *
+     * @return the <code>IActivatable</code>.
+     */
+    public static IActivatable addActivatable(IActivatable activatable) {
+        ACTIVATABLE_MAP.put(activatable.getUuid(), activatable);
+        return activatable;
+    }
+
+    /**
+     * Removes an <code>IActivatable</code> from the map.
+     *
+     * @param uuid the <code>UUID</code> of the <code>IActivatable</code>.
+     * @return the <code>IActivatable</code>, or null if it does not exist.
+     */
+    public static IActivatable removeActivatable(UUID uuid) {
+        return ACTIVATABLE_MAP.remove(uuid);
+    }
 
     /**
      * Gets an <code>IActivatable</code> from the map.
@@ -249,63 +227,6 @@ public class WorldManager extends Manager implements Listener, Runnable {
         return null;
     }
 
-    // ----- ITEM LOCK -----
-
-    /**
-     * Places a new item lock at the location that unlocks when given the correct item.
-     *
-     * @param location the location of the lock.
-     * @param item the item that unlocks the lock.
-     */
-    public static void registerItemLock(Location location, CustomItem item, IActivatable activatable) {
-        ItemLock lock = new ItemLock(location, item, activatable);
-        itemLockMap.put(lock.getUuid(), lock);
-        DataManager.getInstance().getDao(IItemLockDao.class).insertLockAsync(lock);
-    }
-
-    /**
-     * Removes an <code>ItemLock</code> with matching <code>UUID</code>.
-     *
-     * @param uuid the <code>UUID</code> of the <code>ItemLock</code> to remove.
-     */
-    public static void removeItemLock(UUID uuid) {
-        itemLockMap.remove(uuid);
-        DataManager.getInstance().getDao(IItemLockDao.class).removeLockAsync(uuid);
-    }
-
-    /**
-     * Gets all <code>ItemLock</code>'s
-     *
-     * @return an array of <code>ItemLock</code>'s.
-     */
-    public static ItemLock[] getItemLocks() {
-        List<ItemLock> locks = new ArrayList<>(itemLockMap.values());
-        return locks.toArray(new ItemLock[0]);
-    }
-
-    /**
-     * Gets an <code>ItemLock</code> with matching <code>UUID</code>.
-     *
-     * @param uuid the <code>UUID</code> of the <code>ItemLock</code>.
-     * @return an <code>ItemLock</code>.
-     */
-    public static ItemLock getItemLock(UUID uuid) {
-        return itemLockMap.get(uuid);
-    }
-
-    /**
-     * Gets all <code>ItemLock</code> keys.
-     *
-     * @return an array of <code>ItemLock</code> keys.
-     */
-    public static String[] getItemLockKeys() {
-        List<String> keys = new ArrayList<>();
-        for (UUID uuid : itemLockMap.keySet()) {
-            keys.add(uuid.toString());
-        }
-        return keys.toArray(new String[0]);
-    }
-
     // ----- DOOR -----
 
     /**
@@ -362,191 +283,10 @@ public class WorldManager extends Manager implements Listener, Runnable {
         return location.getX() + "::" + location.getY() + "::" + location.getZ() + "::" + location.getWorld().getName();
     }
 
-    // ----- HIDDEN OBJECTS -----
-
-    @EventHandler
-    public void onSpellCast(SpellCastEvent event) {
-        if (event.getSpell().getId() == SpellManager.ALL_SEEING_EYE.getId()) {
-            revealNearbyHiddenParticles(RevealMethod.ALL_SEEING_EYE, event.getSpell().getCaster().getLocation()); // TODO: Replace with actual spell location
-        }
-    }
-
-    @EventHandler
-    public void onMovement(PlayerMoveEvent event) {
-        revealNearbyHiddenParticles(RevealMethod.PROXIMITY, event.getPlayer().getLocation());
-    }
-
-    public static String[] getRevealMethods() {
-        RevealMethod[] methods = RevealMethod.values();
-        List<String> revealMethodStrings = new ArrayList<>();
-        for (RevealMethod method : methods) revealMethodStrings.add(method.toString());
-        return revealMethodStrings.toArray(new String[0]);
-    }
-
-    private static void revealNearbyHiddenParticles(RevealMethod revealMethod, Location location) {
-        List<IChunkBound<?>> chunkBounds = ChunkBoundObjectManager.getLoadedOfType(HiddenObject.class);
-
-        for (IChunkBound<?> chunkBound : chunkBounds) {
-            if (chunkBound instanceof HiddenObject hiddenObject) {
-                Location hiddenLocation = hiddenObject.getLocation();
-
-                if (hiddenLocation.getWorld() != location.getWorld()) continue;
-
-                if (hiddenLocation.distanceSquared(location) <= HiddenObject.MAX_REVEAL_DISTANCE* HiddenObject.MAX_REVEAL_DISTANCE && revealMethod == hiddenObject.getRevealMethod()) {
-                    hiddenObject.activate();
-                }
-            }
-        }
-    }
-
-    /**
-     * Creates a new <code>HiddenObject</code>.
-     *
-     * @param location the <code>Location</code> of the <code>HiddenObject</code>.
-     * @param revealMethod the method used to reveal the <code>HiddenObject</code>.
-     */
-    public static UUID createHiddenObject(Location location, RevealMethod revealMethod) {
-        HiddenObject hidden = new HiddenObject(location, revealMethod);
-        HIDDEN_OBJECT_MAP.put(hidden.getUUID(), hidden);
-        ChunkBoundObjectManager.addChunkLoadableObject(location.getChunk(), hidden);
-        CobaltCore.getInstance().getManager(CobaltCore.getInstance(), DataManager.class).getDao(IHiddenObjectDao.class).insertHiddenObjectAsync(hidden);
-        return hidden.getUUID();
-    }
-
-    /**
-     * Removes a <code>HiddenObject</code>.
-     *
-     * @param uuid the <code>UUID</code> of the <code>HiddenObject</code>.
-     */
-    public static void removeHiddenObject(UUID uuid) {
-        HIDDEN_OBJECT_MAP.remove(uuid);
-        ChunkBoundObjectManager.removeChunkBound(HiddenObject.class, uuid);
-        CobaltCore.getInstance().getManager(CobaltCore.getInstance(), DataManager.class).getDao(IHiddenObjectDao.class).removeHiddenObjectAsync(uuid);
-    }
-
-    /**
-     * Gets a list of <code>HiddenObject</code> identifiers.
-     *
-     * @return a list of <code>HiddenObject</code> identifiers.
-     */
-    public static String[] getHiddenObjectIdentifiers() {
-        List<String> hiddenParticleIds = new ArrayList<>();
-        for (UUID uuid : HIDDEN_OBJECT_MAP.keySet()) {
-            hiddenParticleIds.add(uuid.toString());
-        }
-        return hiddenParticleIds.toArray(new String[0]);
-    }
-
-    public static void setHiddenObjectParticleGroup(UUID uuid, ParticleGroup particleGroup) {
-        HiddenObject hiddenObject = HIDDEN_OBJECT_MAP.get(uuid);
-        if (hiddenObject == null) return;
-        hiddenObject.setParticleGroup(particleGroup);
-    }
-
-    public static void setHiddenObjectItemSpawn(UUID uuid, String item) {
-        HiddenObject hiddenObject = HIDDEN_OBJECT_MAP.get(uuid);
-        if (hiddenObject == null) return;
-        hiddenObject.setItemSpawn(item);
-    }
-
-    public static void setHiddenObjectWandSpawn(UUID uuid, int wandTier) {
-        HiddenObject hiddenObject = HIDDEN_OBJECT_MAP.get(uuid);
-        if (hiddenObject == null) return;
-        hiddenObject.setWandSpawn(wandTier);
-    }
-
-    public static void setHiddenObjectDeleteOnActivation(UUID uuid, boolean deleteOnActivation) {
-        HiddenObject hiddenObject = HIDDEN_OBJECT_MAP.get(uuid);
-        if (hiddenObject == null) return;
-        hiddenObject.setDeleteOnActivation(deleteOnActivation);
-    }
-
-    // ----- RUNE LOCK -----
-
-    public static RuneLock registerRuneLock(Location location, IActivatable activatable, String item) {
-        // Create the Rune Lock
-        int id = getRuneLockId();
-        Location formattedLocation = location.getBlock().getLocation();
-        RuneLock runeLock = new RuneLock(formattedLocation, activatable, id, item);
-
-        // Store the Rune Lock
-        runeLockMap.put(id, runeLock);
-        runeLockLocations.put(formattedLocation, runeLock);
-        DataManager.getInstance().getDao(IRuneLockDao.class).insertRuneLockAsync(runeLock);
-
-        return runeLock;
-    }
-
-    /**
-     * Adds an item to the <code>RuneLock</code>.
-     *
-     * @param id the id of the <code>RuneLock</code>.
-     * @param item the item to add.
-     * @return weather an item was added or not.
-     */
-    public static boolean addRuneLockItem(int id, String item) {
-        RuneLock runeLock = runeLockMap.get(id);
-        if (runeLock == null) return false;
-
-        runeLock.addItem(item);
-        DataManager.getInstance().getDao(IRuneLockDao.class).updateRuneLockItemsAsync(runeLock);
-        return true;
-    }
-
-    /**
-     * Removes the first item in the <code>RuneLock</code> queue.
-     *
-     * @param id the id of the <code>RuneLock</code>.
-     * @return weather an item was removed or not.
-     */
-    public static boolean removeRuneLockItem(int id) {
-        RuneLock runeLock = runeLockMap.get(id);
-        if (runeLock == null) return false;
-
-        runeLock.removeItem();
-        DataManager.getInstance().getDao(IRuneLockDao.class).updateRuneLockItemsAsync(runeLock);
-        return true;
-    }
-
-    private static int getRuneLockId() {
-        while (runeLockMap.get(currentRuneLockId) != null) currentRuneLockId++;
-        return currentRuneLockId;
-    }
-
-    public static String[] getRuneLockIds() {
-        List<String> ids = new ArrayList<>();
-        for (int id : runeLockMap.keySet()) {
-            ids.add(Integer.toString(id));
-        }
-        return ids.toArray(new String[0]);
-    }
-
-    public static RuneLock getRuneLock(int id) {
-        return runeLockMap.get(id);
-    }
-
-    /**
-     * Removes a <code>RuneLock</code>.
-     *
-     * @param id the id of the <code>RuneLock</code>.
-     * @return the <code>RuneLock</code> that was removed.
-     */
-    public static RuneLock removeRuneLock(int id) {
-        RuneLock runeLock = runeLockMap.remove(id);
-        if (runeLock == null) return null;
-
-        runeLockLocations.remove(runeLock.getLocation());
-        CobaltCore.getInstance().getManager(CobaltCore.getInstance(), DataManager.class).getDao(IRuneLockDao.class).removeRuneLockAsync(id);
-        return runeLock;
-    }
-
     // ----- RELOADING / DISABLING -----
 
     @Override
     public void reload() {
-        CobaltMagick.getInstance().getServer().getPluginManager().registerEvents(this, CobaltMagick.getInstance());
-        Bukkit.getScheduler().runTaskTimerAsynchronously(CobaltMagick.getInstance(), this, 0, 2);
-
         // Load Music Boxes from Database
         musicBoxLocations = DataManager.getInstance().getDao(IMusicBoxDao.class).getMusicBoxes();
         for (MusicBox box : musicBoxLocations.values()) musicBoxMap.put(box.getId(), box);
@@ -554,21 +294,6 @@ public class WorldManager extends Manager implements Listener, Runnable {
         // Load Doors from database
         doorMap = DataManager.getInstance().getDao(IDoorDao.class).getDoors();
         for (MagickDoor door : doorMap.values()) ACTIVATABLE_MAP.put(door.getUuid(), door);
-
-        // Load Item Locks from database
-        itemLockMap = DataManager.getInstance().getDao(IItemLockDao.class).getLocks();
-
-        // Load Rune Locks from database
-        runeLockMap = DataManager.getInstance().getDao(IRuneLockDao.class).getRuneLocks();
-        for (RuneLock lock : runeLockMap.values()) runeLockLocations.put(lock.getLocation(), lock);
-
-        // Load hidden particles from database
-        List<HiddenObject> hiddenObjects = core.getManager(core, DataManager.class).getDao(IHiddenObjectDao.class).getHiddenParticles();
-        for (HiddenObject particle : hiddenObjects) {
-            // Add to hidden particle map & chunk bound
-            HIDDEN_OBJECT_MAP.put(particle.getUUID(), particle);
-            ChunkBoundObjectManager.addChunkLoadableObject(particle.getLocation().getChunk(), particle);
-        }
     }
 
     @Override
