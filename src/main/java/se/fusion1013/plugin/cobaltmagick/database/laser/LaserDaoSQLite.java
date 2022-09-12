@@ -39,15 +39,16 @@ public class LaserDaoSQLite extends Dao implements ILaserDao {
 
     @Override
     public void removeLaserSync(UUID uuid) {
-        try (
-                Connection conn = getDataManager().getSqliteDb().getSQLConnection();
-                PreparedStatement ps = conn.prepareStatement("DELETE FROM lasers WHERE laser_uuid = ?")
-        ) {
-            ps.setString(1, uuid.toString());
-            ps.executeUpdate();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
+        getDataManager().performThreadSafeSQLiteOperations(conn -> {
+            try (
+                    PreparedStatement ps = conn.prepareStatement("DELETE FROM lasers WHERE laser_uuid = ?")
+            ) {
+                ps.setString(1, uuid.toString());
+                ps.executeUpdate();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        });
     }
 
     @Override
@@ -62,15 +63,16 @@ public class LaserDaoSQLite extends Dao implements ILaserDao {
 
         getDataManager().getDao(ILocationDao.class).insertLocation(simpleLaser.getUUID(), simpleLaser.getStartLocation());
 
-        try (
-                Connection conn = getDataManager().getSqliteDb().getSQLConnection();
-                PreparedStatement ps = conn.prepareStatement("INSERT INTO lasers (laser_uuid) VALUES(?)")
-        ) {
-            ps.setString(1, simpleLaser.getUUID().toString());
-            ps.executeUpdate();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
+        getDataManager().performThreadSafeSQLiteOperations(conn -> {
+            try (
+                    PreparedStatement ps = conn.prepareStatement("INSERT INTO lasers (laser_uuid) VALUES(?)")
+            ) {
+                ps.setString(1, simpleLaser.getUUID().toString());
+                ps.executeUpdate();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        });
     }
 
     @Override
