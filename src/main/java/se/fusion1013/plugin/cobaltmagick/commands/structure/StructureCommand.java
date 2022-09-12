@@ -11,11 +11,9 @@ public class StructureCommand {
                 .withPermission("cobalt.magick.commands.structure")
                 .withSubcommand(DoorCommand.createDoorCommand())
                 .withSubcommand(MusicBoxCommand.createMusicBoxCommand())
-                .withSubcommand(ItemLockCommand.createItemLockCommand())
-                .withSubcommand(RuneLockCommand.createRuneLockCommand())
                 .withSubcommand(LaserCommand.createLaserCommand())
                 .withSubcommand(ActivatableCommand.createActivatableCommand())
-                .withSubcommand(HiddenObjectCommand.createHiddenObjectCommand())
+                .withSubcommand(MagickPortalCommand.createMagickPortalCommand())
                 .register();
 
         // Command for /magick
@@ -23,11 +21,9 @@ public class StructureCommand {
                 .withPermission("cobalt.magick.commands.structure")
                 .withSubcommand(DoorCommand.createDoorCommand())
                 .withSubcommand(MusicBoxCommand.createMusicBoxCommand())
-                .withSubcommand(ItemLockCommand.createItemLockCommand())
-                .withSubcommand(RuneLockCommand.createRuneLockCommand())
                 .withSubcommand(LaserCommand.createLaserCommand())
                 .withSubcommand(ActivatableCommand.createActivatableCommand())
-                .withSubcommand(HiddenObjectCommand.createHiddenObjectCommand());
+                .withSubcommand(MagickPortalCommand.createMagickPortalCommand());
     }
 
 }
