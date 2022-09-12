@@ -50,8 +50,8 @@ public class MusicBox implements Listener {
             List<Entity> nearbyEntities = new ArrayList<>(world.getNearbyEntities(location, 20, 20, 20));
             for (Entity e : nearbyEntities) {
                 if (e instanceof Player p) {
-                    p.stopSound(sound, SoundCategory.AMBIENT); // Stop the song from playing if it is already playing
-                    p.playSound(location, sound, SoundCategory.AMBIENT, 1, 1);
+                    p.stopSound(sound, SoundCategory.RECORDS); // Stop the song from playing if it is already playing
+                    p.playSound(location, sound, SoundCategory.RECORDS, 1, 1);
                     p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(HexUtils.colorify(message)));
                 }
             }
