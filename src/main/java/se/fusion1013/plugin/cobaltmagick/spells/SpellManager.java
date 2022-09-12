@@ -1496,8 +1496,7 @@ public class SpellManager extends Manager {
                     double weight = spell.getSpellTierWeights()[i];
 
                     if (weight != 0) randomCollection.add(weight, spell);
-                } else {
-                    randomCollection.add(1, spell);
+                    else randomCollection.add(1, spell);
                 }
             }
         }
