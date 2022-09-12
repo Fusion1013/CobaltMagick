@@ -6,12 +6,12 @@ import se.fusion1013.plugin.cobaltcore.CobaltPlugin;
 import se.fusion1013.plugin.cobaltmagick.advancement.MagickAdvancementManager;
 import se.fusion1013.plugin.cobaltmagick.commands.cgive.CGiveCommand;
 import se.fusion1013.plugin.cobaltmagick.commands.*;
-import se.fusion1013.plugin.cobaltmagick.database.DatabaseHook;
 import se.fusion1013.plugin.cobaltmagick.database.system.MagickDataManager;
 import se.fusion1013.plugin.cobaltmagick.entity.EntityManager;
 import se.fusion1013.plugin.cobaltmagick.eyes.CrystalSong;
 import se.fusion1013.plugin.cobaltmagick.gui.AbstractGUIListener;
 import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
+import se.fusion1013.plugin.cobaltmagick.storage.MagickObjectManager;
 import se.fusion1013.plugin.cobaltmagick.world.structures.cauldron.CauldronManager;
 import se.fusion1013.plugin.cobaltmagick.world.structures.laser.LaserManager;
 import se.fusion1013.plugin.cobaltmagick.manager.*;
@@ -94,8 +94,11 @@ public final class CobaltMagick extends JavaPlugin implements CobaltPlugin {
         CobaltCore.getInstance().getManager(this, SceneManager.class);
         CobaltCore.getInstance().getManager(this, MagickStructureManager.class);
         CobaltCore.getInstance().getManager(this, CauldronManager.class);
+        CobaltCore.getInstance().getManager(this, MagickSettingsManager.class);
 
         CobaltCore.getInstance().reloadPluginIntegrationManager("CrazyAdvancementsAPI", this, MagickAdvancementManager.class);
+
+        CobaltCore.getInstance().getManager(this, MagickObjectManager.class);
     }
 
     // ----- LISTENERS -----
