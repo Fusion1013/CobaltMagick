@@ -18,7 +18,7 @@ public class DirectionalPersonalParticle {
 
         new CommandAPICommand("dpp")
                 .withPermission("cobalt.magick.commands.dpp")
-                .withArguments(new EntitySelectorArgument("players", EntitySelectorArgument.EntitySelector.MANY_PLAYERS))
+                .withArguments(new EntitySelectorArgument("players", EntitySelector.MANY_PLAYERS))
                 .withArguments(new ParticleArgument("particle"))
                 .withArguments(new DoubleArgument("xOffset"))
                 .withArguments(new DoubleArgument("yOffset"))
