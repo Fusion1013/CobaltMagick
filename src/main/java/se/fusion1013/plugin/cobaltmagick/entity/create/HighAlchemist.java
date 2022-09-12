@@ -29,7 +29,9 @@ import se.fusion1013.plugin.cobaltcore.state.CobaltState;
 import se.fusion1013.plugin.cobaltcore.state.StateEngine;
 import se.fusion1013.plugin.cobaltcore.state.TimedState;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
+import se.fusion1013.plugin.cobaltmagick.advancement.AdvancementGranter;
 import se.fusion1013.plugin.cobaltmagick.entity.create.sentientwand.SentientWandParameters;
+import se.fusion1013.plugin.cobaltmagick.entity.modules.EntityAdvancementModule;
 import se.fusion1013.plugin.cobaltmagick.entity.modules.ability.CasterAbility;
 import se.fusion1013.plugin.cobaltmagick.item.loot.WandLootEntry;
 import se.fusion1013.plugin.cobaltmagick.entity.EntityManager;
@@ -111,12 +113,10 @@ public class HighAlchemist {
                         new LootPool(1, new LootEntry(SpellManager.ALPHA.getSpellItem(), 1, 1)),
                         new LootPool(1, new LootEntry(SpellManager.GAMMA.getSpellItem(), 1, 1)),
                         new LootPool(1, new LootEntry(ItemManager.CRYSTAL_KEY.getItemStack(), 1, 1)),
-                        new LootPool(1, new LootEntry(BookConstants.getEmeraldTabletII(), 1, 1))/*,
+                        new LootPool(1, new LootEntry(BookConstants.getEmeraldTabletI(), 1, 1)),
                         new LootPool(1, new WandLootEntry(4, true))
-                        */
                 )))
-
-                // TODO: Should not take fall damage
+                .addExecuteOnDeathModule(new EntityAdvancementModule(new AdvancementGranter("progression", "kill_high_alchemist", 50)))
 
                 // Sounds
                 .addExecuteOnTickModule(new EntityAmbientSoundModule("minecraft:cobalt.brain", 1, 1, 41))
