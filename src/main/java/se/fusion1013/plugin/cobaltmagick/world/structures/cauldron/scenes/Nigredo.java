@@ -1,28 +1,28 @@
 package se.fusion1013.plugin.cobaltmagick.world.structures.cauldron.scenes;
 
-import com.sk89q.worldedit.math.MathUtils;
 import io.papermc.paper.entity.RelativeTeleportFlag;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
+import se.fusion1013.plugin.cobaltcore.CobaltCore;
 import se.fusion1013.plugin.cobaltcore.particle.ParticleGroup;
 import se.fusion1013.plugin.cobaltcore.particle.styles.ParticleStyleCircle;
 import se.fusion1013.plugin.cobaltcore.particle.styles.ParticleStyleLine;
 import se.fusion1013.plugin.cobaltcore.particle.styles.ParticleStylePoint;
-import se.fusion1013.plugin.cobaltcore.particle.styles.glyph.ParticleStyleFinnishGlyph;
 import se.fusion1013.plugin.cobaltcore.particle.styles.glyph.ParticleStyleText;
 import se.fusion1013.plugin.cobaltcore.util.VectorUtil;
+import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
+import se.fusion1013.plugin.cobaltmagick.advancement.MagickAdvancementManager;
 import se.fusion1013.plugin.cobaltmagick.scene.Scene;
 import se.fusion1013.plugin.cobaltmagick.scene.SceneEvent;
-import se.fusion1013.plugin.cobaltmagick.util.VectorUtils;
 
 public class Nigredo {
 
@@ -65,9 +65,10 @@ public class Nigredo {
         NIGREDO_SCENE.addEvent(new SceneEvent(17500, 64000, location -> amuletOwnerCircles(location, 2.2)));
         NIGREDO_SCENE.addEvent(new SceneEvent(22000, 60000, Nigredo::nigredoText));
         NIGREDO_SCENE.addEvent(new SceneEvent(30000, 60000, Nigredo::cauldronBubbles));
+        NIGREDO_SCENE.addEvent(new SceneEvent(39000, 60000, Nigredo::pillarCircles));
 
         NIGREDO_SCENE.addEvent(new SceneEvent(65000, 65000, Nigredo::fillCauldron));
-        NIGREDO_SCENE.addEvent(new SceneEvent(65000, 65000, Nigredo::reset));
+        NIGREDO_SCENE.addEvent(new SceneEvent(65000, 65000, Nigredo::finalize));
 
         return true;
     }
@@ -133,6 +134,13 @@ public class Nigredo {
         NIGREDO_CIRCLE.display(location.clone().add(new Vector(0, 30, 0)));
     }
 
+    public static void pillarCircles(Location location) {
+        PILLAR_CIRCLES.display(location.toCenterLocation().add(9, -2, 9));
+        PILLAR_CIRCLES.display(location.toCenterLocation().add(-9, -2, 9));
+        PILLAR_CIRCLES.display(location.toCenterLocation().add(9, -2, -9));
+        PILLAR_CIRCLES.display(location.toCenterLocation().add(-9, -2, -9));
+    }
+
     public static void cauldronBubbles(Location location) {
         World world = location.getWorld();
         world.spawnParticle(Particle.SCULK_SOUL, location.clone().add(new Vector(.5, .5, .5)), 3, 0.25, 0.3, 0.25, 0);
@@ -171,9 +179,22 @@ public class Nigredo {
         });
     }
 
-    public static void reset(Location location) {
+    public static void finalize(Location location) {
+        // Set new player max health
+        AttributeInstance healthInstance = amuletOwner.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+        if (healthInstance != null) healthInstance.setBaseValue(healthInstance.getBaseValue() + 4);
+
         // Reset player gravity
         amuletOwner.setGravity(true);
+
+        // Give advancement to all nearby players
+        MagickAdvancementManager advancementManager = CobaltCore.getInstance().getSafeManager(CobaltMagick.getInstance(), MagickAdvancementManager.class);
+
+        if (advancementManager != null) {
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                advancementManager.grantAdvancement(p, "progression", "nigredo");
+            }
+        }
     }
 
     // ----- PARTICLES -----
@@ -220,8 +241,8 @@ public class Nigredo {
         // Nigredo Text
         ParticleStyleText nigredoText1 = new ParticleStyleText("nigredo_text_1");
         nigredoText1.setParticle(Particle.END_ROD);
-        nigredoText1.setOffset(new Vector(.5, .5, .5));
-        nigredoText1.setCount(20);
+        nigredoText1.setOffset(new Vector(.2, .2, .2));
+        nigredoText1.setCount(5);
         nigredoText1.setExtraSetting("text", "nigredo");
         nigredoText1.setExtraSetting("style", "finnish_glyph");
         nigredoText1.setExtraSetting("spacing", 3.4);
@@ -273,6 +294,29 @@ public class Nigredo {
                     .setAngularVelocity(0, 2, 0)
                     .build())
             .build();
+
+    private static ParticleGroup PILLAR_CIRCLES = new ParticleGroup.ParticleGroupBuilder()
+            .addStyle(
+                    new ParticleStyleCircle.ParticleStyleCircleBuilder()
+                            .setParticle(Particle.DRAGON_BREATH)
+                            .setRadius(4)
+                            .setIterations(8)
+                            .setCount(0)
+                            .setSpeed(1)
+                            .setOffset(new Vector(0, .3, 0))
+                            .setAngularVelocity(0, 10, 0)
+                            .build()
+            ).addStyle(
+                    new ParticleStyleCircle.ParticleStyleCircleBuilder()
+                            .setParticle(Particle.FALLING_OBSIDIAN_TEAR)
+                            .setRadius(4)
+                            .setIterations(8)
+                            .setCount(4)
+                            .setOffset(new Vector(.1, .1, .1))
+                            .setSpeed(0)
+                            .setAngularVelocity(0, 10, 0)
+                            .build()
+            ).build();
 
     // ----- UTIL -----
 
