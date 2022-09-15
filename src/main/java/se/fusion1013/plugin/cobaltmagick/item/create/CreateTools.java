@@ -22,6 +22,18 @@ public class CreateTools {
 
     public static void create() {}
 
+    public static CustomItem RUNE_LOCK_OVERRIDE_MODULE = register(new CustomItem.CustomItemBuilder("rune_lock_override_module", Material.EMERALD, 1)
+            .setCustomName(HexUtils.colorify("&bRune Lock Override Module"))
+            .addLoreLine(HexUtils.colorify("&o&7Reads & mimics the signals of runes"))
+            .addLoreLine(HexUtils.colorify("&o&7required to by a Rune Lock"))
+            .setCustomModel(1009)
+            .addShapedRecipe("-%-", "%&%", "-%-",
+                    new AbstractCustomItem.ShapedIngredient('-', Material.REDSTONE),
+                    new AbstractCustomItem.ShapedIngredient('%', CreateMaterialIngots.HEPATIZON_INGOT.getItemStack()),
+                    new AbstractCustomItem.ShapedIngredient('&', Material.CYAN_STAINED_GLASS_PANE)
+            )
+            .build());
+
     public static CustomItem TONGS = register(new CustomItem.CustomItemBuilder("tongs", Material.WOODEN_AXE, 1)
             .setCustomName(HexUtils.colorify("&8Tongs"))
             .addShapedRecipe(
