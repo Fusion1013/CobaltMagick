@@ -3,8 +3,6 @@ package se.fusion1013.plugin.cobaltmagick.database.system;
 import se.fusion1013.plugin.cobaltcore.CobaltCore;
 import se.fusion1013.plugin.cobaltcore.database.system.DataManager;
 import se.fusion1013.plugin.cobaltcore.manager.Manager;
-import se.fusion1013.plugin.cobaltmagick.database.door.DoorDaoSQLite;
-import se.fusion1013.plugin.cobaltmagick.database.door.IDoorDao;
 import se.fusion1013.plugin.cobaltmagick.database.laser.ILaserDao;
 import se.fusion1013.plugin.cobaltmagick.database.laser.LaserDaoSQLite;
 import se.fusion1013.plugin.cobaltmagick.database.musicbox.IMusicBoxDao;
@@ -34,7 +32,6 @@ public class MagickDataManager extends Manager {
 
     private void initDao() {
         // SQLITE
-        core.getManager(core, DataManager.class).registerDao(new DoorDaoSQLite(), IDoorDao.class);
         core.getManager(core, DataManager.class).registerDao(new MusicBoxDaoSQLite(), IMusicBoxDao.class);
         core.getManager(core, DataManager.class).registerDao(new WandDaoSQLite(), IWandDao.class);
         core.getManager(core, DataManager.class).registerDao(new LaserDaoSQLite(), ILaserDao.class);
