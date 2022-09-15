@@ -9,20 +9,16 @@ public class StructureCommand {
         // Standalone command
         new CommandAPICommand("cstructure")
                 .withPermission("cobalt.magick.commands.structure")
-                .withSubcommand(DoorCommand.createDoorCommand())
                 .withSubcommand(MusicBoxCommand.createMusicBoxCommand())
                 .withSubcommand(LaserCommand.createLaserCommand())
-                .withSubcommand(ActivatableCommand.createActivatableCommand())
                 .withSubcommand(MagickPortalCommand.createMagickPortalCommand())
                 .register();
 
         // Command for /magick
         return new CommandAPICommand("structure")
                 .withPermission("cobalt.magick.commands.structure")
-                .withSubcommand(DoorCommand.createDoorCommand())
                 .withSubcommand(MusicBoxCommand.createMusicBoxCommand())
                 .withSubcommand(LaserCommand.createLaserCommand())
-                .withSubcommand(ActivatableCommand.createActivatableCommand())
                 .withSubcommand(MagickPortalCommand.createMagickPortalCommand());
     }
 
