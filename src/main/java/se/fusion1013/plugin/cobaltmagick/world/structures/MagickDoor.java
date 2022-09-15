@@ -1,8 +1,14 @@
 package se.fusion1013.plugin.cobaltmagick.world.structures;
 
+import com.google.gson.JsonObject;
+import dev.jorel.commandapi.arguments.Argument;
+import dev.jorel.commandapi.arguments.IntegerArgument;
 import org.bukkit.*;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
+import se.fusion1013.plugin.cobaltcore.storage.IActivatableStorageObject;
+import se.fusion1013.plugin.cobaltcore.storage.IStorageObject;
+import se.fusion1013.plugin.cobaltcore.util.JsonUtil;
 import se.fusion1013.plugin.cobaltcore.util.VectorUtil;
 import se.fusion1013.plugin.cobaltcore.world.block.entity.BlockEntityCollection;
 import se.fusion1013.plugin.cobaltcore.world.block.entity.BlockEntityManager;
@@ -10,23 +16,26 @@ import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.world.structures.system.IActivatable;
 import se.fusion1013.plugin.cobaltmagick.world.structures.system.IMagickDoor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
-public class MagickDoor implements IMagickDoor, IActivatable {
+public class MagickDoor implements IActivatableStorageObject {
 
     // ----- VARIABLES -----
 
+    UUID uuid;
     Location cornerLocation; // The north-west corner of the door
-
-    int width, height, depth; // x, y, z
-
+    int width = 1, height = 1, depth = 1; // x, y, z
     Material[][][] doorMaterials; // Stores the materials the door is made up of
-
     boolean isClosed = true;
 
-    UUID uuid;
-
     // ----- CONSTRUCTORS -----
+
+    public MagickDoor() {
+        this.doorMaterials = new Material[width][height][depth];
+        storeDoorMaterials();
+    }
 
     public MagickDoor(Location cornerLocation, int width, int height, int depth) {
         this.cornerLocation = cornerLocation;
@@ -55,6 +64,25 @@ public class MagickDoor implements IMagickDoor, IActivatable {
         }
     }
 
+    // ----- LOADING / UNLOADING -----
+
+    @Override
+    public void onLoad() {
+        if (!isClosed) setDoorBlocks(true);
+    }
+
+    // ----- ACTIVATING / DISABLING -----
+
+    @Override
+    public void activate(Object... objects) {
+        open();
+    }
+
+    @Override
+    public void deactivate(Object... objects) {
+        close();
+    }
+
     // ----- LOGIC -----
 
     /**
@@ -62,6 +90,7 @@ public class MagickDoor implements IMagickDoor, IActivatable {
      */
     private void storeDoorMaterials() {
         // Get the door world
+        if (cornerLocation == null) return;
         World world = cornerLocation.getWorld();
         if (world == null) return;
 
@@ -77,14 +106,10 @@ public class MagickDoor implements IMagickDoor, IActivatable {
                 }
             }
         }
+
+        // TODO: Update this object in the database
     }
 
-    @Override
-    public void activate() {
-        open();
-    }
-
-    @Override
     public void open() {
         if (!isClosed) return;
         isClosed = false;
@@ -101,7 +126,6 @@ public class MagickDoor implements IMagickDoor, IActivatable {
 
     }
 
-    @Override
     public void close() {
         isClosed = true;
 
@@ -150,40 +174,121 @@ public class MagickDoor implements IMagickDoor, IActivatable {
         }, 0, 1);
     }
 
+    // ----- JSON INTEGRATION -----
+
+    @Override
+    public JsonObject toJson() {
+        JsonObject jo = new JsonObject();
+        jo.addProperty("uuid", uuid.toString());
+        jo.add("location", JsonUtil.toJson(cornerLocation));
+        jo.addProperty("width", width);
+        jo.addProperty("height", height);
+        jo.addProperty("depth", depth);
+        if (doorMaterials != null) jo.add("materials", JsonUtil.toJson(doorMaterials));
+        jo.addProperty("is_closed", isClosed);
+        return jo;
+    }
+
+    @Override
+    public void fromJson(JsonObject jsonObject) {
+        this.uuid = UUID.fromString(jsonObject.get("uuid").getAsString());
+        this.cornerLocation = JsonUtil.toLocation(jsonObject.getAsJsonObject("location"));
+        this.width = jsonObject.get("width").getAsInt();
+        this.height = jsonObject.get("height").getAsInt();
+        this.depth = jsonObject.get("depth").getAsInt();
+        this.doorMaterials = JsonUtil.toMaterialArray3D(jsonObject.get("materials").getAsJsonArray());
+        this.isClosed = jsonObject.get("is_closed").getAsBoolean();
+    }
+
+    // ----- COMMAND INTEGRATION -----
+
+    @Override
+    public void fromCommandArguments(Object[] objects) {
+
+    }
+
+    @Override
+    public Argument<?>[] getCommandArguments() {
+        return new Argument[] {
+                new IntegerArgument("width"),
+                new IntegerArgument("height"),
+                new IntegerArgument("depth")
+        };
+    }
+
+
     // ----- GETTERS / SETTERS -----
+
+    @Override
+    public void setValue(String key, Object value) {
+        switch (key) {
+            case "width" -> this.width = (int) value;
+            case "height" -> this.height = (int) value;
+            case "depth" -> this.depth = (int) value;
+        }
+
+        this.doorMaterials = new Material[width][height][depth];
+        storeDoorMaterials();
+    }
+
+    @Override
+    public List<String> getInfoStrings() {
+        List<String> info = new ArrayList<>();
+        info.add("UUID: " + uuid);
+        info.add("Location: " + cornerLocation.toVector());
+        info.add("Width: " + width);
+        info.add("Height: " + height);
+        info.add("Depth: " + depth);
+        info.add("Is Closed: " + isClosed);
+        return info;
+    }
+
+    @Override
+    public UUID getUniqueIdentifier() {
+        return uuid;
+    }
+
+    @Override
+    public void setUniqueIdentifier(UUID uuid) {
+        this.uuid = uuid;
+    }
+
+    @Override
+    public String getObjectIdentifier() {
+        return "magick_door";
+    }
+
+    @Override
+    public Location getLocation() {
+        return cornerLocation;
+    }
+
+    @Override
+    public void setLocation(Location location) {
+        this.cornerLocation = location;
+    }
 
     @Override
     public boolean isActive() {
         return !isClosed;
     }
 
-    @Override
-    public boolean isClosed() {
-        return isClosed;
+    // ----- CLONE CONSTRUCTOR & METHOD -----
+
+    public MagickDoor(MagickDoor target) {
+        this.uuid = target.uuid;
+        this.cornerLocation = target.cornerLocation;
+        this.width = target.width;
+        this.height = target.height;
+        this.depth = target.depth;
+        this.doorMaterials = target.doorMaterials;
+        this.isClosed = target.isClosed;
+        this.p = target.p;
+        this.doorTask = target.doorTask;
     }
 
     @Override
-    public Location getCorner() {
-        return cornerLocation;
-    }
-
-    @Override
-    public int getWidth() {
-        return width;
-    }
-
-    @Override
-    public int getHeight() {
-        return height;
-    }
-
-    @Override
-    public int getDepth() {
-        return depth;
-    }
-
-    @Override
-    public UUID getUuid() {
-        return uuid;
+    public MagickDoor clone() {
+        return new MagickDoor(this);
     }
 }
