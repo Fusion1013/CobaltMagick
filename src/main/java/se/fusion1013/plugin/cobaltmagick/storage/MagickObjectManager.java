@@ -19,6 +19,7 @@ import se.fusion1013.plugin.cobaltcore.world.chunk.IChunkBound;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.event.SpellCastEvent;
 import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
+import se.fusion1013.plugin.cobaltmagick.world.structures.MagickDoor;
 import se.fusion1013.plugin.cobaltmagick.world.structures.hidden.HiddenObject;
 import se.fusion1013.plugin.cobaltmagick.world.structures.hidden.HiddenParticle;
 import se.fusion1013.plugin.cobaltmagick.world.structures.hidden.RevealMethod;
@@ -54,6 +55,9 @@ public class MagickObjectManager extends Manager implements Listener {
     // Hidden
     public static IStorageObject HIDDEN_PARTICLE = ObjectManager.registerDefaultStorage(new HiddenParticle());
     public static IStorageObject HIDDEN_OBJECT = ObjectManager.registerDefaultStorage(new HiddenObject());
+
+    // Doors
+    public static IStorageObject MAGICK_DOOR = ObjectManager.registerDefaultStorage(new MagickDoor());
 
     // ----- CONSTRUCTORS -----
 
