@@ -41,10 +41,13 @@ public class CreateMaterialIngots {
             .setCustomModel(20).setItemCategory(MagickItemCategory.MATERIAL)
             .build());
 
-    public static ICustomItem HEPATIZON_NUGGET = CustomItemManager.register(new CustomItem.CustomItemBuilder("hepatizon_nugget", Material.EMERALD, 1)
+    public static ICustomItem HEPATIZON_NUGGET = CustomItemManager.register(new CustomItem.CustomItemBuilder("hepatizon_nugget", Material.EMERALD, 9)
             .setCustomName(HexUtils.colorify("&fHepatizon Nugget"))
             .setCustomModel(21).setItemCategory(MagickItemCategory.MATERIAL)
+            .addShapelessRecipe(new AbstractCustomItem.ShapelessIngredient(1, HEPATIZON_INGOT.getItemStack()))
             .build());
+
+    public static ShapedRecipe HEPATIZON_INGOT_RECIPE = CustomItemManager.addShapedRecipe(HEPATIZON_INGOT.getItemStack(), "---", "---", "---", new AbstractCustomItem.ShapedIngredient('-', HEPATIZON_NUGGET.getItemStack()));
 
     public static ICustomItem HOLLOW_INGOT = CustomItemManager.register(new CustomItem.CustomItemBuilder("hollow_ingot", Material.EMERALD, 1)
             .setCustomName(HexUtils.colorify("&fHollow Ingot"))
