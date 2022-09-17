@@ -63,6 +63,7 @@ public class SpellManager extends Manager {
     public static final Spell SPARK_BOLT = register(new ProjectileSpell.ProjectileSpellBuilder(10, "spark_bolt")
             .addManaDrain(5).setRadius(.2).setVelocity(16).setLifetime(1.6).addCastDelay(0.05).setSpread(-1).setAffectedByAirResistance(false)
             .addExecuteOnEntityCollision(new DamageModule(2, true).setCriticalChance(5))
+            .addExecuteOnCast(new SoundSpellModule(Sound.ENTITY_ILLUSIONER_CAST_SPELL, SoundCategory.PLAYERS, false))
             .addDescription("A weak but enchanting sparkling projectile")
             .setParticle(new ParticleGroup.ParticleGroupBuilder()
                     .addStyle(new ParticleStyleLine.ParticleStyleLineBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setExtra(new Particle.DustTransition(Color.PURPLE, Color.fromRGB(245, 66, 239), 1)).setCount(5).setOffset(new Vector(.1, .1, .1)).setDensity(5).build())
