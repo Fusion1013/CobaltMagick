@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import se.fusion1013.plugin.cobaltcore.CobaltCore;
@@ -20,6 +21,7 @@ import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.event.SpellCastEvent;
 import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
 import se.fusion1013.plugin.cobaltmagick.world.structures.MagickDoor;
+import se.fusion1013.plugin.cobaltmagick.world.structures.crafting.MagickAnvil;
 import se.fusion1013.plugin.cobaltmagick.world.structures.hidden.HiddenObject;
 import se.fusion1013.plugin.cobaltmagick.world.structures.hidden.HiddenParticle;
 import se.fusion1013.plugin.cobaltmagick.world.structures.hidden.RevealMethod;
@@ -28,6 +30,7 @@ import se.fusion1013.plugin.cobaltmagick.world.structures.lock.MaterialLock;
 import se.fusion1013.plugin.cobaltmagick.world.structures.lock.RuneLock;
 import se.fusion1013.plugin.cobaltmagick.world.structures.portal.MagickPortal;
 import se.fusion1013.plugin.cobaltmagick.world.structures.portal.MeditationPortal;
+import se.fusion1013.plugin.cobaltmagick.world.structures.portal.SpellPortal;
 import se.fusion1013.plugin.cobaltmagick.world.structures.system.MultiActivatable;
 import se.fusion1013.plugin.cobaltmagick.world.structures.trap.TrappedChestEntity;
 
@@ -59,6 +62,9 @@ public class MagickObjectManager extends Manager implements Listener {
     // Doors
     public static IStorageObject MAGICK_DOOR = ObjectManager.registerDefaultStorage(new MagickDoor());
 
+    // Crafting Structures
+    public static IStorageObject MAGICK_ANVIL = ObjectManager.registerDefaultStorage(new MagickAnvil());
+
     // ----- CONSTRUCTORS -----
 
     public MagickObjectManager(CobaltCore cobaltCore) {
@@ -66,6 +72,12 @@ public class MagickObjectManager extends Manager implements Listener {
     }
 
     // ----- EVENTS -----
+
+    @EventHandler
+    public void onItemDrop(ItemSpawnEvent event) {
+        IStorageObject[] magickAnvilObjects = ObjectManager.getLoadedObjectsOfType(MAGICK_ANVIL.getObjectIdentifier());
+        for (IStorageObject object : magickAnvilObjects) object.onTrigger(event.getEntity(), event.getLocation());
+    }
 
     @EventHandler
     public void onSpellCast(SpellCastEvent event) {
