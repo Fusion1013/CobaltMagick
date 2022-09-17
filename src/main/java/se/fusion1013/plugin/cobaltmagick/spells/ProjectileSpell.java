@@ -141,8 +141,10 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
 
         // Add Velocity
         this.velocityVector.multiply(velocity);
-        Vector casterVelocity = caster.getVelocity().clone();
-        this.velocityVector.add(casterVelocity.setY(0));
+        if (caster != null) {
+            Vector casterVelocity = caster.getVelocity().clone();
+            this.velocityVector.add(casterVelocity.setY(0));
+        }
 
         // Special Things Here
         for (SpellModule module : executeOnCast){
