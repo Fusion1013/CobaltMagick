@@ -148,7 +148,10 @@ public class HiddenObject implements IActivatableStorageObject, Runnable {
 
             if (spawnsItem) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(CobaltMagick.getInstance(), () -> {
-                    location.getWorld().dropItemNaturally(location, CustomItemManager.getItemStack(item));
+                    Item spawnedItem = location.getWorld().dropItem(location, CustomItemManager.getItemStack(item));
+                    spawnedItem.setGravity(false);
+                    spawnedItem.setVelocity(new Vector());
+                    spawnedItem.setGlowing(true);
                 }, 0);
             }
 
