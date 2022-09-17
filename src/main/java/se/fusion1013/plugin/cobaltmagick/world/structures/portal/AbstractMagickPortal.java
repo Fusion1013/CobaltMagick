@@ -11,6 +11,7 @@ import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltcore.particle.ParticleGroup;
 import se.fusion1013.plugin.cobaltcore.particle.styles.ParticleStylePoint;
 import se.fusion1013.plugin.cobaltcore.particle.styles.ParticleStyleSphere;
+import se.fusion1013.plugin.cobaltcore.storage.IActivatableStorageObject;
 import se.fusion1013.plugin.cobaltcore.storage.IStorageObject;
 import se.fusion1013.plugin.cobaltcore.util.JsonUtil;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
@@ -19,12 +20,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public abstract class AbstractMagickPortal implements IStorageObject, Cloneable {
+public abstract class AbstractMagickPortal implements IActivatableStorageObject, Cloneable {
 
     // ----- VARIABLES -----
 
     private boolean firstActivation = true;
     protected static final String OBJECT_IDENTIFIER = "magick_portal";
+    protected boolean isActive = true;
 
     // Static variables
     private static final Sound TELEPORT_SOUND = Sound.ENTITY_ILLUSIONER_MIRROR_MOVE; // TODO: Replace with custom sound
@@ -84,6 +86,7 @@ public abstract class AbstractMagickPortal implements IStorageObject, Cloneable 
     protected void tickPortal() {
 
         if (exitLocation == null) return;
+        if (!isActive) return;
 
         // If first activation tick, play appear sound & extra particles
         if (firstActivation) {
@@ -110,6 +113,20 @@ public abstract class AbstractMagickPortal implements IStorageObject, Cloneable 
         }
     }
 
+    // ----- ACTIVATABLE -----
+
+    @Override
+    public void activate(Object... objects) {
+        if (!isActive) this.firstActivation = true;
+        this.isActive = true;
+    }
+
+    @Override
+    public void deactivate(Object... objects) {
+        this.isActive = false;
+        this.firstActivation = true;
+    }
+
     // ----- JSON STORAGE -----
 
     @Override
@@ -118,6 +135,7 @@ public abstract class AbstractMagickPortal implements IStorageObject, Cloneable 
         jo.addProperty("uuid", uuid.toString());
         jo.add("portal_location", JsonUtil.toJson(portalLocation));
         if (exitLocation != null) jo.add("exit_location", JsonUtil.toJson(exitLocation));
+        jo.addProperty("is_active", isActive);
         return jo;
     }
 
@@ -126,6 +144,7 @@ public abstract class AbstractMagickPortal implements IStorageObject, Cloneable 
         uuid = UUID.fromString(jsonObject.get("uuid").getAsString());
         portalLocation = JsonUtil.toLocation(jsonObject.getAsJsonObject("portal_location"));
         exitLocation = JsonUtil.toLocation(jsonObject.getAsJsonObject("exit_location"));
+        if (jsonObject.get("is_active") != null) isActive = jsonObject.get("is_active").getAsBoolean();
     }
 
     // ----- CLONE CONSTRUCTOR & METHOD -----
@@ -135,6 +154,7 @@ public abstract class AbstractMagickPortal implements IStorageObject, Cloneable 
         this.portalLocation = target.portalLocation;
         this.exitLocation = target.exitLocation;
         this.firstActivation = true;
+        this.isActive = target.isActive;
     }
 
     @Override
@@ -159,6 +179,11 @@ public abstract class AbstractMagickPortal implements IStorageObject, Cloneable 
     }
 
     // ----- GETTERS / SETTERS -----
+
+    @Override
+    public boolean isActive() {
+        return isActive;
+    }
 
     @Override
     public void setValue(String key, Object value) {
