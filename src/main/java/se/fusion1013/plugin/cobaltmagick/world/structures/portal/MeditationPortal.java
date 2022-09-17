@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class MeditationPortal extends AbstractMagickPortal implements Runnable, Listener {
+public class MeditationPortal extends AbstractMagickPortal implements Runnable {
 
     // ----- VARIABLES -----
 
