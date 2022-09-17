@@ -47,7 +47,7 @@ public class CreateMaterialIngots {
             .addShapelessRecipe(new AbstractCustomItem.ShapelessIngredient(1, HEPATIZON_INGOT.getItemStack()))
             .build());
 
-    public static ShapedRecipe HEPATIZON_INGOT_RECIPE = CustomItemManager.addShapedRecipe(HEPATIZON_INGOT.getItemStack(), "---", "---", "---", new AbstractCustomItem.ShapedIngredient('-', HEPATIZON_NUGGET.getItemStack()));
+    public static ShapedRecipe HEPATIZON_INGOT_RECIPE = CustomItemManager.addShapedRecipe("hepatizon_ingot", HEPATIZON_INGOT.getItemStack(), "---", "---", "---", new AbstractCustomItem.ShapedIngredient('-', HEPATIZON_NUGGET.getItemStack()));
 
     public static ICustomItem HOLLOW_INGOT = CustomItemManager.register(new CustomItem.CustomItemBuilder("hollow_ingot", Material.EMERALD, 1)
             .setCustomName(HexUtils.colorify("&fHollow Ingot"))
@@ -142,7 +142,7 @@ public class CreateMaterialIngots {
             .setCustomModel(37).setItemCategory(MagickItemCategory.MATERIAL)
             .build());
 
-    public static ShapedRecipe ARCANE_ALLOY_RECIPE = CustomItemManager.addShapedRecipe(ARCANE_ALLOY.getItemStack(), "---", "---", "---", new AbstractCustomItem.ShapedIngredient('-', ARCANE_ALLOY_NUGGET.getItemStack()));
+    public static ShapedRecipe ARCANE_ALLOY_RECIPE = CustomItemManager.addShapedRecipe("arcane_alloy", ARCANE_ALLOY.getItemStack(), "---", "---", "---", new AbstractCustomItem.ShapedIngredient('-', ARCANE_ALLOY_NUGGET.getItemStack()));
 
     public static ICustomItem TINKERS_BRONZE_INGOT = CustomItemManager.register(new CustomItem.CustomItemBuilder("tinkers_bronze_ingot", Material.EMERALD, 1)
             .setCustomName(HexUtils.colorify("&fTinkers Bronze Ingot"))
