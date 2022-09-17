@@ -43,6 +43,7 @@ public class MagickObjectManager extends Manager implements Listener {
     // Portals
     public static IStorageObject MAGICK_PORTAL_STORAGE = ObjectManager.registerDefaultStorage(new MagickPortal(null, null));
     public static IStorageObject MEDITATION_PORTAL_STORAGE = ObjectManager.registerDefaultStorage(new MeditationPortal(null, null));
+    public static IStorageObject SPELL_PORTAL_STORAGE = ObjectManager.registerDefaultStorage(new SpellPortal(null, null, null));
 
     // Trapped Chests
     public static IStorageObject TRAPPED_CHEST_ENTITY = ObjectManager.registerDefaultStorage(new TrappedChestEntity(null, null));
@@ -84,6 +85,9 @@ public class MagickObjectManager extends Manager implements Listener {
         if (event.getSpell().getId() == SpellManager.ALL_SEEING_EYE.getId()) {
             revealNearbyHiddenParticles(RevealMethod.ALL_SEEING_EYE, event.getSpell().getCaster().getLocation()); // TODO: Replace with actual spell location
         }
+
+        IStorageObject[] spellPortalObjects = ObjectManager.getLoadedObjectsOfType(SPELL_PORTAL_STORAGE.getObjectIdentifier());
+        for (IStorageObject object : spellPortalObjects) object.onTrigger(event.getSpell());
     }
 
     @EventHandler
