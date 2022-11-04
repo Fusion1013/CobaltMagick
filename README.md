@@ -1,6 +1,6 @@
 # Cobalt - Magick
 
-Magick plugin for Spigot. Adds a powerful spellcasting system inspired by the game Noita.
+Magick plugin for Paper. Adds a powerful spellcasting system inspired by the game Noita.
 
 There are currently over 50 spells and more are in development.
 
