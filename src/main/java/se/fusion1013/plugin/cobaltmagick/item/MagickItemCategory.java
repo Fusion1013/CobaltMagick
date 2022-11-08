@@ -1,19 +1,25 @@
 package se.fusion1013.plugin.cobaltmagick.item;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import se.fusion1013.plugin.cobaltcore.item.category.IItemCategory;
 import se.fusion1013.plugin.cobaltcore.util.HexUtils;
+import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 
 public enum MagickItemCategory implements IItemCategory {
 
-    HAT("hat", "&6Hats", "Hat items", Material.YELLOW_SHULKER_BOX),
-    KEY("key", "&6Keys", "Key items", Material.YELLOW_SHULKER_BOX),
-    MATERIAL("material", "&8Materials", "Material items", Material.GRAY_SHULKER_BOX),
-    POTION("potion", "&3Potions", "Potion items", Material.CYAN_SHULKER_BOX),
-    RUNE("rune", "&2Runes", "Rune items", Material.GREEN_SHULKER_BOX),
-    SPELL("spell", "&dSpells", "Spell items", Material.MAGENTA_SHULKER_BOX),
-    TOOL("tool", "&7Tools", "Tool items", Material.LIGHT_GRAY_SHULKER_BOX),
-    WAND("wand", "&bWands", "Wand items", Material.LIGHT_BLUE_SHULKER_BOX);
+    HAT("hat", "Hats", "Hat items", Material.YELLOW_SHULKER_BOX),
+    KEY("key", "Keys", "Key items", Material.YELLOW_SHULKER_BOX),
+    MATERIAL("material", "Materials", "Material items", Material.GRAY_SHULKER_BOX),
+    POTION("potion", "Potions", "Potion items", Material.CYAN_SHULKER_BOX),
+    RUNE("rune", "Runes", "Rune items", Material.GREEN_SHULKER_BOX),
+    SPELL("spell", "Spells", "Spell items", Material.MAGENTA_SHULKER_BOX),
+    TOOL("tool", "Tools", "Tool items", Material.LIGHT_GRAY_SHULKER_BOX),
+    WEAPON("weapon", "Weapon", "Weapon items", Material.LIGHT_GRAY_SHULKER_BOX),
+    ARMOR("armor", "Armor", "Armor items", Material.YELLOW_SHULKER_BOX),
+    WAND("wand", "Wands", "Wand items", Material.LIGHT_BLUE_SHULKER_BOX),
+    UNKNOWN("unknown", "???", "Items of unknown origin", Material.PURPLE_SHULKER_BOX);
 
     final String internalName;
     final String name;
@@ -28,8 +34,13 @@ public enum MagickItemCategory implements IItemCategory {
     }
 
     @Override
-    public String getName() {
-        return HexUtils.colorify(name);
+    public Component getFormattedName() {
+        return Component.text(name);
+    }
+
+    @Override
+    public NamespacedKey getNamespacedKey() {
+        return new NamespacedKey(CobaltMagick.getInstance(), "magick_item_category." + internalName);
     }
 
     @Override
