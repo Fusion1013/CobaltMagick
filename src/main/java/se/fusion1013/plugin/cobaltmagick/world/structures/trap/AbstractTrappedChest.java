@@ -18,7 +18,7 @@ public abstract class AbstractTrappedChest implements IStorageObject {
 
     // ----- VARIABLES -----
 
-    private UUID uuid;
+    protected UUID uuid;
     protected Location chestLocation;
 
     // ----- CONSTRUCTORS -----
@@ -33,7 +33,7 @@ public abstract class AbstractTrappedChest implements IStorageObject {
     @Override
     public void onLoad() {
         IStorageObject.super.onLoad();
-        if (chestLocation != null) BlockPlacementManager.addBlock(Material.CHEST, chestLocation); // TODO: Chest direction
+        if (chestLocation != null) BlockPlacementManager.addBlock(Material.TRAPPED_CHEST, chestLocation); // TODO: Chest direction
     }
 
     // ----- ON TRIGGER -----
