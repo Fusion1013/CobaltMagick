@@ -1,12 +1,18 @@
 package se.fusion1013.plugin.cobaltmagick.entity;
 
-import org.bukkit.entity.EntityType;
+import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.inventory.ItemStack;
 import se.fusion1013.plugin.cobaltcore.CobaltCore;
 import se.fusion1013.plugin.cobaltcore.entity.ICustomEntity;
 import se.fusion1013.plugin.cobaltcore.manager.Manager;
+import se.fusion1013.plugin.cobaltcore.util.PlayerUtil;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.entity.create.*;
 import se.fusion1013.plugin.cobaltmagick.entity.create.sentientwand.SentientWand;
@@ -49,6 +55,30 @@ public class EntityManager extends Manager implements Listener {
         if (event.getEntity().getType() == EntityType.WARDEN) {
             Random r = new Random();
             if (r.nextDouble() > .75) event.getDrops().add(ItemManager.ECHO_INGOT.getItemStack()); // TODO: Move into Cobalt Core
+        }
+
+        if (event.getEntity().getType() == EntityType.SHULKER) {
+            event.getDrops().clear();
+            event.getDrops().add(new ItemStack(Material.SHULKER_SHELL));
+            event.getDrops().add(new ItemStack(Material.SHULKER_SHELL));
+        }
+    }
+
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractAtEntityEvent event) {
+        Player player = event.getPlayer();
+        Entity entity = event.getRightClicked();
+
+        if (entity instanceof Allay allay) {
+            ItemStack heldItem = player.getInventory().getItemInMainHand();
+            if (heldItem.getType() == Material.AMETHYST_SHARD) {
+                PlayerUtil.reduceHeldItemStack(player, 1);
+                allay.getWorld().spawn(allay.getLocation(), Allay.class);
+                allay.getWorld().playSound(allay.getLocation(), Sound.BLOCK_AMETHYST_BLOCK_CHIME, 1, 1);
+                allay.getWorld().spawnParticle(Particle.COMPOSTER, allay.getLocation(), 5, .2, .2, .2, 0);
+
+                event.setCancelled(true);
+            }
         }
     }
 
