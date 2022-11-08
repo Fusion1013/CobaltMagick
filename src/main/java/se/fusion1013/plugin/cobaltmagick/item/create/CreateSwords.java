@@ -13,6 +13,7 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import se.fusion1013.plugin.cobaltcore.item.CustomItem;
 import se.fusion1013.plugin.cobaltcore.item.CustomItemManager;
+import se.fusion1013.plugin.cobaltcore.item.ICustomItem;
 import se.fusion1013.plugin.cobaltcore.item.ItemActivator;
 import se.fusion1013.plugin.cobaltcore.util.HexUtils;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
@@ -22,7 +23,7 @@ public class CreateSwords {
 
     public static void create() {}
 
-    public static CustomItem HEAVY_NETHERITE_MACHETE = CustomItemManager.register(new CustomItem.CustomItemBuilder("heavy_netherite_machete", Material.NETHERITE_SWORD, 1)
+    public static ICustomItem HEAVY_NETHERITE_MACHETE = CustomItemManager.register(new CustomItem.CustomItemBuilder("heavy_netherite_machete", Material.NETHERITE_SWORD, 1)
             .setCustomName(HexUtils.colorify("&8Heavy Netherite Machete"))
             .addItemActivatorSync(ItemActivator.PLAYER_HIT_ENTITY, (iCustomItem, event, equipmentSlot) -> {
                 EntityDamageByEntityEvent entityDamageByEntityEvent = (EntityDamageByEntityEvent) event;
