@@ -13,6 +13,9 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.yaml.snakeyaml.util.EnumUtils;
+import se.fusion1013.plugin.cobaltcore.item.enchantment.CobaltEnchantment;
+import se.fusion1013.plugin.cobaltcore.item.enchantment.EnchantmentManager;
+import se.fusion1013.plugin.cobaltcore.item.enchantment.EnchantmentWrapper;
 import se.fusion1013.plugin.cobaltcore.locale.LocaleManager;
 import se.fusion1013.plugin.cobaltcore.util.HexUtils;
 import se.fusion1013.plugin.cobaltcore.util.ItemUtil;
@@ -32,10 +35,30 @@ public class EditItemCommand {
                 .withSubcommand(createBookAuthorCommand())
                 .withSubcommand(createPotionEffectCommand())
                 .withSubcommand(createPotionColorCommand())
-                .withSubcommand(createWeightedEnchantmentCommand());
+                .withSubcommand(createWeightedEnchantmentCommand())
+                .withSubcommand(createCobaltEnchantmentCommand());
     }
 
     // ----- ENCHANTMENTS -----
+
+    private static CommandAPICommand createCobaltEnchantmentCommand() {
+        return new CommandAPICommand("cobalt_enchantment")
+                .withPermission("cobalt.magick.commands.cedit.item.cobalt_enchantment")
+                .withArguments(new StringArgument("enchantment").replaceSuggestions(ArgumentSuggestions.strings(EnchantmentManager.getEnchantmentNames())))
+                .withArguments(new IntegerArgument("level"))
+                .executesPlayer(EditItemCommand::addCobaltEnchantment);
+    }
+
+    private static void addCobaltEnchantment(Player player, Object[] args) {
+        ItemStack stack = player.getInventory().getItemInMainHand();
+
+        String enchant = (String) args[0];
+        int level = (int) args[1];
+
+        EnchantmentWrapper wrapper = EnchantmentManager.getEnchantment(enchant, level, true);
+        stack = wrapper.add(stack);
+        player.getInventory().setItemInMainHand(stack);
+    }
 
     private static CommandAPICommand createWeightedEnchantmentCommand() {
         return new CommandAPICommand("weighted_enchantment")
