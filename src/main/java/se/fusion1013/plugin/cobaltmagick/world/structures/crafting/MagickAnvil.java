@@ -4,13 +4,17 @@ import com.google.gson.JsonObject;
 import dev.jorel.commandapi.arguments.Argument;
 import org.bukkit.*;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
+import se.fusion1013.plugin.cobaltcore.CobaltCore;
+import se.fusion1013.plugin.cobaltcore.item.CustomItemManager;
 import se.fusion1013.plugin.cobaltcore.storage.IStorageObject;
 import se.fusion1013.plugin.cobaltcore.util.GeometryUtil;
 import se.fusion1013.plugin.cobaltcore.util.JsonUtil;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
+import se.fusion1013.plugin.cobaltmagick.advancement.MagickAdvancementManager;
 import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
 import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
@@ -74,21 +78,26 @@ public class MagickAnvil implements IStorageObject, Runnable {
         if (item.getWorld() != location.getWorld()) return;
         if (item.getLocation().distanceSquared(location) >= 5*5) return;
 
-        item.getWorld().spawnParticle(Particle.END_ROD, item.getLocation(), 4, .1, .1, .1, .1);
-        item.getWorld().spawnParticle(Particle.SPELL_WITCH, item.getLocation(), 2, .1, .1, .1, .2);
+        if (executeCraft(item)) {
+            item.getWorld().spawnParticle(Particle.END_ROD, item.getLocation(), 4, .1, .1, .1, .1);
+            item.getWorld().spawnParticle(Particle.SPELL_WITCH, item.getLocation(), 2, .1, .1, .1, .2);
 
-        item.getWorld().playSound(item.getLocation(), Sound.ENTITY_ILLUSIONER_CAST_SPELL, SoundCategory.BLOCKS, 1, 1);
-
-        executeCraft(item);
+            item.getWorld().playSound(item.getLocation(), Sound.ENTITY_ILLUSIONER_CAST_SPELL, SoundCategory.BLOCKS, 1, 1);
+        }
     }
 
     BukkitTask craftTask;
     int currentTick = 0;
 
-    private void executeCraft(Item item) {
+    private boolean executeCraft(Item item) {
         ItemStack stack = item.getItemStack();
 
-        if (!ItemManager.BROKEN_SPELL.compareTo(stack) && !ItemManager.BROKEN_WAND.compareTo(stack)) return;
+        if (
+                !ItemManager.BROKEN_SPELL.compareTo(stack) &&
+                !ItemManager.BROKEN_WAND.compareTo(stack) &&
+                !CustomItemManager.getCustomItem(stack).getInternalName().equalsIgnoreCase("emerald_tablet_i") &&
+                !CustomItemManager.getCustomItem(stack).getInternalName().equalsIgnoreCase("emerald_tablet_ii")
+        ) return false;
 
         Random r = new Random();
 
@@ -124,6 +133,24 @@ public class MagickAnvil implements IStorageObject, Runnable {
                     int cost = 20 * level;
                     Wand wand = WandManager.getInstance().createWand(cost, level, true);
                     item.setItemStack(wand.getWandItem());
+
+                    // Grant advancement
+                    MagickAdvancementManager advancementManager = CobaltCore.getInstance().getSafeManager(CobaltMagick.getInstance(), MagickAdvancementManager.class);
+                    if (advancementManager == null) return;
+
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        if (player.getLocation().distanceSquared(location) > 50 * 50) continue;
+
+                        Bukkit.getScheduler().runTaskLater(CobaltMagick.getInstance(), () -> advancementManager.grantAdvancement(player, "progression", "broken_wand"), 10);
+                    }
+                }
+
+                if (CustomItemManager.getCustomItem(stack).getInternalName().equalsIgnoreCase("emerald_tablet_i")) {
+                    item.setItemStack(CustomItemManager.getCustomItemStack("emerald_tablet_i_reforged"));
+                }
+
+                if (CustomItemManager.getCustomItem(stack).getInternalName().equalsIgnoreCase("emerald_tablet_ii")) {
+                    item.setItemStack(CustomItemManager.getCustomItemStack("emerald_tablet_ii_reforged"));
                 }
 
                 // Item Spawn effects
@@ -148,6 +175,8 @@ public class MagickAnvil implements IStorageObject, Runnable {
             currentTick++;
 
         }, 0, 1);
+
+        return true;
     }
 
     // ----- JSON INTEGRATION -----
