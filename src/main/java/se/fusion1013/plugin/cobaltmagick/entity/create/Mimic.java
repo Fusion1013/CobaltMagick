@@ -23,6 +23,7 @@ import se.fusion1013.plugin.cobaltcore.item.CustomItemManager;
 import se.fusion1013.plugin.cobaltcore.item.loot.CustomLootTable;
 import se.fusion1013.plugin.cobaltcore.item.loot.LootEntry;
 import se.fusion1013.plugin.cobaltcore.item.loot.LootPool;
+import se.fusion1013.plugin.cobaltmagick.entity.modules.ability.Enderport;
 import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
 import se.fusion1013.plugin.cobaltmagick.item.create.CreateKeyItems;
 
@@ -54,7 +55,7 @@ public class Mimic {
         ICustomEntity mimic = new CustomEntity.CustomEntityBuilder("mimic", EntityType.HUSK)
 
                 // Set stats
-                .addExecuteOnSpawnModule(new EntityHealthModule(100))
+                .addExecuteOnSpawnModule(new EntityHealthModule(200))
                 .addExecuteOnTickModule(new EntityBossBarModule("Mimic", 32, BarColor.YELLOW, BarStyle.SEGMENTED_6))
 
                 // Add Equipment
@@ -68,21 +69,26 @@ public class Mimic {
                 .addExecuteOnTickModule(new EntityAmbientSoundModule(Sound.BLOCK_CHEST_OPEN, 1, 1, 56))
 
                 // Set potion effects
-                .addExecuteOnSpawnModule(new EntityPotionEffectModule(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 1000000, 1, true, false)))
+                .addExecuteOnSpawnModule(new EntityPotionEffectModule(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 1000000, 2, true, false)))
                 .addExecuteOnSpawnModule(new EntityPotionEffectModule(new PotionEffect(PotionEffectType.SPEED, 1000000, 2, true, false)))
 
                 // Abilities
-                .addAbilityModule(new ChargeAbility(8, 1, 8))
+                .addAbilityModule(
+                        new ChargeAbility(6, 1, 8)
+                                .damage(7)
+                )
+                .addAbilityModule(
+                        new Enderport(8)
+                )
 
                 // Drops
-                .addExecuteOnDeathModule(new EntityDropModule(new CustomLootTable(
-                        new CustomLootTable.LootTarget[] {CustomLootTable.LootTarget.DROP},
+                .addExecuteOnDeathModule(new EntityDropModule(
                         new LootPool(3,
-                                new LootEntry(CreateKeyItems.RUSTY_KEY.getItemStack(), 1, 1),
+                                new LootEntry(CustomItemManager.getCustomItemStack("rusty_key"), 1, 1),
                                 new LootEntry(new ItemStack(Material.OAK_PLANKS), 1, 8),
                                 new LootEntry(new ItemStack(Material.OAK_LOG), 1, 2)
                         )
-                )))
+                ))
 
                 .build();
 
