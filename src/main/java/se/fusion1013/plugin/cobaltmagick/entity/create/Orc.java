@@ -19,6 +19,8 @@ import se.fusion1013.plugin.cobaltcore.entity.modules.EntityEquipmentModule;
 import se.fusion1013.plugin.cobaltcore.entity.modules.EntityHealthModule;
 import se.fusion1013.plugin.cobaltcore.entity.modules.EntityPotionEffectModule;
 import se.fusion1013.plugin.cobaltcore.item.CustomItemManager;
+import se.fusion1013.plugin.cobaltmagick.entity.modules.ability.BrutalBlood;
+import se.fusion1013.plugin.cobaltmagick.entity.modules.ability.PartingGift;
 
 public class Orc {
 
@@ -48,6 +50,8 @@ public class Orc {
         boot.setItemMeta(meta);
 
         ICustomEntity orc = new CustomEntity.CustomEntityBuilder("orc", EntityType.ZOMBIE)
+
+                .addAbilityModule(new BrutalBlood(5, 3, 1, 40))
 
                 // Set stats
                 .addExecuteOnSpawnModule(new EntityHealthModule(40))
