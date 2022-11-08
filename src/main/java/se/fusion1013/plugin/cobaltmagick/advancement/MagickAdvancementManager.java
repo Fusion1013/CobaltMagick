@@ -124,6 +124,7 @@ public class MagickAdvancementManager extends Manager implements Listener {
 
         // ----- SECRET PROGRESSION ADVANCEMENTS -----
 
+        // Meditation Cube
         TextComponent meditationCubeTitle = new TextComponent("Meditate");
         meditationCubeTitle.setFont("minecraft:alt");
         TextComponent meditationCubeDescription = new TextComponent("Cube glorious cube");
@@ -135,6 +136,32 @@ public class MagickAdvancementManager extends Manager implements Listener {
         Advancement meditationCubeAdvancement = new Advancement(rootAdvancement, new NameKey("cobalt.magick.progression.secret.meditation_cube", "meditation_cube"), meditationCubeDisplay, AdvancementFlag.TOAST_AND_MESSAGE);
         manager.addAdvancement(meditationCubeAdvancement);
         PROGRESSION_ADVANCEMENTS.put("meditation_cube", meditationCubeAdvancement);
+
+        // Broken wand
+        TextComponent brokenWandTitle = new TextComponent("It worked");
+        brokenWandTitle.setFont("minecraft:alt");
+        TextComponent brokenWandDescription = new TextComponent("Broken wand unbroken");
+        brokenWandDescription.setFont("minecraft:alt");
+        AdvancementDisplay brokenWandDisplay = createDisplay(ItemManager.BROKEN_WAND.getItemStack(), brokenWandTitle, brokenWandDescription, AdvancementDisplay.AdvancementFrame.CHALLENGE, AdvancementVisibility.HIDDEN);
+        brokenWandDisplay.setPositionOrigin(rootAdvancement);
+        brokenWandDisplay.setX(2);
+        brokenWandDisplay.setY(2);
+        Advancement brokenWandAdvancement = new Advancement(rootAdvancement, new NameKey("cobalt.magick.progression.secret.broken_wand", "broken_wand"), brokenWandDisplay, AdvancementFlag.TOAST_AND_MESSAGE);
+        manager.addAdvancement(brokenWandAdvancement);
+        PROGRESSION_ADVANCEMENTS.put("broken_wand", brokenWandAdvancement);
+
+        // Soul Egg
+        TextComponent soulEggTitle = new TextComponent("Egg of Soul");
+        soulEggTitle.setFont("minecraft:alt");
+        TextComponent soulEggDescription = new TextComponent("The egg reveals its secrets");
+        soulEggDescription.setFont("minecraft:alt");
+        AdvancementDisplay soulEggDisplay = createDisplay(SpellManager.REPAIRED_SPELL.getSpellItem(), soulEggTitle, soulEggDescription, AdvancementDisplay.AdvancementFrame.CHALLENGE, AdvancementVisibility.HIDDEN);
+        soulEggDisplay.setPositionOrigin(rootAdvancement);
+        soulEggDisplay.setX(3);
+        soulEggDisplay.setY(2);
+        Advancement soulEggAdvancement = new Advancement(rootAdvancement, new NameKey("cobalt.magick.progression.secret.soul_egg", "soul_egg"), soulEggDisplay, AdvancementFlag.TOAST_AND_MESSAGE);
+        manager.addAdvancement(soulEggAdvancement);
+        PROGRESSION_ADVANCEMENTS.put("soul_egg", soulEggAdvancement);
 
         // ----- CAULDRON PROGRESSION ADVANCEMENTS -----
 
