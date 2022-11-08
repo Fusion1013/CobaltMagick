@@ -3,6 +3,7 @@ package se.fusion1013.plugin.cobaltmagick.world.structures.cauldron;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -81,10 +82,14 @@ public class CauldronManager extends Manager implements Listener {
     }
 
     private static void executeAlbedo(Player player) {
-        PlayerUtil.reduceHeldItemStack(player, 1);
 
-        Player amuletOwner = Bukkit.getPlayer("Fusion1013");
-        if (amuletOwner == null) return;
+        Player amuletOwner = Bukkit.getPlayer("Imerocks");
+        if (amuletOwner == null) {
+            CAULDRON_LOCATION.getWorld().playSound(CAULDRON_LOCATION, "cobalt.poof", SoundCategory.PLAYERS, 1, 1);
+            return;
+        }
+
+        PlayerUtil.reduceHeldItemStack(player, 1);
 
         Albedo.start(CAULDRON_LOCATION, amuletOwner);
     }
