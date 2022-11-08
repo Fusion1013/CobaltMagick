@@ -9,7 +9,10 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltcore.item.CustomItem;
+import se.fusion1013.plugin.cobaltcore.item.CustomItemManager;
+import se.fusion1013.plugin.cobaltcore.item.ICustomItem;
 import se.fusion1013.plugin.cobaltcore.item.ItemActivator;
+import se.fusion1013.plugin.cobaltcore.item.system.CobaltItem;
 import se.fusion1013.plugin.cobaltcore.util.HexUtils;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
@@ -22,11 +25,12 @@ import static se.fusion1013.plugin.cobaltcore.item.CustomItemManager.register;
 
 public class CreateShinyOrb {
 
-    public static CustomItem create() {
-        return register(new CustomItem.CustomItemBuilder("shiny_orb", Material.EMERALD, 1)
-                .setCustomName(HexUtils.colorify("&r&6Shiny Orb"))
-                .addLoreLine(HexUtils.colorify("&e&oIt hums slightly. What happens if you throw it, you wonder..."))
-                .addItemActivator(ItemActivator.PLAYER_DROP_CUSTOM_ITEM, (item, event, slot) -> {
+    public static ICustomItem create() {
+        return register(new CobaltItem.Builder("shiny_orb")
+                .material(Material.EMERALD)
+                .itemName(HexUtils.colorify("&r&6Shiny Orb"))
+                .extraLore(HexUtils.colorify("&e&oIt hums slightly. What happens if you throw it, you wonder..."))
+                .itemActivatorSync(ItemActivator.PLAYER_DROP_CUSTOM_ITEM, (item, event, slot) -> {
                     Bukkit.getScheduler().scheduleSyncDelayedTask(CobaltMagick.getInstance(), () -> {
 
                         // Get the dropped item
@@ -63,7 +67,7 @@ public class CreateShinyOrb {
                                 double itemSpawnRandom = r.nextDouble();
                                 if (itemSpawnRandom < 0.4 - (currentUses/20.0)) itemSpawn = new ItemStack(Material.GOLD_NUGGET);
                                 else if (itemSpawnRandom < .98 - (currentUses/100.0)) itemSpawn = new ItemStack(Material.GOLD_INGOT);
-                                else itemSpawn = ItemManager.GOLD_COIN.getItemStack();
+                                else itemSpawn = CustomItemManager.getCustomItemStack("gold_coin");
 
                                 // Spawn the item and play a sound
                                 location.getWorld().dropItemNaturally(location.clone().add(new Vector(-.5, -.5, -.5)), itemSpawn);
@@ -73,7 +77,7 @@ public class CreateShinyOrb {
 
                     }, 40); // Activate after 2 seconds
                 })
-                .setCustomModel(41)
+                .modelData(41)
                 .build());
     }
 
