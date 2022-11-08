@@ -19,6 +19,8 @@ import se.fusion1013.plugin.cobaltcore.entity.ICustomEntity;
 import se.fusion1013.plugin.cobaltcore.entity.ISpawnParameters;
 import se.fusion1013.plugin.cobaltcore.entity.modules.*;
 import se.fusion1013.plugin.cobaltcore.item.CustomItemManager;
+import se.fusion1013.plugin.cobaltcore.item.loot.LootEntry;
+import se.fusion1013.plugin.cobaltcore.item.loot.LootPool;
 import se.fusion1013.plugin.cobaltcore.util.PlayerUtil;
 
 public class OrcHivemind {
@@ -62,7 +64,9 @@ public class OrcHivemind {
                 .addExecuteOnSpawnModule(new EntityEquipmentModule(EquipmentSlot.FEET, boot, 0))
 
                 // Loot
-                .addExecuteOnDeathModule(new EntityDropModule(sword, 0.002f))
+                .addExecuteOnDeathModule(new EntityDropModule(
+                        new LootPool(1, new LootEntry(sword, 0, 1)))
+                )
 
                 // Set potion effects
                 .addExecuteOnSpawnModule(new EntityPotionEffectModule(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 1000000, 1, true, false)))
