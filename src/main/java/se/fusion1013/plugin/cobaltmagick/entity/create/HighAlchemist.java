@@ -1,5 +1,6 @@
 package se.fusion1013.plugin.cobaltmagick.entity.create;
 
+import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.boss.BarColor;
@@ -109,13 +110,13 @@ public class HighAlchemist {
                 .addExecuteOnTickModule(new EntityBossBarModule("High Alchemist", 50, BarColor.BLUE, BarStyle.SEGMENTED_10))
 
                 // Drops
-                .addExecuteOnDeathModule(new EntityDropModule(6000, 10, new CustomLootTable(new CustomLootTable.LootTarget[] {CustomLootTable.LootTarget.CHEST, CustomLootTable.LootTarget.BARREL, CustomLootTable.LootTarget.SHULKER_BOX},
+                .addExecuteOnDeathModule(new EntityDropModule(6000, 10,
                         new LootPool(1, new LootEntry(SpellManager.ALPHA.getSpellItem(), 1, 1)),
                         new LootPool(1, new LootEntry(SpellManager.GAMMA.getSpellItem(), 1, 1)),
                         new LootPool(1, new LootEntry(ItemManager.CRYSTAL_KEY.getItemStack(), 1, 1)),
                         new LootPool(1, new LootEntry(BookConstants.getEmeraldTabletI(), 1, 1)),
                         new LootPool(1, new WandLootEntry(4, true))
-                )))
+                ))
                 .addExecuteOnDeathModule(new EntityAdvancementModule(new AdvancementGranter("progression", "kill_high_alchemist", 50)))
 
                 // Sounds
@@ -213,8 +214,8 @@ public class HighAlchemist {
         // Switch color of the bossbar for a few seconds
         EntityBossBarModule bossBarModule = entity.getTickExecutable(EntityBossBarModule.class);
         if (bossBarModule != null) {
-            bossBarModule.getBossBar().setColor(BarColor.RED);
-            Bukkit.getScheduler().runTaskLater(CobaltMagick.getInstance(), () -> bossBarModule.getBossBar().setColor(BarColor.BLUE), 20);
+            bossBarModule.getBossBar().getAdventureBossBar().color(BossBar.Color.RED);
+            Bukkit.getScheduler().runTaskLater(CobaltMagick.getInstance(), () -> bossBarModule.getBossBar().getAdventureBossBar().color(BossBar.Color.BLUE), 20);
         }
 
         // Get entity info
