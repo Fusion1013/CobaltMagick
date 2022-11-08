@@ -1,5 +1,9 @@
 package se.fusion1013.plugin.cobaltmagick.item.create;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -8,6 +12,8 @@ import se.fusion1013.plugin.cobaltcore.item.AbstractCustomItem;
 import se.fusion1013.plugin.cobaltcore.item.CustomItem;
 import se.fusion1013.plugin.cobaltcore.item.CustomItemManager;
 import se.fusion1013.plugin.cobaltcore.item.ICustomItem;
+import se.fusion1013.plugin.cobaltcore.item.system.CobaltItem;
+import se.fusion1013.plugin.cobaltcore.item.system.ItemRarity;
 import se.fusion1013.plugin.cobaltcore.util.HexUtils;
 import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
 import se.fusion1013.plugin.cobaltmagick.item.MagickItemCategory;
@@ -16,9 +22,14 @@ public class CreateMaterialIngots {
 
     public static void create() {}
 
-    public static ICustomItem ARDITE_INGOT = CustomItemManager.register(new CustomItem.CustomItemBuilder("ardite_ingot", Material.EMERALD, 1)
-            .setCustomName(HexUtils.colorify("&fArdite Ingot"))
-            .setCustomModel(16).setItemCategory(MagickItemCategory.MATERIAL)
+    public static ICustomItem ARDITE_INGOT = CustomItemManager.register(new CobaltItem.Builder("ardite_ingot")
+            .material(Material.EMERALD).modelData(16)
+            .itemName(HexUtils.colorify("&fArdite Ingot"))
+            .rarity(ItemRarity.COMMON)
+            .rarityLore(
+                    Component.text("It feels soft.").color(NamedTextColor.DARK_GRAY).decoration(TextDecoration.ITALIC, false)
+            )
+            .category(MagickItemCategory.MATERIAL)
             .build());
 
     public static ICustomItem ARDITE_NUGGET = CustomItemManager.register(new CustomItem.CustomItemBuilder("ardite_nugget", Material.EMERALD, 1)
@@ -119,15 +130,22 @@ public class CreateMaterialIngots {
             .setCustomModel(35).setItemCategory(MagickItemCategory.MATERIAL)
             .build());
 
-    public static ICustomItem ARCANE_ALLOY = CustomItemManager.register(new CustomItem.CustomItemBuilder("arcane_alloy", Material.EMERALD, 1)
-            .setCustomName(HexUtils.colorify("&bArcane Alloy"))
-            .addLoreLine(HexUtils.colorify("&9&oEnergy pulses within..."))
-            .setItemMetaEditor((itemMeta -> {
+    // Made using amethyst (??)
+    public static ICustomItem ARCANE_ALLOY = CustomItemManager.register(new CobaltItem.Builder("arcane_alloy")
+            .material(Material.EMERALD).modelData(36)
+            .itemName(HexUtils.colorify("&bArcane Alloy"))
+            .rarity(ItemRarity.VERY_RARE)
+            .rarityLore(
+                    Component.text("Energy pulses within...")
+                            .color(NamedTextColor.DARK_GRAY)
+                            .decoration(TextDecoration.ITALIC, false)
+            )
+            .category(MagickItemCategory.MATERIAL)
+            .editMeta((itemMeta -> {
                 itemMeta.addEnchant(Enchantment.MENDING, 1, true);
                 itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                 return itemMeta;
             }))
-            .setCustomModel(36).setItemCategory(MagickItemCategory.MATERIAL)
             .build());
 
     public static ICustomItem ARCANE_ALLOY_NUGGET = CustomItemManager.register(new CustomItem.CustomItemBuilder("arcane_alloy_nugget", Material.EMERALD, 9)
