@@ -9,6 +9,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import se.fusion1013.plugin.cobaltcore.item.CustomItem;
+import se.fusion1013.plugin.cobaltcore.item.ICustomItem;
 import se.fusion1013.plugin.cobaltcore.item.ItemActivator;
 import se.fusion1013.plugin.cobaltcore.util.HexUtils;
 import se.fusion1013.plugin.cobaltcore.util.PlayerUtil;
@@ -22,7 +23,7 @@ import static se.fusion1013.plugin.cobaltcore.item.CustomItemManager.register;
 
 public class CreateExperienceOrb {
 
-    public static CustomItem createExperienceOrb() {
+    public static ICustomItem createExperienceOrb() {
         return register(new CustomItem.CustomItemBuilder("experience_orb", Material.EMERALD, 1)
                 .setCustomName(HexUtils.colorify("&bExperience Orb"))
                 .addLoreLine(HexUtils.colorify("&e0xp"))
