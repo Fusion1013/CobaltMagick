@@ -58,7 +58,7 @@ public class Albedo {
         ALBEDO_SCENE.addEvent(new SceneEvent(8800, 74000, Albedo::tickBoids));
         ALBEDO_SCENE.addEvent(new SceneEvent(47000, 57000, Albedo::reduceBoidSize));
         ALBEDO_SCENE.addEvent(new SceneEvent(54000, 74000, Albedo::reduceIntegrity));
-        ALBEDO_SCENE.addEvent(new SceneEvent(57000, 74000, Albedo::centerBoids));
+        ALBEDO_SCENE.addEvent(new SceneEvent(52000, 74000, Albedo::centerBoids));
         ALBEDO_SCENE.addEvent(new SceneEvent(74000, 74000, Albedo::fillCauldron));
         ALBEDO_SCENE.addEvent(new SceneEvent(62000, 74000, Nigredo::cauldronBubbles));
         ALBEDO_SCENE.addEvent(new SceneEvent(31500, 62000, Albedo::displayGlyphs));
@@ -86,7 +86,7 @@ public class Albedo {
             item.setItemStack(ItemManager.OUR_MATTER.getItemStack());
         });
 
-        LINE_GROUP.display(location.toCenterLocation(), location.clone().add(.5, 3, .5));
+        // LINE_GROUP.display(location.toCenterLocation(), location.clone().add(.5, 3, .5));
     }
 
     static int itemParticleTick = 0;
@@ -184,6 +184,10 @@ public class Albedo {
         AttributeInstance healthInstance = amuletOwner.getAttribute(Attribute.GENERIC_MAX_HEALTH);
         if (healthInstance != null) healthInstance.setBaseValue(healthInstance.getBaseValue() + 16);
 
+        // Particle line towards amulet owner
+        LINE_GROUP.display(location.toCenterLocation(), amuletOwner.getLocation().clone().add(0, 1, 0));
+        LINE_HEART_GROUP.display(location.toCenterLocation(), amuletOwner.getLocation().clone().add(0, 1, 0));
+
         // Give advancement to all nearby players
         MagickAdvancementManager advancementManager = CobaltCore.getInstance().getSafeManager(CobaltMagick.getInstance(), MagickAdvancementManager.class);
 
@@ -201,6 +205,7 @@ public class Albedo {
                 .setParticle(Particle.END_ROD)
                 .setWidth(10000).setHeight(10000).setDepth(10000)
                 .setAmount(200)
+                .setIgnoreCount(100)
                 .setMoveDistance(10)
                 .setCohesion(10).setAlignment(50).setSeparation(100)
                 .build();
@@ -235,13 +240,16 @@ public class Albedo {
 
         LINE_STYLE = new ParticleStyleLine.ParticleStyleLineBuilder()
                 .setParticle(Particle.END_ROD)
+                .setOffset(new Vector(.05, .05, .05))
+                .setCount(3)
                 .build();
         LINE_GROUP = new ParticleGroup.ParticleGroupBuilder()
                 .addStyle(LINE_STYLE)
                 .build();
 
         ITEM_CIRCLE_STYLE = new ParticleStyleCircle.ParticleStyleCircleBuilder()
-                .setParticle(Particle.END_ROD)
+                .setParticle(Particle.DUST_COLOR_TRANSITION)
+                .setExtra(new Particle.DustTransition(Color.BLACK, Color.GRAY, 2))
                 .setIterations(3)
                 .setRadius(.1)
                 .setAngularVelocity(0, 5, 0)
@@ -259,6 +267,15 @@ public class Albedo {
                 .build();
         SMALL_BOID_GROUP = new ParticleGroup.ParticleGroupBuilder()
                 .addStyle(SMALL_BOID_STYLE)
+                .build();
+
+        LINE_HEART_STYLE = new ParticleStyleLine.ParticleStyleLineBuilder()
+                .setParticle(Particle.HEART)
+                .setOffset(new Vector(.1, .1, .1))
+                .setCount(2)
+                .build();
+        LINE_HEART_GROUP = new ParticleGroup.ParticleGroupBuilder()
+                .addStyle(LINE_HEART_STYLE)
                 .build();
     }
 
@@ -279,5 +296,8 @@ public class Albedo {
 
     private static ParticleStyleBoids SMALL_BOID_STYLE;
     private static ParticleGroup SMALL_BOID_GROUP;
+
+    private static ParticleStyle LINE_HEART_STYLE;
+    private static ParticleGroup LINE_HEART_GROUP;
 
 }
