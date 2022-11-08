@@ -11,6 +11,8 @@ import se.fusion1013.plugin.cobaltmagick.entity.EntityManager;
 import se.fusion1013.plugin.cobaltmagick.eyes.CrystalSong;
 import se.fusion1013.plugin.cobaltmagick.gui.AbstractGUIListener;
 import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
+import se.fusion1013.plugin.cobaltmagick.item.enchantments.MagickEnchantment;
+import se.fusion1013.plugin.cobaltmagick.item.enchantments.MagickEnchantmentManager;
 import se.fusion1013.plugin.cobaltmagick.storage.MagickObjectManager;
 import se.fusion1013.plugin.cobaltmagick.world.structures.cauldron.CauldronManager;
 import se.fusion1013.plugin.cobaltmagick.world.structures.laser.LaserManager;
@@ -95,6 +97,7 @@ public final class CobaltMagick extends JavaPlugin implements CobaltPlugin {
         CobaltCore.getInstance().getManager(this, MagickStructureManager.class);
         CobaltCore.getInstance().getManager(this, CauldronManager.class);
         CobaltCore.getInstance().getManager(this, MagickSettingsManager.class);
+        CobaltCore.getInstance().getManager(this, MagickEnchantmentManager.class);
 
         CobaltCore.getInstance().reloadPluginIntegrationManager("CrazyAdvancementsAPI", this, MagickAdvancementManager.class);
 
