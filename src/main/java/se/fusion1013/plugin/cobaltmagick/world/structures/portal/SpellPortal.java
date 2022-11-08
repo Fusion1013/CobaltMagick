@@ -6,8 +6,11 @@ import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.StringArgument;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
+import se.fusion1013.plugin.cobaltcore.CobaltCore;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
+import se.fusion1013.plugin.cobaltmagick.advancement.MagickAdvancementManager;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
 import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
 
@@ -47,6 +50,16 @@ public class SpellPortal extends AbstractMagickPortal implements Runnable {
 
         if (location.distanceSquared(portalLocation) > 10*10) return;
         if (SpellManager.getSpell(activationSpell).getId() == spell.getId()) super.isActive = true;
+
+        MagickAdvancementManager advancementManager = CobaltCore.getInstance().getSafeManager(CobaltMagick.getInstance(), MagickAdvancementManager.class);
+        if (advancementManager == null) return;
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player.getWorld() != portalLocation.getWorld()) continue;
+            if (player.getLocation().distanceSquared(portalLocation) > 50 * 50) continue;
+
+            Bukkit.getScheduler().runTaskLater(CobaltMagick.getInstance(), () -> advancementManager.grantAdvancement(player, "progression", "soul_egg"), 10);
+        }
     }
 
     @Override
