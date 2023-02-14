@@ -12,9 +12,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import se.fusion1013.plugin.cobaltcore.CobaltCore;
-import se.fusion1013.plugin.cobaltcore.item.CustomItem;
 import se.fusion1013.plugin.cobaltcore.item.CustomItemManager;
-import se.fusion1013.plugin.cobaltcore.item.ICustomItem;
 import se.fusion1013.plugin.cobaltcore.manager.Manager;
 import se.fusion1013.plugin.cobaltcore.util.PlayerUtil;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
@@ -47,7 +45,7 @@ public class CauldronManager extends Manager implements Listener {
         if (ItemManager.DEATH_BOUND_AMULET.compareTo(event.getPlayer().getInventory().getItemInMainHand())) executeNigredo(event.getPlayer());
 
         // Trigger cauldron stage 2 (Albedo)
-        if (ItemManager.OUR_MATTER.compareTo(event.getPlayer().getInventory().getItemInMainHand())) executeAlbedo(event.getPlayer());
+        if (CustomItemManager.getCustomItem("our_matter").compareTo(event.getPlayer().getInventory().getItemInMainHand())) executeAlbedo(event.getPlayer());
 
         // Trigger cauldron stage 3 (Citrinitas)
         if (false) executeCitrinitas(event.getPlayer());

@@ -1,9 +1,6 @@
 package se.fusion1013.plugin.cobaltmagick.util.constants;
 
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
-import se.fusion1013.plugin.cobaltcore.item.CustomItemManager;
-import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +12,7 @@ public class MerchantRecipeConstants {
 
         // TODO: Only select a random number of trades
 
+        /*
         // YODA
         MerchantRecipe recipe1 = new MerchantRecipe(ItemManager.HAT_YODA.getItemStack(), 1);
         List<ItemStack> recipe1Ingredients = new ArrayList<>();
@@ -63,6 +61,8 @@ public class MerchantRecipeConstants {
         recipe7Ingredients.add(CustomItemManager.getCustomItemStack("gold_coin"));
         recipe7.setIngredients(recipe7Ingredients);
         recipes.add(recipe7);
+
+         */
 
         return recipes;
 

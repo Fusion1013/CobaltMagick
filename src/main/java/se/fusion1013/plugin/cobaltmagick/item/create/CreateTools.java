@@ -1,13 +1,13 @@
 package se.fusion1013.plugin.cobaltmagick.item.create;
 
-import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
+import org.bukkit.EntityEffect;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltcore.CobaltCore;
-import se.fusion1013.plugin.cobaltcore.item.*;
+import se.fusion1013.plugin.cobaltcore.item.ICustomItem;
+import se.fusion1013.plugin.cobaltcore.item.ItemActivator;
 import se.fusion1013.plugin.cobaltcore.item.system.CobaltItem;
 import se.fusion1013.plugin.cobaltcore.util.HexUtils;
 import se.fusion1013.plugin.cobaltcore.util.PlayerUtil;
@@ -17,7 +17,6 @@ import se.fusion1013.plugin.cobaltmagick.item.MagickItemCategory;
 import java.util.Objects;
 
 import static se.fusion1013.plugin.cobaltcore.item.CustomItemManager.register;
-import static se.fusion1013.plugin.cobaltmagick.item.ItemManager.ECHO_INGOT;
 
 public class CreateTools {
 
@@ -64,8 +63,10 @@ public class CreateTools {
      */
 
     // Item Used to Reactivate Sculk Shrieker
-    public static final ICustomItem SHRIEKER_CATALYST = register(new CustomItem.CustomItemBuilder("shrieker_catalyst", Material.CLOCK, 1)
-            .setCustomName(HexUtils.colorify("&eShrieker Catalyst"))
+    /*
+    public static final ICustomItem SHRIEKER_CATALYST = register(new CobaltItem.Builder("shrieker_catalyst")
+            .material(Material.CLOCK)
+            .itemName(HexUtils.colorify("&eShrieker Catalyst"))
             .addShapedRecipe("-*-", "*%*", "-*-", new AbstractCustomItem.ShapedIngredient('*', ECHO_INGOT.getItemStack()), new AbstractCustomItem.ShapedIngredient('%', Material.SCULK_CATALYST))
             .addItemActivator(ItemActivator.PLAYER_RIGHT_CLICK_BLOCK, (item, event, slot) -> {
                 PlayerInteractEvent interactEvent = (PlayerInteractEvent) event;
@@ -95,11 +96,13 @@ public class CreateTools {
             })
             .setCustomModel(2001).setItemCategory(MagickItemCategory.TOOL).addTag("dream_item")
             .build());
+     */
 
-    public static final ICustomItem ECHO_TOTEM = register(new CustomItem.CustomItemBuilder("echo_totem", Material.ENCHANTED_BOOK, 1)
-            .setCustomName(HexUtils.colorify("&eEcho Totem"))
-            .addLoreLine(HexUtils.colorify("&o&7Teleports you to your spawnpoint, though it comes at a cost..."))
-            .addItemActivator(ItemActivator.PLAYER_RIGHT_CLICK, (item, event, slot) -> {
+    public static final ICustomItem ECHO_TOTEM = register(new CobaltItem.Builder("echo_totem")
+            .material(Material.ENCHANTED_BOOK)
+            .itemName(HexUtils.colorify("&eEcho Totem"))
+            .extraLore(HexUtils.colorify("&o&7Teleports you to your spawnpoint, though it comes at a cost..."))
+            .itemActivatorAsync(ItemActivator.PLAYER_RIGHT_CLICK, (item, event, slot) -> {
                 PlayerInteractEvent interactEvent = (PlayerInteractEvent) event;
                 if (!item.compareTo(interactEvent.getPlayer().getInventory().getItemInMainHand())) return;
 
@@ -113,7 +116,7 @@ public class CreateTools {
                     player.playEffect(EntityEffect.TOTEM_RESURRECT);
                 });
             })
-            .setCustomModel(1001).setItemCategory(MagickItemCategory.TOOL)
+            .modelData(1001).category(MagickItemCategory.TOOL)
             .build());
 
 }

@@ -11,6 +11,7 @@ import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class MulticastSpell extends Spell implements Cloneable, Runnable {
 

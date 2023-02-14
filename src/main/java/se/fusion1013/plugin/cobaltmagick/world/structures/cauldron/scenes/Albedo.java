@@ -11,6 +11,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltcore.CobaltCore;
+import se.fusion1013.plugin.cobaltcore.item.CustomItemManager;
 import se.fusion1013.plugin.cobaltcore.particle.ParticleGroup;
 import se.fusion1013.plugin.cobaltcore.particle.manager.ParticleStyleManager;
 import se.fusion1013.plugin.cobaltcore.particle.styles.*;
@@ -83,7 +84,7 @@ public class Albedo {
             item.setCanPlayerPickup(false);
             item.setGlowing(true);
             item.setVelocity(new Vector());
-            item.setItemStack(ItemManager.OUR_MATTER.getItemStack());
+            item.setItemStack(CustomItemManager.getCustomItemStack("our_matter"));
         });
 
         // LINE_GROUP.display(location.toCenterLocation(), location.clone().add(.5, 3, .5));

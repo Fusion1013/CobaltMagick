@@ -4,7 +4,8 @@ import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
-import se.fusion1013.plugin.cobaltcore.item.CustomItem;
+import se.fusion1013.plugin.cobaltcore.item.ICustomItem;
+import se.fusion1013.plugin.cobaltcore.item.system.CobaltItem;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
 import java.util.List;
@@ -37,7 +38,7 @@ public interface ISpell {
     String getInternalSpellName();
     String getSpellName();
     ItemStack getSpellItem();
-    CustomItem getSpellCustomItem();
+    ICustomItem getSpellCustomItem();
     int getCustomModelData();
     SpellType getSpellType();
     boolean getConsumeOnUse();

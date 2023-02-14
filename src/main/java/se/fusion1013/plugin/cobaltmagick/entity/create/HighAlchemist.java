@@ -246,7 +246,7 @@ public class HighAlchemist {
      * @param upperLimit higher percent value. Range between 0.0 - 1.0.
      * @return if the entity's health is below the given percent value.
      */
-    private static boolean isBetweenPercentHealth(CustomEntity entity, double lowerLimit, double upperLimit) {
+    public static boolean isBetweenPercentHealth(CustomEntity entity, double lowerLimit, double upperLimit) {
         if (entity.getSummonedEntity() instanceof LivingEntity living) {
             double currentHealth = living.getHealth();
             double maxHealth = living.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();

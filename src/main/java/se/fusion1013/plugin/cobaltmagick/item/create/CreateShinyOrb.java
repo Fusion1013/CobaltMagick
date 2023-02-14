@@ -8,7 +8,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
-import se.fusion1013.plugin.cobaltcore.item.CustomItem;
 import se.fusion1013.plugin.cobaltcore.item.CustomItemManager;
 import se.fusion1013.plugin.cobaltcore.item.ICustomItem;
 import se.fusion1013.plugin.cobaltcore.item.ItemActivator;

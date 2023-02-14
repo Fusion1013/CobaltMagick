@@ -4,9 +4,8 @@ import org.bukkit.*;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
-import se.fusion1013.plugin.cobaltcore.item.CustomItem;
+import se.fusion1013.plugin.cobaltcore.item.system.CobaltItem;
 import se.fusion1013.plugin.cobaltcore.particle.ParticleGroup;
-import se.fusion1013.plugin.cobaltcore.particle.styles.ParticleStyle;
 import se.fusion1013.plugin.cobaltcore.particle.styles.ParticleStyleSphere;
 import se.fusion1013.plugin.cobaltcore.particle.styles.glyph.ParticleStyleFinnishGlyph;
 
@@ -16,7 +15,7 @@ public class MagickChest {
 
     Location location;
     int width;
-    CustomItem key;
+    CobaltItem key;
     ItemStack[] content;
 
     ParticleGroup particles = new ParticleGroup.ParticleGroupBuilder("light_chest")
@@ -40,7 +39,7 @@ public class MagickChest {
 
     // ----- CONSTRUCTORS -----
 
-    public MagickChest(Location location, int width, CustomItem key, ItemStack... content) {
+    public MagickChest(Location location, int width, CobaltItem key, ItemStack... content) {
         this.location = location;
         this.width = width;
         this.key = key;

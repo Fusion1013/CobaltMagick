@@ -8,6 +8,12 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
+import org.yaml.snakeyaml.util.EnumUtils;
+import se.fusion1013.plugin.cobaltcore.action.system.*;
+import se.fusion1013.plugin.cobaltcore.particle.manager.ParticleStyleManager;
+import se.fusion1013.plugin.cobaltcore.particle.styles.IParticleStyle;
+import se.fusion1013.plugin.cobaltcore.particle.styles.ParticleStyle;
+import se.fusion1013.plugin.cobaltcore.particle.styles.ParticleStylePoint;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltcore.particle.ParticleGroup;
 import se.fusion1013.plugin.cobaltmagick.spells.spellmodules.AbstractSpellModule;
@@ -18,27 +24,87 @@ import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable {
 
-    double spread;
-    double velocity;
-    double lifetime;
-    double currentLifetime;
-    ParticleGroup particleGroup;
+    //region FIELDS
 
-    List<SpellModule> executeOnCast = new ArrayList<>();
-    List<SpellModule> executeOnTick = new ArrayList<>();
-    List<SpellModule> executeOnBlockCollision = new ArrayList<>();
-    List<SpellModule> executeOnEntityCollision = new ArrayList<>();
-    List<SpellModule> executeOnDeath = new ArrayList<>();
+    // -- Generic Values
+    private double spread;
+    private double velocity;
+    private double lifetime;
+    private double currentLifetime;
 
-    Vector directionModifier = new Vector(0, 0, 0);
+    private ParticleGroup particleGroup;
+
+    // -- Actions
+    private final List<IAction> castActions = new ArrayList<>();
+    private final List<IAction> tickActions = new ArrayList<>(); // TODO
+    private final List<IAction> blockCollisionActions = new ArrayList<>();
+    private final List<IAction> entityCollisionActions = new ArrayList<>();
+    private final List<IAction> deathActions = new ArrayList<>();
+
+    // -- Executors
+    private List<SpellModule> executeOnCast = new ArrayList<>();
+    private List<SpellModule> executeOnTick = new ArrayList<>();
+    private List<SpellModule> executeOnBlockCollision = new ArrayList<>();
+    private List<SpellModule> executeOnEntityCollision = new ArrayList<>();
+    private List<SpellModule> executeOnDeath = new ArrayList<>();
+
+    private Vector directionModifier = new Vector(0, 0, 0);
 
     private BukkitTask projectileTask;
 
-    List<TriggerType> triggerTypes = new ArrayList<>();
+    private List<TriggerType> triggerTypes = new ArrayList<>();
+
+    //endregion
+
+    //region CONSTRUCTORS
+
+    public ProjectileSpell(int id, String internalSpellName, Map<?, ?> data) {
+        super(id, internalSpellName, SpellType.PROJECTILE, data);
+
+        if (data.containsKey("spread")) spread = (double) data.get("spread");
+        if (data.containsKey("velocity")) velocity = (double) data.get("velocity");
+        if (data.containsKey("lifetime")) lifetime = (double) data.get("lifetime");
+
+        // Main Particle
+        if (data.containsKey("particles")) {
+            ParticleGroup.ParticleGroupBuilder particleBuilder = new ParticleGroup.ParticleGroupBuilder();
+            for (ParticleStyle style : getParticles((List<Map<?,?>>) data.get("particles"))) {
+                particleBuilder.addStyle(style);
+            }
+            particleGroup = particleBuilder.build();
+        }
+
+        // Actions
+        if (data.containsKey("cast_actions")) castActions.addAll(ActionManager.getActions((List<Map<?,?>>) data.get("cast_actions")));
+        if (data.containsKey("tick_actions")) tickActions.addAll(ActionManager.getActions((List<Map<?,?>>) data.get("tick_actions")));
+        if (data.containsKey("block_collision_actions")) blockCollisionActions.addAll(ActionManager.getActions((List<Map<?,?>>) data.get("block_collision_actions")));
+        if (data.containsKey("entity_collision_actions")) entityCollisionActions.addAll(ActionManager.getActions((List<Map<?,?>>) data.get("entity_collision_actions")));
+        if (data.containsKey("death_actions")) deathActions.addAll(ActionManager.getActions((List<Map<?,?>>) data.get("death_actions")));
+
+        // Triggers
+        if (data.containsKey("triggers")) {
+            List<String> triggers = (List<String>) data.get("triggers");
+            for (String s : triggers) triggerTypes.add(EnumUtils.findEnumInsensitiveCase(TriggerType.class, s));
+        }
+    }
+
+    protected List<ParticleStyle> getParticles(List<Map<?, ?>> particleData) {
+        List<ParticleStyle> newStyles = new ArrayList<>();
+
+        for (Map<?, ?> styleData : particleData) {
+            for (var key : styleData.keySet()) {
+                ParticleStyle newStyle = ParticleStyleManager.createParticleStyleSilent((String) key, (Map<?, ?>) styleData.get(key));
+                newStyles.add(newStyle);
+            }
+        }
+
+        return newStyles;
+    }
 
     /**
      * Creates a new <code>ProjectileSpell</code> with an id, internalSpellName and a spellName
@@ -67,12 +133,20 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
 
         this.directionModifier = projectileSpell.getDirectionModifier();
 
+        this.castActions.addAll(projectileSpell.castActions);
+        this.tickActions.addAll(projectileSpell.tickActions);
+        this.blockCollisionActions.addAll(projectileSpell.blockCollisionActions);
+        this.entityCollisionActions.addAll(projectileSpell.entityCollisionActions);
+        this.deathActions.addAll(projectileSpell.deathActions);
+
         this.executeOnCast = projectileSpell.getExecuteOnCast();
         this.executeOnTick = projectileSpell.getExecuteOnTick();
         this.executeOnBlockCollision = projectileSpell.getExecuteOnBlockCollision();
         this.executeOnEntityCollision = projectileSpell.getExecuteOnEntityCollision();
         this.executeOnDeath = projectileSpell.getExecuteOnDeath();
     }
+
+    //endregion
 
     @Override
     public void performPreCast(LivingEntity caster, Wand wand, List<ISpell> wandSpells, int casts, int spellPos) {
@@ -146,6 +220,14 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
             this.velocityVector.add(casterVelocity.setY(0));
         }
 
+        // Actions
+        if (castActions != null && caster != null) {
+            for (IAction action : castActions) {
+                if (action instanceof ILivingEntityAction livingEntityAction) livingEntityAction.activate(caster); // TODO: Audio action does not work if caster is null, ie. spell was cast by non-entity
+                else if (action instanceof IEntityAction entityAction) entityAction.activate(caster);
+            }
+        }
+
         // Special Things Here
         for (SpellModule module : executeOnCast){
             module.executeOnCast(wand, caster, this);
@@ -170,6 +252,10 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
         move();
         display();
 
+        for (IAction action : tickActions) {
+            // TODO
+        }
+
         // Special Things Here
         for (SpellModule module : executeOnTick){
             module.executeOnTick(wand, caster, this);
@@ -192,6 +278,10 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
      * Called when a projectile dies
      */
     public void onProjectileDeath(){
+        for (IAction action : deathActions) {
+            if (action instanceof ILocationAction locationAction) locationAction.activate(currentLocation);
+        }
+
         for (SpellModule module : executeOnDeath){
             module.executeOnDeath(wand, caster, this);
         }
@@ -210,6 +300,15 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
     public void onEntityCollide(Entity hitEntity){
         super.onEntityCollide(hitEntity);
 
+        // Execute actions
+        for (IAction action : entityCollisionActions) {
+            if (action instanceof ILivingEntityAction livingEntityAction) livingEntityAction.activate(hitEntity);
+            else if (action instanceof IEntityAction entityAction) entityAction.activate(hitEntity);
+
+            if (action.isCancelAction()) killParticle();
+        }
+
+        // Old system
         for (SpellModule module : executeOnEntityCollision){
             module.executeOnEntityHit(wand, caster, this, hitEntity);
 
@@ -228,6 +327,11 @@ public class ProjectileSpell extends MovableSpell implements Cloneable, Runnable
     @Override
     public void onBlockCollide(Block hitBlock, BlockFace hitBlockFace){
         super.onBlockCollide(hitBlock, hitBlockFace);
+
+        // Actions
+        for (IAction action : blockCollisionActions) {
+            if (action instanceof ILocationAction locationAction) locationAction.activate(hitBlock.getLocation());
+        }
 
         for (SpellModule module : executeOnBlockCollision){
             module.executeOnBlockHit(wand, caster, this, hitBlock, hitBlockFace);

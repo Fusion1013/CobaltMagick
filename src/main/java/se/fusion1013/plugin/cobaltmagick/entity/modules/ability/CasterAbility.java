@@ -9,6 +9,7 @@ import se.fusion1013.plugin.cobaltcore.entity.ISpawnParameters;
 import se.fusion1013.plugin.cobaltcore.entity.modules.ability.AbilityModule;
 import se.fusion1013.plugin.cobaltcore.entity.modules.ability.IAbilityModule;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
+import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
 import se.fusion1013.plugin.cobaltmagick.util.AIUtil;
 import se.fusion1013.plugin.cobaltmagick.wand.CastParser;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
@@ -22,10 +23,18 @@ public class CasterAbility extends AbilityModule implements IAbilityModule {
     // ----- VARIABLES -----
 
     ISpell[] spells;
+    String[] spellNames;
     private final double maxTargetDistance;
     private Vector offset = new Vector(0, 2, 0);
 
     // ----- CONSTRUCTORS -----
+
+    public CasterAbility(double cooldown, double maxTargetDistance, String... spells) {
+        super(cooldown);
+
+        this.maxTargetDistance = maxTargetDistance;
+        spellNames = spells;
+    }
 
     /**
      * Creates a new <code>CasterAbility</code>.
@@ -52,6 +61,12 @@ public class CasterAbility extends AbilityModule implements IAbilityModule {
 
     @Override
     public void execute(CustomEntity customEntity, ISpawnParameters spawnParameters) {
+        List<ISpell> newSpells = new ArrayList<>(Arrays.stream(spells).toList());
+        for (String s : spellNames) {
+            ISpell ns = SpellManager.getSpell(s);
+            if (ns != null) newSpells.add(ns);
+        }
+
         // Get a target entity
         Entity summonedEntity = customEntity.getSummonedEntity();
         LivingEntity targetEntity = AIUtil.findNearbyPlayerHealthWeighted(summonedEntity, maxTargetDistance);
@@ -63,12 +78,12 @@ public class CasterAbility extends AbilityModule implements IAbilityModule {
             Vector delta = new Vector(target.getX() - castLocation.getX(), target.getY() - castLocation.getY() + 1, target.getZ() - castLocation.getZ()).normalize();
             if (summonedEntity instanceof LivingEntity living) {
                 // Cast Spells
-                CastParser parser = new CastParser(living, -1, Arrays.asList(spells), 1);
+                CastParser parser = new CastParser(living, -1, newSpells, 1);
                 List<ISpell> spellsToCast = parser.prepareCast();
                 for (ISpell spell : spellsToCast) {
                     spell.clone().castSpell(null, living, delta, castLocation); // TODO: Make sure that setting wand to null does not cause problems
                 }
-                for (ISpell spell : spells) spell.setHasCast(false);
+                for (ISpell spell : newSpells) spell.setHasCast(false);
             }
         }
     }

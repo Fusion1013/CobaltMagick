@@ -11,10 +11,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
-import se.fusion1013.plugin.cobaltcore.item.CustomItem;
 import se.fusion1013.plugin.cobaltcore.item.CustomItemManager;
 import se.fusion1013.plugin.cobaltcore.item.ICustomItem;
 import se.fusion1013.plugin.cobaltcore.item.ItemActivator;
+import se.fusion1013.plugin.cobaltcore.item.system.CobaltItem;
 import se.fusion1013.plugin.cobaltcore.util.HexUtils;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.item.MagickItemCategory;
@@ -23,9 +23,10 @@ public class CreateSwords {
 
     public static void create() {}
 
-    public static ICustomItem HEAVY_NETHERITE_MACHETE = CustomItemManager.register(new CustomItem.CustomItemBuilder("heavy_netherite_machete", Material.NETHERITE_SWORD, 1)
-            .setCustomName(HexUtils.colorify("&8Heavy Netherite Machete"))
-            .addItemActivatorSync(ItemActivator.PLAYER_HIT_ENTITY, (iCustomItem, event, equipmentSlot) -> {
+    public static ICustomItem HEAVY_NETHERITE_MACHETE = CustomItemManager.register(new CobaltItem.Builder("heavy_netherite_machete")
+            .material(Material.NETHERITE_SWORD)
+            .itemName(HexUtils.colorify("&8Heavy Netherite Machete"))
+            .itemActivatorSync(ItemActivator.PLAYER_HIT_ENTITY, (iCustomItem, event, equipmentSlot) -> {
                 EntityDamageByEntityEvent entityDamageByEntityEvent = (EntityDamageByEntityEvent) event;
 
                 if (equipmentSlot != EquipmentSlot.HAND) return;
@@ -50,8 +51,8 @@ public class CreateSwords {
 
                 // TODO: Armor Crunch particle effects
             })
-            .addLoreLine(HexUtils.colorify("&7Armor Crunch I"))
-            .setCustomModel(11).setItemCategory(MagickItemCategory.TOOL)
+            .extraLore(HexUtils.colorify("&7Armor Crunch I"))
+            .modelData(11).category(MagickItemCategory.TOOL)
             .build());
 
 }

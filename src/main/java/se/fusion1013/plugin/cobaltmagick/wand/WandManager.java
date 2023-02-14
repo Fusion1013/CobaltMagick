@@ -51,7 +51,9 @@ public class WandManager extends Manager implements Runnable {
      */
     public Wand createWand(boolean shuffle, int spellsPerCast, double castDelay, double rechargeTime, int manaMax, int manaChargeSpeed, int capacity, double spread, List<ISpell> alwaysCast, int wandTier) {
         // Create the wand
-        Wand wand = new Wand(shuffle, spellsPerCast, castDelay, rechargeTime, manaMax, manaChargeSpeed, capacity, spread, alwaysCast, wandTier);
+        List<SpellContainer> alwaysCastContainers = new ArrayList<>();
+        for (ISpell spell : alwaysCast) alwaysCastContainers.add(new SpellContainer(spell.getId(), spell.getCount()));
+        Wand wand = new Wand(shuffle, spellsPerCast, castDelay, rechargeTime, manaMax, manaChargeSpeed, capacity, spread, alwaysCastContainers, wandTier);
 
         // Insert wand into the database & wand cache
         insertWand(wand);

@@ -24,6 +24,7 @@ import se.fusion1013.plugin.cobaltmagick.event.SpellCastEvent;
 import se.fusion1013.plugin.cobaltmagick.manager.MagickConfigManager;
 import se.fusion1013.plugin.cobaltmagick.manager.MagickSettingsManager;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
+import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,7 @@ import java.util.Random;
 
 public class Wand extends AbstractWand {
 
-    public Wand(boolean shuffle, int spellsPerCast, double castDelay, double rechargeTime, int manaMax, int manaChargeSpeed, int capacity, double spread, List<ISpell> alwaysCast, int wandTier){
+    public Wand(boolean shuffle, int spellsPerCast, double castDelay, double rechargeTime, int manaMax, int manaChargeSpeed, int capacity, double spread, List<SpellContainer> alwaysCast, int wandTier){
         super(shuffle, spellsPerCast, castDelay, rechargeTime, manaMax, manaChargeSpeed, capacity, spread, alwaysCast, wandTier);
     }
 
@@ -78,9 +79,12 @@ public class Wand extends AbstractWand {
         else if (rechargeCooldown > 0) return CastResult.RECHARGE_TIME;
 
         // Cast all the always cast spells. These spells get cast for free
-        for (ISpell s : alwaysCast){
-            if (direction == null) s.castSpell(this, caster);
-            else s.castSpell(this, caster, direction, location);
+        for (SpellContainer s : alwaysCast){
+            ISpell spell = SpellManager.getSpell(s.spellId);
+            if (spell == null) continue;
+
+            if (direction == null) spell.castSpell(this, caster);
+            else spell.castSpell(this, caster, direction, location);
         }
 
         if (spells.size() == 0) return CastResult.SUCCESS;
@@ -90,7 +94,7 @@ public class Wand extends AbstractWand {
         int startPos = 0;
         if (shuffle) startPos = getRandomStartPos();
 
-        CastParser parser = new CastParser(caster, id, spells, spellsPerCast, startPos);
+        CastParser parser = new CastParser(caster, id, getSpells(), spellsPerCast, startPos);
         List<ISpell> spellsToCast = parser.prepareCast();
 
         for (ISpell s : spellsToCast){
@@ -133,7 +137,10 @@ public class Wand extends AbstractWand {
         List<Integer> randomPoses = new ArrayList<>();
 
         for (int i = 0; i < spells.size(); i++){
-            if (!spells.get(i).getHasCast()) randomPoses.add(i);
+            ISpell spell = spells.get(i).getSpell();
+            if (spell == null) continue;
+
+            if (!spell.getHasCast()) randomPoses.add(i);
         }
 
         Random r = new Random();
@@ -148,7 +155,10 @@ public class Wand extends AbstractWand {
      * Sets the wand into its recharge state
      */
     private void recharge(){
-        for (ISpell spell : spells){
+        for (SpellContainer spellContainer : spells){
+            ISpell spell = SpellManager.getSpell(spellContainer.spellId);
+            if (spell == null) return;
+
             spell.setHasCast(false);
             rechargeCooldown += spell.getRechargeTime();
         }
@@ -161,8 +171,11 @@ public class Wand extends AbstractWand {
      * @return If all spells have been cast
      */
     private boolean allSpellsCast(){
-        for (ISpell s : spells){
-            if (!s.getHasCast()) return false;
+        for (SpellContainer s : spells) {
+            ISpell spell = s.getSpell();
+            if (spell == null) continue;
+
+            if (!spell.getHasCast()) return false;
         }
         return true;
     }

@@ -48,6 +48,10 @@ public class EntityManager extends Manager implements Listener {
 
     public static final ICustomEntity MIMIC = Mimic.register();
 
+    // Dragons
+    // public static final ICustomEntity GREEN_DRAGON_MINION = GreenDragonMinion.register();
+    // public static final ICustomEntity GREEN_DRAGONLORD = GreenDragonlord.register();
+
     // ----- LISTENERS ----- // TODO: Move into Core
 
     @EventHandler

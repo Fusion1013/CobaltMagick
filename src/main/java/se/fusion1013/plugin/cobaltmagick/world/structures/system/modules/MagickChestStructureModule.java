@@ -5,9 +5,9 @@ import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
-import se.fusion1013.plugin.cobaltcore.item.CustomItem;
 import se.fusion1013.plugin.cobaltcore.item.ICustomItem;
 import se.fusion1013.plugin.cobaltcore.item.loot.CustomLootTable;
+import se.fusion1013.plugin.cobaltcore.item.system.CobaltItem;
 import se.fusion1013.plugin.cobaltcore.particle.ParticleGroup;
 import se.fusion1013.plugin.cobaltcore.particle.styles.ParticleStyleSphere;
 import se.fusion1013.plugin.cobaltcore.particle.styles.glyph.ParticleStyleFinnishGlyph;
@@ -59,7 +59,7 @@ public class MagickChestStructureModule extends StructureModule implements IStru
 
     // ----- CONSTRUCTORS -----
 
-    public MagickChestStructureModule(Material replaceMaterial, int width, CustomItem item, CustomLootTable lootTable) {
+    public MagickChestStructureModule(Material replaceMaterial, int width, CobaltItem item, CustomLootTable lootTable) {
         this.replaceMaterial = replaceMaterial;
         this.width = width;
         this.item = item;

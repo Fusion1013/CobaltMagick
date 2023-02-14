@@ -1,24 +1,34 @@
 package se.fusion1013.plugin.cobaltmagick.crafting.custom;
 
-import com.google.gson.JsonObject;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
+import se.fusion1013.plugin.cobaltcore.item.crafting.ICobaltRecipe;
 
-public class MagickAnvilRecipe implements ICobaltCraftingRecipe {
+public record MagickAnvilRecipe(
+        NamespacedKey key,
+        ItemStack[] input,
+        ItemStack[] output
+) implements ICobaltRecipe {
 
-    // ----- VARIABLES -----
+    //region GETTERS/SETTERS
 
-    private ItemStack[] items;
-    private ItemStack result;
-
-    // ----- CONSTRUCTORS -----
-
-    public MagickAnvilRecipe(ItemStack[] items, ItemStack result) {
-        this.items = items;
-        this.result = result;
+    public ItemStack[] getInput() {
+        return input;
     }
 
-    public MagickAnvilRecipe(JsonObject jsonObject) {
-        // TODO
+    public ItemStack[] getOutput() {
+        return output;
     }
 
+    @Override
+    public String getRecipeType() {
+        return "magick_anvil";
+    }
+
+    @Override
+    public String getInternalName() {
+        return key.getKey();
+    }
+
+    //endregion
 }

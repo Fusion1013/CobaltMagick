@@ -3,10 +3,13 @@ package se.fusion1013.plugin.cobaltmagick.item.components;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import se.fusion1013.plugin.cobaltcore.CobaltCore;
 import se.fusion1013.plugin.cobaltcore.item.components.AbstractItemComponent;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
+
+import java.util.Map;
 
 public class ManaComponent extends AbstractItemComponent {
 
@@ -29,12 +32,17 @@ public class ManaComponent extends AbstractItemComponent {
     // ----- ITEM CONSTRUCTION -----
 
     @Override
-    public void onItemConstruction(ItemStack stack, ItemMeta meta) {
-        super.onItemConstruction(stack, meta);
+    public void onItemConstruction(ItemStack stack, ItemMeta meta, PersistentDataContainer persistentDataContainer) {
+        super.onItemConstruction(stack, meta, persistentDataContainer);
 
-        meta.getPersistentDataContainer().set(MANA_MAX_KEY, PersistentDataType.INTEGER, defaultManaMax);
-        meta.getPersistentDataContainer().set(MANA_CHARGE_SPEED_KEY, PersistentDataType.INTEGER, defaultManaChargeSpeed);
-        meta.getPersistentDataContainer().set(CURRENT_MANA_KEY, PersistentDataType.INTEGER, defaultCurrentMana);
+        persistentDataContainer.set(MANA_MAX_KEY, PersistentDataType.INTEGER, defaultManaMax);
+        persistentDataContainer.set(MANA_CHARGE_SPEED_KEY, PersistentDataType.INTEGER, defaultManaChargeSpeed);
+        persistentDataContainer.set(CURRENT_MANA_KEY, PersistentDataType.INTEGER, defaultCurrentMana);
+    }
+
+    @Override
+    public void loadValues(Map<?, ?> map) {
+
     }
 
     // ----- GETTERS / SETTERS -----

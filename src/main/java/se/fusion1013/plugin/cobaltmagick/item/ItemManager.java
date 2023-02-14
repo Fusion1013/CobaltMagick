@@ -4,18 +4,10 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.ItemFrame;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Villager;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.CompassMeta;
@@ -23,28 +15,19 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.potion.PotionData;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.potion.PotionType;
-import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltcore.CobaltCore;
 import se.fusion1013.plugin.cobaltcore.item.*;
-import se.fusion1013.plugin.cobaltcore.item.category.ItemCategory;
-import se.fusion1013.plugin.cobaltcore.item.enchantment.CobaltEnchantment;
-import se.fusion1013.plugin.cobaltcore.item.enchantment.EnchantmentWrapper;
+import se.fusion1013.plugin.cobaltcore.item.components.ComponentManager;
+import se.fusion1013.plugin.cobaltcore.item.components.IComponentFactory;
 import se.fusion1013.plugin.cobaltcore.item.system.CobaltItem;
 import se.fusion1013.plugin.cobaltcore.item.system.ItemRarity;
 import se.fusion1013.plugin.cobaltcore.manager.Manager;
 import se.fusion1013.plugin.cobaltcore.util.HexUtils;
-import se.fusion1013.plugin.cobaltcore.util.PlayerUtil;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.advancement.MagickAdvancementManager;
+import se.fusion1013.plugin.cobaltmagick.item.components.MagickComponentFactory;
 import se.fusion1013.plugin.cobaltmagick.item.create.*;
-import se.fusion1013.plugin.cobaltmagick.item.enchantments.MagickEnchantment;
-import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
 import se.fusion1013.plugin.cobaltmagick.util.constants.ItemConstants;
-import se.fusion1013.plugin.cobaltmagick.util.constants.MerchantRecipeConstants;
 import se.fusion1013.plugin.cobaltmagick.world.structures.MagickStructureManager;
 
 import java.util.ArrayList;
@@ -69,6 +52,10 @@ public class ItemManager extends Manager implements Listener {
     private static final Class<MagickItemCategory> MAGICK_ITEM_CATEGORY = CustomItemManager.registerCategory(MagickItemCategory.class);
     // TODO: Rarity
 
+    // ----- COMPONENTS -----
+
+    private static final IComponentFactory MAGICK_FACTORY = ComponentManager.registerFactory(new MagickComponentFactory());
+
     // ----- MISCELLANEOUS -----
 
     public static final ICustomItem BROKEN_SPELL = register(new CobaltItem.Builder("broken_spell")
@@ -92,71 +79,7 @@ public class ItemManager extends Manager implements Listener {
             .category(MagickItemCategory.WAND)
             .build());
 
-    public static final ICustomItem INVISIBLE_ITEM_FRAME = register(new CustomItem.CustomItemBuilder("invisible_item_frame", Material.ITEM_FRAME, 1)
-            .setCustomName(HexUtils.colorify("&rInvisible Item Frame"))
-            .addItemActivator(ItemActivator.HANGING_PLACE, (item, event, slot) -> {
-                HangingPlaceEvent hangingPlaceEvent = (HangingPlaceEvent) event;
-                ItemFrame itemFrame = (ItemFrame) hangingPlaceEvent.getEntity();
-                itemFrame.setVisible(false);
-            })
-            .addShapedRecipe("***", "*%*", "***",
-                    new AbstractCustomItem.ShapedIngredient('%', new ItemStack(Material.ITEM_FRAME)),
-                    new AbstractCustomItem.ShapedIngredient('*', new ItemStack(Material.GLASS_PANE)))
-            .build());
-
-    public static final ICustomItem INVISIBLE_GLOW_ITEM_FRAME = register(new CustomItem.CustomItemBuilder("invisible_glow_item_frame", Material.GLOW_ITEM_FRAME, 1)
-            .setCustomName(HexUtils.colorify("&rInvisible Glow Item Frame"))
-            .addItemActivator(ItemActivator.HANGING_PLACE, (item, event, slot) -> {
-                HangingPlaceEvent hangingPlaceEvent = (HangingPlaceEvent) event;
-                ItemFrame itemFrame = (ItemFrame) hangingPlaceEvent.getEntity();
-                itemFrame.setVisible(false);
-            })
-            .addShapedRecipe("***", "*%*", "***",
-                    new AbstractCustomItem.ShapedIngredient('%', new ItemStack(Material.GLOW_ITEM_FRAME)),
-                    new AbstractCustomItem.ShapedIngredient('*', new ItemStack(Material.GLASS_PANE)))
-            .build());
-
-    public static final ICustomItem GLOWING_ITEM_FRAME = register(new CustomItem.CustomItemBuilder("glowing_item_frame", Material.ITEM_FRAME, 1)
-            .setCustomName(HexUtils.colorify("&rGlowing Item Frame"))
-            .addItemActivator(ItemActivator.HANGING_PLACE, (item, event, slot) -> {
-                HangingPlaceEvent hangingPlaceEvent = (HangingPlaceEvent) event;
-                ItemFrame itemFrame = (ItemFrame) hangingPlaceEvent.getEntity();
-                itemFrame.setGlowing(true);
-            })
-            .addShapedRecipe("***", "*%*", "***",
-                    new AbstractCustomItem.ShapedIngredient('%', new ItemStack(Material.ITEM_FRAME)),
-                    new AbstractCustomItem.ShapedIngredient('*', new ItemStack(Material.GLOWSTONE_DUST)))
-            .build());
-
-    public static final ICustomItem GLOWING_GLOW_ITEM_FRAME = register(new CustomItem.CustomItemBuilder("glowing_glow_item_frame", Material.GLOW_ITEM_FRAME, 1)
-            .setCustomName(HexUtils.colorify("&rGlowing Glow Item Frame"))
-            .addItemActivator(ItemActivator.HANGING_PLACE, (item, event, slot) -> {
-                HangingPlaceEvent hangingPlaceEvent = (HangingPlaceEvent) event;
-                ItemFrame itemFrame = (ItemFrame) hangingPlaceEvent.getEntity();
-                itemFrame.setGlowing(true);
-            })
-            .addShapedRecipe("***", "*%*", "***",
-                    new AbstractCustomItem.ShapedIngredient('%', new ItemStack(Material.GLOW_ITEM_FRAME)),
-                    new AbstractCustomItem.ShapedIngredient('*', new ItemStack(Material.GLOWSTONE_DUST)))
-            .build());
-
     public static final ICustomItem SHINY_ORB = CreateShinyOrb.create();
-
-    // ----- COINS -----
-
-    /*
-    public static final ICustomItem IRON_COIN = register(new CustomItem.CustomItemBuilder("iron_coin", Material.IRON_NUGGET, 1)
-            .setCustomName(HexUtils.colorify("&f&lIron Coin"))
-            .addLoreLine(HexUtils.colorify("&r&7It glimmers"))
-            .setCustomModel(1)
-            .build());
-
-    public static final ICustomItem GOLD_COIN = register(new CustomItem.CustomItemBuilder("gold_coin", Material.GOLD_NUGGET, 1)
-            .setCustomName(HexUtils.colorify("&6&lGold Coin"))
-            .addLoreLine(HexUtils.colorify("&r&eIt glimmers"))
-            .setCustomModel(1)
-            .build());
-     */
 
     // ----- MATERIALS -----
 
@@ -165,74 +88,17 @@ public class ItemManager extends Manager implements Listener {
             .itemName(HexUtils.colorify("&rEcho Ingot")).modelData(40).category(MagickItemCategory.MATERIAL).tags("dream_item")
             .build());
 
-    /*
-    public static final ICustomItem CRYSTAL_LENS = register(new CustomItem.CustomItemBuilder("crystal_lens", Material.EMERALD, 1)
-            .setCustomName(HexUtils.colorify("&5Crystal Lens")).addLoreLine(HexUtils.colorify("&dLight shifts and distorts")).setCustomModel(4)
-            .setItemCategory(MagickItemCategory.MATERIAL).build());
-
-    public static final ICustomItem DRAGONSTONE = register(new CobaltItem.Builder("dragonstone")
-            .material(Material.EMERALD).modelData(5)
-            .itemName(HexUtils.colorify("&dDragonstone"))
-            .rarity(ItemRarity.MYSTIC)
-            .rarityLore(
-                    Component.text("A mysterious glow dances").color(NamedTextColor.DARK_GRAY).decoration(TextDecoration.ITALIC, false),
-                    Component.text("below the surface of this gem.").color(NamedTextColor.DARK_GRAY).decoration(TextDecoration.ITALIC, false)
-            )
-            .category(MagickItemCategory.UNKNOWN)
-            .build());
-     */
-
-    /*
-    public static final ICustomItem MANA_DIAMOND = register(new CustomItem.CustomItemBuilder("mana_diamond", Material.EMERALD, 1)
-            .setCustomName(HexUtils.colorify("&fMana Diamond")).setCustomModel(6).setItemCategory(MagickItemCategory.MATERIAL).build());
-     */
-
-    public static final ICustomItem MANA_PEARL = register(new CobaltItem.Builder("mana_pearl")
-            .material(Material.EMERALD)
-            .itemName(HexUtils.colorify("&fMana Pearl")).modelData(7).category(MagickItemCategory.MATERIAL)
-            .build());
-
     public static final ICustomItem MANA_POWDER = register(new CobaltItem.Builder("mana_powder")
             .material(Material.EMERALD)
             .itemName(HexUtils.colorify("&fMana Powder")).modelData(8).category(MagickItemCategory.MATERIAL)
             .build());
-
-    /*
-    public static final ICustomItem RAINBOW_ROD = register(new CustomItem.CustomItemBuilder("rainbow_rod", Material.EMERALD, 1)
-            .setCustomName(HexUtils.colorify("<r:.5:1>Rainbow Rod")).setCustomModel(9).setItemCategory(MagickItemCategory.MATERIAL).build());
-     */
 
     public static final ICustomItem AQUAMARINE = register(new CobaltItem.Builder("aquamarine")
             .material(Material.EMERALD)
             .itemName(HexUtils.colorify("&fAquamarine")).modelData(10).category(MagickItemCategory.MATERIAL)
             .build());
 
-    public static final ICustomItem CRYSTAL_SHARDS = register(new CobaltItem.Builder("crystal_shards")
-            .material(Material.EMERALD)
-            .itemName(HexUtils.colorify("&dCrystal Shards")).modelData(42).category(MagickItemCategory.MATERIAL)
-            .build());
-
     // ----- CAULDRON THINGS -----
-
-    public static final ICustomItem SUNSEED = register(new CobaltItem.Builder("sunseed")
-            .material(Material.EMERALD).modelData(1013)
-            .itemName(HexUtils.colorify("<g:#b93b0b:#baba57>Sunseed"))
-            .rarity(ItemRarity.MYSTIC)
-            .rarityLore(
-                    HexUtils.colorify("&8A seed of great promise...")
-            )
-            .category(MagickItemCategory.UNKNOWN)
-            .build());
-
-    public static final ICustomItem OUR_MATTER = register(new CobaltItem.Builder("our_matter")
-            .material(Material.EMERALD).modelData(1001)
-            .itemName(HexUtils.colorify("<g:#969696:#1a1a1a>Our Matter"))
-            .rarity(ItemRarity.MYSTIC)
-            .rarityLore(
-                    HexUtils.colorify("&8Infinite possibilities pulse within...")
-            )
-            .category(MagickItemCategory.UNKNOWN)
-            .build());
 
     public static final ICustomItem EVIL_EYE = register(new CobaltItem.Builder("evil_eye")
             .material(Material.EMERALD)
@@ -275,73 +141,14 @@ public class ItemManager extends Manager implements Listener {
             //                    new AbstractCustomItem.ShapelessIngredient(1, EVIL_EYE.getItemStack()))
             .build());
 
-    // ----- HATS -----
-
-    public static final ICustomItem HAT_YODA = register(new CustomItem.CustomItemBuilder("hat_yoda", Material.CLOCK, 1)
-            .setCustomName(HexUtils.colorify("&rYoda")).setCustomModel(-107).setItemCategory(MagickItemCategory.HAT).build());
-
-    public static final ICustomItem HAT_MONOCLE = register(new CustomItem.CustomItemBuilder("hat_monocle", Material.CLOCK, 1)
-            .setCustomName(HexUtils.colorify("&rMonocle")).setCustomModel(-97).setItemCategory(MagickItemCategory.HAT).build());
-
-    public static final ICustomItem HAT_DEER_HEAD = register(new CustomItem.CustomItemBuilder("hat_deer_head", Material.CLOCK, 1)
-            .setCustomName(HexUtils.colorify("&rDeer Head")).setCustomModel(-93).setItemCategory(MagickItemCategory.HAT).build());
-
-    public static final ICustomItem HAT_CIGAR = register(new CustomItem.CustomItemBuilder("hat_cigar", Material.CLOCK, 1)
-            .setCustomName(HexUtils.colorify("&rCigar")).setCustomModel(-92).setItemCategory(MagickItemCategory.HAT).build());
-
-    public static final ICustomItem HAT_TINY_HAT = register(new CustomItem.CustomItemBuilder("hat_tiny_hat", Material.CLOCK, 1)
-            .setCustomName(HexUtils.colorify("&rTiny Hat")).setCustomModel(-91).setItemCategory(MagickItemCategory.HAT).build());
-
-    public static final ICustomItem HAT_SPONGEBOB = register(new CustomItem.CustomItemBuilder("hat_spongebob", Material.CLOCK, 1)
-            .setCustomName(HexUtils.colorify("&rSpongebob")).setCustomModel(-88).setItemCategory(MagickItemCategory.HAT).build());
-
-    public static final ICustomItem HAT_BIRD_MASTER = register(new CustomItem.CustomItemBuilder("hat_bird_master", Material.CLOCK, 1)
-            .setCustomName(HexUtils.colorify("&rBird Master")).setCustomModel(-4).setItemCategory(MagickItemCategory.HAT).build());
-
-    public static final ICustomItem VILLAGER_CONVERTER_HAT = register(new CustomItem.CustomItemBuilder("villager_converter_hat", Material.EMERALD, 1)
-            .setCustomName(HexUtils.colorify("&rVillager Converter"))
-            .addLoreLine(HexUtils.colorify("&r&7Type: &2Hat"))
-            .setCustomModel(43)
-            .addItemActivator(ItemActivator.PLAYER_CLICK_AT_ENTITY, (item, event, slot) -> {
-                PlayerInteractAtEntityEvent interactAtEntityEvent = (PlayerInteractAtEntityEvent) event;
-
-                if (interactAtEntityEvent.getRightClicked() instanceof Villager villager) {
-
-                    // If villager does not have a profession, set the new profession
-                    if (villager.getProfession() == Villager.Profession.NONE) {
-
-                        CobaltMagick.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(CobaltMagick.getInstance(), () -> {
-                            // Set the new profession
-                            villager.setProfession(Villager.Profession.MASON);
-                            villager.setRecipes(MerchantRecipeConstants.createHatRecipes()); // TODO: Select random recipes with weights
-                            villager.setVillagerLevel(5);
-
-                            // Set equipment & play effects
-                            villager.getEquipment().setItem(EquipmentSlot.HEAD, HAT_BIRD_MASTER.getItemStack());
-                            World world = villager.getWorld();
-                            Location location = villager.getLocation().clone().add(new Vector(.5, 1, .5));
-
-                            world.playSound(location, "cobalt.poof", SoundCategory.NEUTRAL, 1, 1);
-                            world.spawnParticle(Particle.DUST_COLOR_TRANSITION, location, 30, .5, 1, .5, 0, new Particle.DustTransition(Color.WHITE, Color.GRAY, 1));
-
-                            PlayerUtil.reduceHeldItemStack(interactAtEntityEvent.getPlayer(), 1);
-                        });
-                    }
-                }
-            })
-            .addShapedRecipe("-*-", "*%*", "-*-",
-                    new AbstractCustomItem.ShapedIngredient('%', MANA_PEARL.getItemStack()),
-                    new AbstractCustomItem.ShapedIngredient('*', CRYSTAL_SHARDS.getItemStack()),
-                    new AbstractCustomItem.ShapedIngredient('-', AQUAMARINE.getItemStack()))
-            .setItemCategory(MagickItemCategory.HAT)
-            .build());
-
     // ----- TOOLS -----
 
-    public static final ICustomItem DUNGEON_LOCATOR = register(new CustomItem.CustomItemBuilder("dungeon_locator", Material.COMPASS, 1)
-            .setCustomName(HexUtils.colorify("&fDungeon Locator"))
-            .addLoreLine(HexUtils.colorify("&7&oReveals the location of two hidden structures..."))
-            .addItemActivatorSync(ItemActivator.PLAYER_RIGHT_CLICK, ((iCustomItem, event, equipmentSlot) -> {
+    public static final ICustomItem DUNGEON_LOCATOR = register(new CobaltItem.Builder("dungeon_locator")
+            .material(Material.COMPASS)
+            .itemName(HexUtils.colorify("&fDungeon Locator"))
+            .rarity(ItemRarity.UNCOMMON)
+            .rarityLore(HexUtils.colorify("&7&oReveals the location of two hidden structures..."))
+            .itemActivatorSync(ItemActivator.PLAYER_RIGHT_CLICK, ((iCustomItem, event, equipmentSlot) -> {
                 PlayerInteractEvent interactEvent = (PlayerInteractEvent) event;
 
                 if (interactEvent.getItem().getItemMeta() instanceof CompassMeta compassMeta) {
@@ -363,7 +170,8 @@ public class ItemManager extends Manager implements Listener {
                     CobaltMagick.getInstance().getLogger().info("Set compass location to: " + MagickStructureManager.highAlchemistDungeonLocation + ", in world: " + MagickStructureManager.highAlchemistWorld.getName());
                 }
             }))
-            .setCustomModel(1)
+            .modelData(1)
+            /*
             .addShapedRecipe(
                     "-e-",
                     "ece",
@@ -371,15 +179,16 @@ public class ItemManager extends Manager implements Listener {
                     new AbstractCustomItem.ShapedIngredient('c', Material.COMPASS),
                     new AbstractCustomItem.ShapedIngredient('e', Material.NETHERITE_INGOT)
             )
+             */
             .build());
 
     public static final ICustomItem EXPERIENCE_ORB = CreateExperienceOrb.createExperienceOrb();
 
     // Battleaxe
-    public static final ICustomItem BATTLEAXE = register(new CustomItem.CustomItemBuilder("battle_axe", Material.NETHERITE_AXE, 1)
-            .setCustomName(ChatColor.RESET + "Battle Axe")
-            .addShapelessRecipe(new AbstractCustomItem.ShapelessIngredient(1, Material.NETHERITE_AXE), new AbstractCustomItem.ShapelessIngredient(1, Material.NETHERITE_AXE))
-            .addItemActivatorSync(ItemActivator.PLAYER_KILL_PLAYER, (item, event, slot) -> {
+    public static final ICustomItem BATTLEAXE = register(new CobaltItem.Builder("battle_axe")
+            .material(Material.NETHERITE_AXE)
+            .itemName(ChatColor.RESET + "Battle Axe")
+            .itemActivatorSync(ItemActivator.PLAYER_KILL_PLAYER, (item, event, slot) -> {
                 EntityDamageByEntityEvent killEvent = (EntityDamageByEntityEvent) event;
                 ItemStack skullItem = new ItemStack(Material.PLAYER_HEAD, 1);
                 SkullMeta skullMeta = (SkullMeta) skullItem.getItemMeta();
@@ -395,20 +204,8 @@ public class ItemManager extends Manager implements Listener {
                 skullItem.setItemMeta(skullMeta);
                 killEvent.getEntity().getWorld().dropItemNaturally(killEvent.getEntity().getLocation(), skullItem);
             })
-            .setCustomModel(5).setItemCategory(MagickItemCategory.TOOL)
+            .modelData(5).category(MagickItemCategory.TOOL)
             .build());
-
-    /*
-    public static final ICustomItem POISON_BLADE = register(new CobaltItem.Builder("poison_blade")
-            .material(Material.NETHERITE_SWORD).modelData(3)
-            .itemName(HexUtils.colorify("&ePoison Blade"))
-            .rarity(ItemRarity.RARE)
-            .rarityLore(Component.text("Reeks of ancient poison").color(NamedTextColor.DARK_GRAY).decoration(TextDecoration.ITALIC, false))
-            .category(MagickItemCategory.WEAPON)
-            // Poison Effect
-            .enchantments(new EnchantmentWrapper(CobaltEnchantment.POISON, 1, false))
-            .build());
-     */
 
     public static final ICustomItem CRYSTAL_KEY = register(new CobaltItem.Builder("crystal_key")
             .material(Material.EMERALD)
@@ -439,12 +236,6 @@ public class ItemManager extends Manager implements Listener {
                 return meta;
             }))
             .modelData(3).category(MagickItemCategory.UNKNOWN)
-            .build());
-
-    public static final ICustomItem DUNGEON_COIN = register(new CobaltItem.Builder("dungeon_coin")
-            .material(Material.EMERALD)
-            .itemName(ChatColor.RESET + "" + ChatColor.GOLD + "Dungeon Coin")
-            .modelData(1)
             .build());
 
     public static final ICustomItem DREAMGLASS = register(new CobaltItem.Builder("dreamglass")
@@ -483,6 +274,7 @@ public class ItemManager extends Manager implements Listener {
 
     // ----- BOTTLES / GLASSES / FLASKS -----
 
+    /*
     @EventHandler
     public void onBucketFill(PlayerBucketFillEvent event) {
         ICustomItem[] items = CustomItemManager.getPlayerHeldCustomItem(event.getPlayer());
@@ -508,8 +300,9 @@ public class ItemManager extends Manager implements Listener {
         }
     }
 
-    public static final ICustomItem EMPTY_MARTINI_GLASS = register(new CustomItem.CustomItemBuilder("empty_martini_glass", Material.BUCKET, 4)
-            .setCustomName(HexUtils.colorify("&fEmpty Martini Glass")).setCustomModel(7).addStoneCuttingRecipe(Material.GLASS).setItemCategory(MagickItemCategory.POTION)
+    public static final ICustomItem EMPTY_MARTINI_GLASS = register(new CobaltItem.Builder("empty_martini_glass")
+            .material(Material.BUCKET)
+            .itemName(HexUtils.colorify("&fEmpty Martini Glass")).modelData(7).addStoneCuttingRecipe(Material.GLASS).setItemCategory(MagickItemCategory.POTION)
             .build());
 
     public static final ICustomItem MARTINI_GLASS = register(new CustomItem.CustomItemBuilder("martini_glass", Material.POTION, 1)
@@ -796,57 +589,23 @@ public class ItemManager extends Manager implements Listener {
                 consumeEvent.getPlayer().getEquipment().setItem(equipmentSlot, item);
             }))
             .build());
+     */
 
     // ----- POTIONS -----
 
-    public static final ICustomItem POTION_JAR = register(new CustomItem.CustomItemBuilder("potion_jar", Material.POTION, 1)
-            .setCustomName(HexUtils.colorify("&fPotion Jar"))
-            .setCustomModel(1).setItemCategory(MagickItemCategory.POTION)
-            .addItemActivator(ItemActivator.PLAYER_CONSUME, ((iCustomItem, event, equipmentSlot) -> {
+    public static final ICustomItem POTION_JAR = register(new CobaltItem.Builder("potion_jar")
+            .material(Material.POTION)
+            .itemName(HexUtils.colorify("&fPotion Jar"))
+            .modelData(1).category(MagickItemCategory.POTION)
+            .itemActivatorAsync(ItemActivator.PLAYER_CONSUME, ((iCustomItem, event, equipmentSlot) -> {
                 PlayerItemConsumeEvent consumeEvent = (PlayerItemConsumeEvent) event;
                 ItemStack item = consumeEvent.getPlayer().getEquipment().getItem(equipmentSlot);
                 PotionMeta meta = (PotionMeta) item.getItemMeta();
                 if (meta.getCustomModelData() < 3) meta.setCustomModelData(meta.getCustomModelData() + 1);
-                else consumeEvent.getPlayer().getEquipment().setItem(equipmentSlot, EMPTY_BOTTLE.getItemStack());
+                else consumeEvent.getPlayer().getEquipment().setItem(equipmentSlot, new ItemStack(Material.GLASS_BOTTLE)/*EMPTY_BOTTLE.getItemStack()*/);
                 item.setItemMeta(meta);
             }))
             .build());
-
-    // ----- CUSTOM RECIPES -----
-
-    public static final ShapedRecipe BUNDLE_RECIPE = CustomItemManager.addShapedRecipe(new ItemStack(Material.BUNDLE),
-            "%*%","*-*","***",
-            new AbstractCustomItem.ShapedIngredient('%', Material.STRING),
-            new AbstractCustomItem.ShapedIngredient('*', Material.RABBIT_HIDE));
-
-    public static final ShapedRecipe SPARKBOLT_RECIPE = CustomItemManager.addShapedRecipe(SpellManager.SPARK_BOLT.getSpellItem(),
-            "-*-", "*%*", "-*-",
-            new AbstractCustomItem.ShapedIngredient('%', MANA_PEARL.getItemStack()),
-            new AbstractCustomItem.ShapedIngredient('*', Material.AMETHYST_SHARD),
-            new AbstractCustomItem.ShapedIngredient('-', AQUAMARINE.getItemStack()));
-
-    public static final ShapedRecipe SLIMESTEEL_INGOT = CustomItemManager.addShapedRecipe("slimesteel_ingot_from_slime", CreateMaterialIngots.SLIMESTEEL_INGOT.getItemStack(),
-            "---","-*-","---",
-            new AbstractCustomItem.ShapedIngredient('-', Material.SLIME_BALL),
-            new AbstractCustomItem.ShapedIngredient('*', Material.IRON_INGOT));
-
-    /*
-    public static final ShapedRecipe SLIMESTEEL_HELMET = CustomItemManager.addShapedRecipe("slimesteel_helmet", CreateArmor.SLIMESTEEL_HELMET.getItemStack(),
-            "***", "*-*", "---",
-            new AbstractCustomItem.ShapedIngredient('*', CreateMaterialIngots.SLIMESTEEL_INGOT.getItemStack()));
-
-    public static final ShapedRecipe SLIMESTEEL_CHESTPLATE = CustomItemManager.addShapedRecipe("slimesteel_chestplate", CreateArmor.SLIMESTEEL_CHESTPLATE.getItemStack(),
-            "*-*", "***", "***",
-            new AbstractCustomItem.ShapedIngredient('*', CreateMaterialIngots.SLIMESTEEL_INGOT.getItemStack()));
-
-    public static final ShapedRecipe SLIMESTEEL_LEGGINGS = CustomItemManager.addShapedRecipe("slimesteel_leggings", CreateArmor.SLIMESTEEL_LEGGINGS.getItemStack(),
-            "***", "*-*", "*-*",
-            new AbstractCustomItem.ShapedIngredient('*', CreateMaterialIngots.SLIMESTEEL_INGOT.getItemStack()));
-
-    public static final ShapedRecipe SLIMESTEEL_BOOTS = CustomItemManager.addShapedRecipe("slimesteel_boots", CreateArmor.SLIMESTEEL_BOOTS.getItemStack(),
-            "---", "*-*", "*-*",
-            new AbstractCustomItem.ShapedIngredient('*', CreateMaterialIngots.SLIMESTEEL_INGOT.getItemStack()));
-     */
 
     // ----- RELOADING / DISABLING -----
 
@@ -854,12 +613,8 @@ public class ItemManager extends Manager implements Listener {
     public void reload() {
         Bukkit.getServer().getPluginManager().registerEvents(this, CobaltMagick.getInstance());
 
-        // Create external items
-        CreateMaterialIngots.create();
-        // CreateKeyItems.create();
         CreateTools.create();
         CreateSwords.create();
-        // CreateEssenceStones.create();
     }
 
     @Override

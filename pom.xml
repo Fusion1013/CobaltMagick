@@ -6,7 +6,7 @@
 
     <groupId>se.fusion1013.plugin</groupId>
     <artifactId>CobaltMagick</artifactId>
-    <version>0.7.6</version>
+    <version>0.7.7</version>
     <packaging>jar</packaging>
 
     <name>CobaltMagick</name>

@@ -6,6 +6,7 @@ import se.fusion1013.plugin.cobaltcore.database.system.DataManager;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
+import se.fusion1013.plugin.cobaltmagick.wand.SpellContainer;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
 import java.sql.Connection;
@@ -73,21 +74,22 @@ public class WandDaoSQLite extends Dao implements IWandDao {
                 ) {
 
                     // Get all spells for the specific wand from the database
-                    List<ISpell> alwaysCast = new ArrayList<>();
-                    List<ISpell> spellList = new ArrayList<>();
+                    List<SpellContainer> alwaysCast = new ArrayList<>();
+                    List<SpellContainer> spellList = new ArrayList<>();
                     while (rsSpells.next()){
                         int spellId = rsSpells.getInt("spell_id");
                         boolean isAlwaysCast = rsSpells.getBoolean("is_always_cast");
                         int count = rsSpells.getInt("count");
-                        ISpell spell = SpellManager.getSpell(spellId);
-                        spell.setCount(count);
-                        if (isAlwaysCast) alwaysCast.add(spell);
-                        else spellList.add(spell);
+
+                        SpellContainer spellContainer = new SpellContainer(spellId, count);
+
+                        if (isAlwaysCast) alwaysCast.add(spellContainer);
+                        else spellList.add(spellContainer);
                     }
 
                     // Create the wand and set the spells
                     Wand wand = new Wand(shuffle, spellsPerCast, castDelay, rechargeTime, manaMax, manaChargeSpeed, capacity, spread, alwaysCast, wandTier);
-                    wand.setSpells(spellList);
+                    wand.setSpellContainers(spellList);
                     wand.setId(id);
 
                     wands.add(wand);

@@ -60,19 +60,30 @@ public class SpellManager extends Manager {
 
     // ----- PROJECTILE SPELLS ----- ID: 1+XXX
 
+    /*
     public static final Spell SPARK_BOLT = register(new ProjectileSpell.ProjectileSpellBuilder(10, "spark_bolt")
             .addManaDrain(5).setRadius(.2).setVelocity(16).setLifetime(1.6).addCastDelay(0.05).setSpread(-1).setAffectedByAirResistance(false)
             .addExecuteOnEntityCollision(new DamageModule(2, true).setCriticalChance(5))
             .addExecuteOnCast(new SoundSpellModule(Sound.ENTITY_ILLUSIONER_CAST_SPELL, SoundCategory.PLAYERS, false))
             .addDescription("A weak but enchanting sparkling projectile")
             .setParticle(new ParticleGroup.ParticleGroupBuilder()
-                    .addStyle(new ParticleStyleLine.ParticleStyleLineBuilder().setParticle(Particle.DUST_COLOR_TRANSITION).setExtra(new Particle.DustTransition(Color.PURPLE, Color.fromRGB(245, 66, 239), 1)).setCount(5).setOffset(new Vector(.1, .1, .1)).setDensity(5).build())
+                    .addStyle(
+                            new ParticleStyleLine.ParticleStyleLineBuilder()
+                                    .setParticle(Particle.DUST_COLOR_TRANSITION)
+                                    .setExtra(new Particle.DustTransition(Color.PURPLE, Color.fromRGB(245, 66, 239), 1))
+                                    .setCount(5)
+                                    .setOffset(new Vector(.1, .1, .1))
+                                    .setDensity(5)
+                                    .build()
+                    )
                     .build())
             .setCustomModel(100000)
             .setSpellTiers(0,1,2)
             .setSpellTierWeights(2, 1, 0.5)
             .build());
+     */
 
+    /*
     public static final Spell BUBBLE_SPARK = register(new ProjectileSpell.ProjectileSpellBuilder(11, "bubble_spark")
             .addManaDrain(5).setRadius(.4).setSpread(22.9).setVelocity(5).setLifetime(2).addCastDelay(-0.08)
             .addExecuteOnEntityCollision(new DamageModule(1, true))
@@ -85,7 +96,9 @@ public class SpellManager extends Manager {
             .setSpellTiers(0,1,2,3)
             .setSpellTierWeights(1, 1, 1, 0.5)
             .build());
+     */
 
+    /*
     public static final Spell BOUNCING_BURST = register(new ProjectileSpell.ProjectileSpellBuilder(12, "bouncing_burst")
             .addManaDrain(5).setRadius(.4).setSpread(0.6).setVelocity(14).setLifetime(15).addCastDelay(-0.03).addGravity(1)
             .addExecuteOnEntityCollision(new DamageModule(3, true))
@@ -100,7 +113,9 @@ public class SpellManager extends Manager {
             .setSpellTiers(0,1,6)
             .setSpellTierWeights(1, 1, 1)
             .build());
+     */
 
+    /*
     public static final Spell FIREBOLT = register(new ProjectileSpell.ProjectileSpellBuilder(13, "firebolt")
             .addManaDrain(50).setRadius(.7).setSpread(2.9).setVelocity(5.3).setLifetime(10).addCastDelay(.5).addGravity(2).consumeOnUse(25)
             .addExecuteOnEntityCollision(new ExplodeModule(true).setsFire().destroysBlocks().overrideRadius(1.3))
@@ -115,7 +130,9 @@ public class SpellManager extends Manager {
             .setSpellTiers(0,1,2,3,4)
             .setSpellTierWeights(1, 1, 0.5, 0.25, 0.25)
             .build());
+     */
 
+    /*
     public static final Spell BURST_OF_AIR = register(new ProjectileSpell.ProjectileSpellBuilder(14, "burst_of_air")
             .addManaDrain(5).setRadius(.4).setVelocity(8).setLifetime(0.8).addCastDelay(.05).setSpread(-2)
             .addExecuteOnEntityCollision(new DamageModule(6, true).setKnockback(3))
@@ -127,7 +144,9 @@ public class SpellManager extends Manager {
             .setSpellTiers(1,2)
             .setSpellTierWeights(1, 1)
             .build());
+     */
 
+    /*
     public static final Spell SPARK_BOLT_WITH_TRIGGER = register(new ProjectileSpell.ProjectileSpellBuilder(15, "spark_bolt_with_trigger")
             .addManaDrain(10).setRadius(.2).setVelocity(16).setLifetime(1.6).addCastDelay(0.05).setAffectedByAirResistance(false)
             .addExecuteOnEntityCollision(new DamageModule(3, true).setCriticalChance(5))
@@ -140,6 +159,7 @@ public class SpellManager extends Manager {
             .setSpellTiers(0,1,2,3)
             .setSpellTierWeights(1, 0.5, 0.5, 0.5)
             .build());
+     */
 
     public static final Spell SPARK_BOLT_WITH_DOUBLE_TRIGGER = register(new ProjectileSpell.ProjectileSpellBuilder(16, "spark_bolt_with_double_trigger")
             .addManaDrain(15).setRadius(.2).setVelocity(14).setLifetime(1.6).addCastDelay(0.07).setAffectedByAirResistance(false)
@@ -1358,6 +1378,19 @@ public class SpellManager extends Manager {
             .setCustomModel(5)
             .build());
 
+    public static final Spell DRAGON_MINION_SPELL = register(new ProjectileSpell.ProjectileSpellBuilder(96, "dragon_minion_spell")
+            .addManaDrain(1).setRadius(.2).setSpread(2).setVelocity(24).setLifetime(1.3)
+            .addExecuteOnEntityCollision(new DamageModule(4, true))
+            .setIsBouncy(true)
+            .setParticle(new ParticleGroup.ParticleGroupBuilder()
+                    .addStyle(new ParticleStyleLine.ParticleStyleLineBuilder().setParticle(Particle.VILLAGER_HAPPY).setCount(10).setSpeed(.04).setDensity(3).build())
+                    .addStyle(new ParticleStyleLine.ParticleStyleLineBuilder().setParticle(Particle.TOTEM).setCount(2).setSpeed(0).setDensity(3).build())
+                    .build())
+            .addExecuteOnCast(new SoundSpellModule("minecraft:magic.zap", SoundCategory.HOSTILE, false).setVolume(.5f))
+            .addExecuteOnEntityCollision(new SoundSpellModule("minecraft:magic.hit", SoundCategory.HOSTILE, false).setVolume(.5f))
+            .addDescription("This spell is intended for use by the Dragon minion, not for gameplay!")
+            .build());
+
     /**
      * Registers a spell.
      *
@@ -1365,7 +1398,7 @@ public class SpellManager extends Manager {
      * @param <T> the spell type.
      * @return the registered spell.
      */
-    private static <T extends Spell> T register(final T spell){
+    public static <T extends Spell> T register(final T spell){
         INBUILT_SPELLS.put(spell.getId(), spell);
         return spell;
     }

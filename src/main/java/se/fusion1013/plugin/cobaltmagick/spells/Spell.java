@@ -7,13 +7,17 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
-import se.fusion1013.plugin.cobaltcore.item.CustomItem;
+import se.fusion1013.plugin.cobaltcore.item.CustomItemManager;
+import se.fusion1013.plugin.cobaltcore.item.ICustomItem;
+import se.fusion1013.plugin.cobaltcore.item.system.CobaltItem;
+import se.fusion1013.plugin.cobaltcore.item.system.ItemRarity;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.item.MagickItemCategory;
 import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public abstract class Spell implements ISpell, Cloneable {
 
@@ -27,7 +31,7 @@ public abstract class Spell implements ISpell, Cloneable {
     static final int maxDescriptionLineLength = 30;
     int customModelData = 1;
     SpellType type;
-    static NamespacedKey spellKey = new NamespacedKey(CobaltMagick.getInstance(), "spell");
+    public static NamespacedKey SPELL_KEY = new NamespacedKey(CobaltMagick.getInstance(), "spell");
     int[] spellTiers;
     double[] spellTierWeights;
 
@@ -36,7 +40,7 @@ public abstract class Spell implements ISpell, Cloneable {
     int count = 1; // The number of spells in the itemstack
 
     // Spell Item
-    private CustomItem spellItem;
+    private ICustomItem spellItem;
 
     // Shown Attributes
     boolean consumeOnUse;
@@ -50,6 +54,40 @@ public abstract class Spell implements ISpell, Cloneable {
     Wand wand;
 
     List<String> tags = new ArrayList<>();
+
+    //region CONSTRUCTORS
+
+    public Spell(int id, String internalSpellName, SpellType type, Map<?, ?> data) {
+        this.id = id;
+        this.internalSpellName = internalSpellName;
+        generateSpellName();
+        this.type = type;
+
+        // Data loading
+        if (data.containsKey("radius")) radius = (double) data.get("radius");
+        if (data.containsKey("description")) description = (String) data.get("description");
+
+        if (data.containsKey("spell_tiers")) {
+            List<Integer> tiers = ((ArrayList<Integer>) data.get("spell_tiers"));
+            spellTiers = new int[tiers.size()];
+            for (int i = 0; i < tiers.size(); i++) spellTiers[i] = tiers.get(i);
+        }
+        if (data.containsKey("spell_tier_weights")) {
+            List<Double> tierWeights = (ArrayList<Double>) data.get("spell_tier_weights");
+            spellTierWeights = new double[tierWeights.size()];
+            for (int i = 0; i < tierWeights.size(); i++) spellTierWeights[i] = tierWeights.get(i);
+        }
+
+        if (data.containsKey("count")) count = (int) data.get("count");
+
+        if (data.containsKey("consume_on_use")) consumeOnUse = (boolean) data.get("consume_on_use");
+        if (data.containsKey("mana_drain")) manaDrain = (int) data.get("mana_drain");
+
+        if (data.containsKey("cast_delay")) castDelay = (double) data.get("cast_delay");
+        if (data.containsKey("recharge_time")) rechargeTime = (double) data.get("recharge_time");
+
+        // TODO: Tags
+    }
 
     public Spell(int id, String internalSpellName, String spellName, SpellType type) {
         this.id = id;
@@ -91,6 +129,8 @@ public abstract class Spell implements ISpell, Cloneable {
         this.spellTiers = spell.spellTiers;
     }
 
+    //endregion
+
     // ----- CASTING METHODS -----
 
     /**
@@ -108,24 +148,35 @@ public abstract class Spell implements ISpell, Cloneable {
 
     // ----- ITEM CREATION -----
 
-    private CustomItem createSpellItem() {
+    private ICustomItem createSpellItem() {
+        var customItem = CustomItemManager.getCustomItem(internalSpellName);
+        if (customItem != null) return customItem;
+
         List<String> lore = getLore();
         lore.add("");
         lore.add(type.spellColor + type.name().replaceAll("_", " "));
 
-        CustomItem.CustomItemBuilder itemBuilder = new CustomItem.CustomItemBuilder(internalSpellName, Material.CLOCK, count)
-                .setItemMetaEditor(itemMeta -> {
-                    itemMeta.getPersistentDataContainer().set(spellKey, PersistentDataType.INTEGER, id);
+        CobaltItem.Builder itemBuilder = new CobaltItem.Builder(internalSpellName)
+                .material(Material.CLOCK)
+                .amount(count)
+                .editMeta(itemMeta -> {
+                    itemMeta.getPersistentDataContainer().set(SPELL_KEY, PersistentDataType.INTEGER, id);
                     return itemMeta;
                 })
-                .setLore(lore)
-                .setCustomModel(customModelData)
-                .setItemCategory(MagickItemCategory.SPELL);
+                .rarity(ItemRarity.MYSTIC)
+                .rarityLore(lore.toArray(new String[0]))
+                .modelData(customModelData)
+                .category(MagickItemCategory.SPELL);
 
-        if (consumeOnUse) itemBuilder.setCustomName(type.spellColor + spellName + " (-)");
-        else itemBuilder.setCustomName(type.spellColor + spellName);
+        if (consumeOnUse) itemBuilder.itemName(type.spellColor + spellName + " (-)");
+        else itemBuilder.itemName(type.spellColor + spellName);
 
         return itemBuilder.build();
+    }
+
+    public String getFormattedName() {
+        if (consumeOnUse) return type.spellColor + spellName + " (-)";
+        else return type.spellColor + spellName;
     }
 
     // ----- GETTERS / SETTERS -----
@@ -166,7 +217,7 @@ public abstract class Spell implements ISpell, Cloneable {
      * @return the <code>CustomItem</code> representing this spell.
      */
     @Override
-    public CustomItem getSpellCustomItem() {
+    public ICustomItem getSpellCustomItem() {
         if (spellItem == null) this.spellItem = createSpellItem();
         return spellItem;
     }
@@ -179,6 +230,9 @@ public abstract class Spell implements ISpell, Cloneable {
      */
     public ItemStack getSpellItem(List<String> lore) {
 
+        return CustomItemManager.getItemStack(internalSpellName);
+
+        /*
         lore.add("");
         lore.add(type.spellColor + type.name().replaceAll("_", " "));
 
@@ -186,7 +240,7 @@ public abstract class Spell implements ISpell, Cloneable {
         ItemMeta meta = stack.getItemMeta();
 
         if (meta != null) {
-            meta.getPersistentDataContainer().set(spellKey, PersistentDataType.INTEGER, id);
+            meta.getPersistentDataContainer().set(SPELL_KEY, PersistentDataType.INTEGER, id);
 
             if (consumeOnUse) meta.setDisplayName(type.spellColor + spellName + " (-)");
             else meta.setDisplayName(type.spellColor + spellName);
@@ -198,6 +252,7 @@ public abstract class Spell implements ISpell, Cloneable {
         }
 
         return stack;
+         */
     }
 
     /**
@@ -294,9 +349,6 @@ public abstract class Spell implements ISpell, Cloneable {
             return obj;
         }
 
-        protected abstract T createObj();
-        protected abstract B getThis();
-
         private void generateSpellName(){
             String[] strings = internalSpellName.split("_");
             spellName = "";
@@ -305,6 +357,9 @@ public abstract class Spell implements ISpell, Cloneable {
             }
             spellName = spellName.substring(0, spellName.length()-1);
         }
+
+        protected abstract T createObj();
+        protected abstract B getThis();
 
         public B setSpellTiers(int... tier) {
             obj.setSpellTiers(tier);
@@ -372,6 +427,15 @@ public abstract class Spell implements ISpell, Cloneable {
             obj.rechargeTime = rechargeTime;
             return getThis();
         }
+    }
+
+    protected void generateSpellName(){
+        String[] strings = internalSpellName.split("_");
+        spellName = "";
+        for (String s : strings){
+            spellName += Character.toUpperCase(s.charAt(0)) + s.substring(1) + " ";
+        }
+        spellName = spellName.substring(0, spellName.length()-1);
     }
 
     /**

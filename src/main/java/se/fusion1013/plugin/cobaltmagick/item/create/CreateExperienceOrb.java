@@ -8,9 +8,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import se.fusion1013.plugin.cobaltcore.item.CustomItem;
 import se.fusion1013.plugin.cobaltcore.item.ICustomItem;
 import se.fusion1013.plugin.cobaltcore.item.ItemActivator;
+import se.fusion1013.plugin.cobaltcore.item.system.CobaltItem;
 import se.fusion1013.plugin.cobaltcore.util.HexUtils;
 import se.fusion1013.plugin.cobaltcore.util.PlayerUtil;
 import se.fusion1013.plugin.cobaltmagick.item.MagickItemCategory;
@@ -24,10 +24,11 @@ import static se.fusion1013.plugin.cobaltcore.item.CustomItemManager.register;
 public class CreateExperienceOrb {
 
     public static ICustomItem createExperienceOrb() {
-        return register(new CustomItem.CustomItemBuilder("experience_orb", Material.EMERALD, 1)
-                .setCustomName(HexUtils.colorify("&bExperience Orb"))
-                .addLoreLine(HexUtils.colorify("&e0xp"))
-                .addItemActivatorSync(ItemActivator.PLAYER_RIGHT_CLICK, ((iCustomItem, event, equipmentSlot) -> {
+        return register(new CobaltItem.Builder("experience_orb")
+                .material(Material.EMERALD)
+                .itemName(HexUtils.colorify("&bExperience Orb"))
+                .extraLore(HexUtils.colorify("&e0xp"))
+                .itemActivatorSync(ItemActivator.PLAYER_RIGHT_CLICK, ((iCustomItem, event, equipmentSlot) -> {
 
                     PlayerInteractEvent interactEvent = (PlayerInteractEvent) event;
                     Player player = interactEvent.getPlayer();
@@ -79,7 +80,7 @@ public class CreateExperienceOrb {
                     item.setItemMeta(itemMeta);
 
                 }))
-                .setCustomModel(1006).setItemCategory(MagickItemCategory.TOOL)
+                .modelData(1006).category(MagickItemCategory.TOOL)
                 .build());
     }
 

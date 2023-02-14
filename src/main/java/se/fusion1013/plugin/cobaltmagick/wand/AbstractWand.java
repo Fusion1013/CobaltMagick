@@ -2,7 +2,6 @@ package se.fusion1013.plugin.cobaltmagick.wand;
 
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.md_5.bungee.api.ChatColor;
@@ -34,7 +33,6 @@ public abstract class AbstractWand {
     int manaChargeSpeed;
     int capacity;
     double spread;
-    List<ISpell> alwaysCast;
 
     double currentMana;
     double castCooldown;
@@ -47,7 +45,8 @@ public abstract class AbstractWand {
     int wandTier;
 
     // Stored Spells
-    List<ISpell> spells = new ArrayList<>();
+    List<SpellContainer> alwaysCast;
+    List<SpellContainer> spells = new ArrayList<>();
 
     // Protection
     boolean regionAllowsManaRecharge = true;
@@ -55,7 +54,7 @@ public abstract class AbstractWand {
     // Value override
     int modelDataOverride = 0;
 
-    public AbstractWand(boolean shuffle, int spellsPerCast, double castDelay, double rechargeTime, int manaMax, int manaChargeSpeed, int capacity, double spread, List<ISpell> alwaysCast, int wandTier){
+    public AbstractWand(boolean shuffle, int spellsPerCast, double castDelay, double rechargeTime, int manaMax, int manaChargeSpeed, int capacity, double spread, List<SpellContainer> alwaysCast, int wandTier){
         this.shuffle = shuffle;
         this.spellsPerCast = spellsPerCast;
         this.castDelay = castDelay;
@@ -90,8 +89,8 @@ public abstract class AbstractWand {
 
         this.lastRechargeMax = target.lastRechargeMax;
 
-        this.spells = new ArrayList<>(target.getSpells());
-        this.alwaysCast = new ArrayList<>(target.getAlwaysCast());
+        this.spells = new ArrayList<>(target.getSpellContainers());
+        this.alwaysCast = new ArrayList<>(target.getAlwaysCastContainers());
 
         this.id = target.id;
         this.modelDataOverride = target.modelDataOverride;
@@ -205,14 +204,16 @@ public abstract class AbstractWand {
         RandomCollection<ISpell> randomSpellCollection = SpellManager.getWeightedSpellCollection(level-1);
 
         int nSpellsToAdd = r.nextInt(0, capacity);
-        List<ISpell> modifierSpells = new ArrayList<>();
-        List<ISpell> projectileSpells = new ArrayList<>();
+        List<SpellContainer> modifierSpells = new ArrayList<>();
+        List<SpellContainer> projectileSpells = new ArrayList<>();
         for (int i = 0; i < nSpellsToAdd; i++) {
             ISpell spellToAdd = randomSpellCollection.next();
             if (spellToAdd == null) continue;
 
-            if (spellToAdd instanceof MovableSpell) projectileSpells.add(spellToAdd);
-            else modifierSpells.add(spellToAdd);
+            SpellContainer spellContainer = new SpellContainer(spellToAdd.getId(), spellToAdd.getCount());
+
+            if (spellToAdd instanceof MovableSpell) projectileSpells.add(spellContainer);
+            else modifierSpells.add(spellContainer);
         }
 
         // Insert spells into the wand
@@ -471,6 +472,11 @@ public abstract class AbstractWand {
         return data;
     }
 
+    /**
+     * Gets the lore for the wand
+     *
+     * @return a list of strings representing the lore
+     */
     public List<Component> getLore() {
         List<Component> lore = new ArrayList<>();
 
@@ -498,61 +504,45 @@ public abstract class AbstractWand {
         return lore;
     }
 
-    /**
-     * Gets the lore for the wand
-     *
-     * @return a list of strings representing the lore
-     */
-    /*
-    public List<String> getLore() {
-        List<String> lore = new ArrayList<>();
-
-        // TODO: Add always casts
-
-        // TODO: Find a way to display the spells that are currently in the wand (Could probably use bundles in the future)
-
-        // TODO: Replace with components
-
-        lore.add("");
-        lore.add(ChatColor.WHITE + getSpellString());
-        // lore.add(ChatColor.BLACK + "--------------------");
-
-        if (shuffle) lore.add(ChatColor.WHITE + "Shuffle: " + ChatColor.BLUE + "Yes");
-        else lore.add(ChatColor.WHITE + "Shuffle: " + ChatColor.BLUE + "No");
-        lore.add(ChatColor.WHITE + "Spells/Cast: " + ChatColor.BLUE + spellsPerCast);
-        lore.add(ChatColor.WHITE + "Cast Delay: " + ChatColor.BLUE + (double)Math.round(castDelay * 100) / 100 + ChatColor.WHITE + "s");
-        lore.add(ChatColor.WHITE + "Recharge Time: " + ChatColor.BLUE + (double)Math.round(rechargeTime * 100) / 100 + ChatColor.WHITE + "s");
-        lore.add(ChatColor.WHITE + "Mana Max: " + ChatColor.BLUE + manaMax);
-        lore.add(ChatColor.WHITE + "Mana Charge Speed: " + ChatColor.BLUE + manaChargeSpeed);
-        lore.add(ChatColor.WHITE + "Capacity: " + ChatColor.BLUE + capacity);
-        lore.add(ChatColor.WHITE + "Spread: " + ChatColor.BLUE + (double)Math.round(spread * 10) / 10 + ChatColor.WHITE + " DEG");
-
-        lore.add(ChatColor.GRAY + "id#" + id);
-
-        return lore;
-    }
-     */
-
     private String getSpellString() {
         StringBuilder spellString = new StringBuilder();
-        for (ISpell spell : spells) {
+        for (SpellContainer spellContainer : spells) {
+            ISpell spell = SpellManager.getSpell(spellContainer.spellId);
+            if (spell == null) continue;
+
             spellString.append(spell.getHexIcon()).append(" ");
         }
         return spellString.toString();
     }
 
-    public void setSpells(List<ISpell> spells){
-        this.spells = spells;
+    public void setSpells(List<ISpell> spells) {
+        this.spells.clear();
+        for (ISpell spell : spells) this.spells.add(new SpellContainer(spell.getId(), spell.getCount()));
     }
-    public List<ISpell> getSpells() { return this.spells; }
+
+    public void setSpellContainers(List<SpellContainer> containers) {
+        this.spells = containers;
+    }
+
+    public List<ISpell> getSpells() {
+        List<ISpell> spellList = new ArrayList<>();
+        for (SpellContainer spellContainer : spells) {
+            spellList.add(spellContainer.getSpell());
+        }
+        return spellList;
+    }
+
+    public List<SpellContainer> getSpellContainers() {
+        return spells;
+    }
 
     public AbstractWand addSpell(ISpell spell) {
-        this.spells.add(spell);
+        this.spells.add(new SpellContainer(spell.getId(), spell.getCount()));
         return this;
     }
 
     public AbstractWand addSpells(ISpell... spells) {
-        this.spells.addAll(List.of(spells));
+        for (ISpell spell : spells) addSpell(spell);
         return this;
     }
 
@@ -605,8 +595,20 @@ public abstract class AbstractWand {
         return spread;
     }
 
-    public void setAlwaysCast(List<ISpell> spells) { this.alwaysCast = spells; }
+    public void setAlwaysCast(List<ISpell> spells) {
+        this.alwaysCast.clear();
+        for (ISpell spell : spells) this.alwaysCast.add(new SpellContainer(spell.getId(), spell.getCount()));
+    }
+
     public List<ISpell> getAlwaysCast() {
+        List<ISpell> spellList = new ArrayList<>();
+        for (SpellContainer spellContainer : alwaysCast) {
+            spellList.add(spellContainer.getSpell());
+        }
+        return spellList;
+    }
+
+    public List<SpellContainer> getAlwaysCastContainers() {
         return alwaysCast;
     }
 

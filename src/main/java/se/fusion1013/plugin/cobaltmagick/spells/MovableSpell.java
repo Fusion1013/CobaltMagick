@@ -17,6 +17,7 @@ import se.fusion1013.plugin.cobaltmagick.wand.Wand;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public abstract class MovableSpell extends Spell implements Cloneable {
 
@@ -47,11 +48,36 @@ public abstract class MovableSpell extends Spell implements Cloneable {
 
     // Bounce Variables
     boolean isBouncy;
-    Vector bounceFriction; // Values should be between 0 & 1
+    Vector bounceFriction = new Vector(.99, .75, .99); // Values should be between 0 & 1
     int maxBounces = 0; // Set to -1 to allow infinite bounces. TODO: Add to builder
 
     // Movement Modifiers
     List<IMovementModifier> movementModifiers = new ArrayList<>();
+
+    //region CONSTRUCTORS
+
+    public MovableSpell(int id, String internalSpellName, SpellType type, Map<?, ?> data) {
+        super(id, internalSpellName, type, data);
+
+        if (data.containsKey("movement_enabled")) moves = (boolean) data.get("movement_enabled");
+
+        if (data.containsKey("collides_with_entities")) collidesWithEntities = (boolean) data.get("collides_with_entities");
+        if (data.containsKey("collides_with_blocks")) collidesWithBlocks = (boolean) data.get("collides_with_blocks");
+        if (data.containsKey("pierces_entities")) piercesEntities = (boolean) data.get("pierces_entities");
+
+        if (data.containsKey("affected_by_gravity")) affectedByGravity = (boolean) data.get("affected_by_gravity");
+        if (data.containsKey("gravity_multiplier")) gravityMultiplier = (double) data.get("gravity_multiplier");
+
+        if (data.containsKey("affected_by_air_resistance")) affectedByAirResistance = (boolean) data.get("affected_by_air_resistance");
+        if (data.containsKey("air_resistance_multiplier")) airResistanceMultiplier = (double) data.get("air_resistance_multiplier");
+
+        if (data.containsKey("is_bouncy")) isBouncy = (boolean) data.get("is_bouncy");
+        if (bounceFriction == null) bounceFriction = new Vector(.99, .75, .99);
+        if (data.containsKey("bounce_friction_x")) bounceFriction.setX((double) data.get("bounce_friction_x"));
+        if (data.containsKey("bounce_friction_y")) bounceFriction.setY((double) data.get("bounce_friction_y"));
+        if (data.containsKey("bounce_friction_z")) bounceFriction.setZ((double) data.get("bounce_friction_z"));
+        if (data.containsKey("max_bounces")) maxBounces = (int) data.get("max_bounces");
+    }
 
     public MovableSpell(int id, String internalSpellName, String spellName, SpellType type) {
         super(id, internalSpellName, spellName, type);
@@ -88,6 +114,8 @@ public abstract class MovableSpell extends Spell implements Cloneable {
 
         this.movementModifiers = new ArrayList<>(movableSpell.movementModifiers);
     }
+
+    //endregion
 
     /**
      * Applies all modifiers to the direction of the spell, and then performs a movement step

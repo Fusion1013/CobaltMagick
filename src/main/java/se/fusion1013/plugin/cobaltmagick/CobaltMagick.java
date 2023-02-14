@@ -4,26 +4,32 @@ import org.bukkit.plugin.java.JavaPlugin;
 import se.fusion1013.plugin.cobaltcore.CobaltCore;
 import se.fusion1013.plugin.cobaltcore.CobaltPlugin;
 import se.fusion1013.plugin.cobaltmagick.advancement.MagickAdvancementManager;
+import se.fusion1013.plugin.cobaltmagick.commands.ArmorStandTestCommand;
+import se.fusion1013.plugin.cobaltmagick.commands.DirectionalPersonalParticle;
+import se.fusion1013.plugin.cobaltmagick.commands.KillSpellsCommand;
+import se.fusion1013.plugin.cobaltmagick.commands.MagickCommand;
 import se.fusion1013.plugin.cobaltmagick.commands.cgive.CGiveCommand;
-import se.fusion1013.plugin.cobaltmagick.commands.*;
+import se.fusion1013.plugin.cobaltmagick.crafting.MagickRecipeManager;
 import se.fusion1013.plugin.cobaltmagick.database.system.MagickDataManager;
 import se.fusion1013.plugin.cobaltmagick.entity.EntityManager;
 import se.fusion1013.plugin.cobaltmagick.eyes.CrystalSong;
 import se.fusion1013.plugin.cobaltmagick.gui.AbstractGUIListener;
 import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
-import se.fusion1013.plugin.cobaltmagick.item.enchantments.MagickEnchantment;
 import se.fusion1013.plugin.cobaltmagick.item.enchantments.MagickEnchantmentManager;
-import se.fusion1013.plugin.cobaltmagick.storage.MagickObjectManager;
-import se.fusion1013.plugin.cobaltmagick.world.structures.cauldron.CauldronManager;
-import se.fusion1013.plugin.cobaltmagick.world.structures.laser.LaserManager;
-import se.fusion1013.plugin.cobaltmagick.manager.*;
+import se.fusion1013.plugin.cobaltmagick.manager.DreamManager;
+import se.fusion1013.plugin.cobaltmagick.manager.MagickConfigManager;
+import se.fusion1013.plugin.cobaltmagick.manager.MagickSettingsManager;
+import se.fusion1013.plugin.cobaltmagick.manager.WorldGuardManager;
 import se.fusion1013.plugin.cobaltmagick.scene.SceneManager;
 import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
+import se.fusion1013.plugin.cobaltmagick.storage.MagickObjectManager;
 import se.fusion1013.plugin.cobaltmagick.wand.WandEvents;
 import se.fusion1013.plugin.cobaltmagick.wand.WandManager;
 import se.fusion1013.plugin.cobaltmagick.world.WorldEvents;
 import se.fusion1013.plugin.cobaltmagick.world.WorldManager;
 import se.fusion1013.plugin.cobaltmagick.world.structures.MagickStructureManager;
+import se.fusion1013.plugin.cobaltmagick.world.structures.cauldron.CauldronManager;
+import se.fusion1013.plugin.cobaltmagick.world.structures.laser.LaserManager;
 
 public final class CobaltMagick extends JavaPlugin implements CobaltPlugin {
 
@@ -38,6 +44,11 @@ public final class CobaltMagick extends JavaPlugin implements CobaltPlugin {
     @Override
     public String getPrefix() {
         return "prefix.magick";
+    }
+
+    @Override
+    public String getInternalName() {
+        return "cobalt_magick";
     }
 
     @Override
@@ -83,6 +94,7 @@ public final class CobaltMagick extends JavaPlugin implements CobaltPlugin {
         CobaltCore.getInstance().getManager(this, MagickDataManager.class);
         CobaltCore.getInstance().getManager(this, LaserManager.class);
         CobaltCore.getInstance().getManager(this, SpellManager.class);
+        CobaltCore.getInstance().getManager(this, MagickRecipeManager.class);
 
         // TODO: Move worldguard integration to core
         if (WorldGuardManager.isEnabled()) CobaltCore.getInstance().getManager(this, WorldGuardManager.class); // TODO: Add isEnabled method to all managers and move check to registration

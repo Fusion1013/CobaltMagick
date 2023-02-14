@@ -4,27 +4,22 @@ import com.google.gson.JsonObject;
 import dev.jorel.commandapi.arguments.Argument;
 import org.bukkit.*;
 import org.bukkit.entity.Item;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
-import se.fusion1013.plugin.cobaltcore.CobaltCore;
 import se.fusion1013.plugin.cobaltcore.item.CustomItemManager;
+import se.fusion1013.plugin.cobaltcore.item.crafting.ICobaltRecipe;
+import se.fusion1013.plugin.cobaltcore.item.crafting.RecipeManager;
 import se.fusion1013.plugin.cobaltcore.storage.IStorageObject;
 import se.fusion1013.plugin.cobaltcore.util.GeometryUtil;
 import se.fusion1013.plugin.cobaltcore.util.JsonUtil;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
-import se.fusion1013.plugin.cobaltmagick.advancement.MagickAdvancementManager;
-import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
+import se.fusion1013.plugin.cobaltmagick.crafting.custom.MagickAnvilRecipe;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
 import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
-import se.fusion1013.plugin.cobaltmagick.wand.Wand;
-import se.fusion1013.plugin.cobaltmagick.wand.WandManager;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Used by throwing an item on top of the <code>MagickAnvil</code> structure.
@@ -32,24 +27,40 @@ import java.util.UUID;
  */
 public class MagickAnvil implements IStorageObject, Runnable {
 
-    // ----- VARIABLES -----
+    //region FIELDS
 
-    private static final ISpell[] POTENTIAL_SPELLS = new ISpell[] {
-            SpellManager.SPARK_BOLT,
-            SpellManager.BUBBLE_SPARK,
-            SpellManager.BURST_OF_AIR
+    private static final NamespacedKey IGNORE_ITEM_KEY = new NamespacedKey(CobaltMagick.getInstance(), "magick_anvil_ignore");
+
+    private static final String[] POTENTIAL_SPELLS = new String[] {
+            "spark_bolt",
+            "bubble_spark",
+            "burst_of_air"
     };
+
+    private boolean canPickupItems = true;
 
     private UUID uuid;
     private Location location;
 
     private BukkitTask particleTask;
 
-    // ----- CONSTRUCTORS -----
+    private List<Item> heldItems = new ArrayList<>();
+    private List<String> heldItemNames = new ArrayList<>();
+
+    // Craft task
+    private BukkitTask craftTask;
+    private int currentTick = 0;
+    private int craftTick;
+
+    //endregion
+
+    //region CONSTRUCTORS
 
     public MagickAnvil() {}
 
-    // ----- LOADING / UNLOADING -----
+    //endregion
+
+    //region LOADING/UNLOADING
 
     @Override
     public void onLoad() {
@@ -61,7 +72,9 @@ public class MagickAnvil implements IStorageObject, Runnable {
         if (particleTask != null) particleTask.cancel();
     }
 
-    // ----- TICK -----
+    //endregion
+
+    //region TICK
 
     @Override
     public void run() {
@@ -69,117 +82,184 @@ public class MagickAnvil implements IStorageObject, Runnable {
         location.getWorld().spawnParticle(Particle.SPELL_WITCH, location.toCenterLocation(), 1, .3, .3, .3, 0);
     }
 
-    // ----- TRIGGER -----
+    //endregion
+
+    //region TRIGGER
 
     @Override
     public void onTrigger(Object... args) {
         Item item = (Item) args[0];
 
+        if (!canPickupItems) return;
+
         if (item.getWorld() != location.getWorld()) return;
         if (item.getLocation().distanceSquared(location) >= 5*5) return;
+        if (item.getItemStack().getItemMeta().getPersistentDataContainer().has(IGNORE_ITEM_KEY)) return;
 
-        if (executeCraft(item)) {
-            item.getWorld().spawnParticle(Particle.END_ROD, item.getLocation(), 4, .1, .1, .1, .1);
-            item.getWorld().spawnParticle(Particle.SPELL_WITCH, item.getLocation(), 2, .1, .1, .1, .2);
+        addCraftItem(item);
+    }
 
-            item.getWorld().playSound(item.getLocation(), Sound.ENTITY_ILLUSIONER_CAST_SPELL, SoundCategory.BLOCKS, 1, 1);
+    private void addCraftItem(Item item) {
+
+        // Add items to the lists
+        heldItems.add(item);
+        String itemName = CustomItemManager.getItemName(item.getItemStack());
+        heldItemNames.add(itemName);
+        Collections.sort(heldItemNames);
+
+        // Prepare the item entity
+        toggleItemEffects(item, true);
+
+        // Create the crafting loop task if it does not already exist
+        if (craftTask == null) startIdleLoop();
+        else if (craftTask.isCancelled()) startIdleLoop();
+
+        // Spawn particles at the newly added item
+        item.getWorld().spawnParticle(Particle.END_ROD, item.getLocation(), 4, .1, .1, .1, .1);
+        item.getWorld().spawnParticle(Particle.SPELL_WITCH, item.getLocation(), 2, .1, .1, .1, .2);
+
+        item.getWorld().playSound(item.getLocation(), Sound.ENTITY_ILLUSIONER_CAST_SPELL, SoundCategory.BLOCKS, 1, 1);
+    }
+
+    //endregion
+
+    //region IDLE/CRAFTING LOOP
+
+    private void startIdleLoop() {
+        Random r = new Random();
+        craftTask = Bukkit.getScheduler().runTaskTimerAsynchronously(CobaltMagick.getInstance(), () -> idleLoop(r), 0, 1);
+    }
+
+    private void idleLoop(Random r) {
+        // Run item-specific idle effects
+        for (Item item : heldItems) {
+            item.getWorld().spawnParticle(Particle.END_ROD, item.getLocation().clone().add(0, .5, 0), 2, .1, .1, .1, .05);
+            item.getWorld().spawnParticle(Particle.SPELL_WITCH, item.getLocation().clone().add(0, .5, 0), 1, .1, .1, .1, .1);
+        }
+
+        // Attempt to craft an item
+        craftLoop(r);
+
+        // If it has been more than 20 seconds, and it is not currently crafting, abort the craft
+        if (currentTick >= 200 && craftTick <= 0) {
+            for (Item item : heldItems) toggleItemEffects(item, false);
+            heldItems.clear();
+            heldItemNames.clear();
+
+            cancelTask();
+        }
+
+        currentTick++;
+    }
+
+    private void craftLoop(Random r) {
+        Location center = location.toCenterLocation().add(0, 1, 0);
+
+        // Try to find a valid recipe
+        MagickAnvilRecipe recipe = findRecipe();
+        if (recipe == null) return;
+
+        canPickupItems = false;
+
+        // Run item-specific crafting effects
+        for (Item item : heldItems) spawnRandomSpell(r, item.getLocation());
+
+        // Complete the craft
+        if (craftTick >= 100) {
+
+            // Spawn new items
+            clearInput();
+            spawnItems(recipe.getOutput(), center);
+            cancelTask();
+        }
+
+        craftTick++;
+    }
+
+    private void cancelTask() {
+        // Cancel task
+        if (craftTask != null) {
+            currentTick = 0;
+            craftTick = 0;
+            craftTask.cancel();
         }
     }
 
-    BukkitTask craftTask;
-    int currentTick = 0;
-
-    private boolean executeCraft(Item item) {
-        ItemStack stack = item.getItemStack();
-
-        if (
-                !ItemManager.BROKEN_SPELL.compareTo(stack) &&
-                !ItemManager.BROKEN_WAND.compareTo(stack) &&
-                !CustomItemManager.getCustomItem(stack).getInternalName().equalsIgnoreCase("emerald_tablet_i") &&
-                !CustomItemManager.getCustomItem(stack).getInternalName().equalsIgnoreCase("emerald_tablet_ii")
-        ) return false;
-
-        Random r = new Random();
-
-        craftTask = Bukkit.getScheduler().runTaskTimerAsynchronously(CobaltMagick.getInstance(), () -> {
-
-            // Float item & Give properties
-            item.teleport(location.toCenterLocation().add(0, 1, 0));
-            item.setVelocity(new Vector());
-            item.setCanPlayerPickup(false);
-            item.setCanMobPickup(false);
-            item.setGlowing(true);
-            item.setGravity(false);
-
-            // Particle Effects
-            item.getWorld().spawnParticle(Particle.END_ROD, item.getLocation().clone().add(0, .5, 0), 2, .1, .1, .1, .05);
-            item.getWorld().spawnParticle(Particle.SPELL_WITCH, item.getLocation().clone().add(0, .5, 0), 1, .1, .1, .1, .1);
-
-            // Cast spells in random directions
-            if (currentTick % 4 == 0) {
-                ISpell spell = POTENTIAL_SPELLS[r.nextInt(POTENTIAL_SPELLS.length)];
-                spell.clone().castSpell(null, null, GeometryUtil.getPointOnSphere(1), item.getLocation());
-            }
-
-            // Cancel task if tick == 100
-            if (currentTick >= 100) {
-                // Spawn new item
-                if (ItemManager.BROKEN_SPELL.compareTo(stack)) {
-                    item.setItemStack(SpellManager.REPAIRED_SPELL.getSpellItem());
-                }
-
-                if (ItemManager.BROKEN_WAND.compareTo(stack)) {
-                    int level = 5;
-                    int cost = 20 * level;
-                    Wand wand = WandManager.getInstance().createWand(cost, level, true);
-                    item.setItemStack(wand.getWandItem());
-
-                    // Grant advancement
-                    MagickAdvancementManager advancementManager = CobaltCore.getInstance().getSafeManager(CobaltMagick.getInstance(), MagickAdvancementManager.class);
-                    if (advancementManager == null) return;
-
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        if (player.getLocation().distanceSquared(location) > 50 * 50) continue;
-
-                        Bukkit.getScheduler().runTaskLater(CobaltMagick.getInstance(), () -> advancementManager.grantAdvancement(player, "progression", "broken_wand"), 10);
-                    }
-                }
-
-                if (CustomItemManager.getCustomItem(stack).getInternalName().equalsIgnoreCase("emerald_tablet_i")) {
-                    item.setItemStack(CustomItemManager.getCustomItemStack("emerald_tablet_i_reforged"));
-                }
-
-                if (CustomItemManager.getCustomItem(stack).getInternalName().equalsIgnoreCase("emerald_tablet_ii")) {
-                    item.setItemStack(CustomItemManager.getCustomItemStack("emerald_tablet_ii_reforged"));
-                }
-
-                // Item Spawn effects
-                item.getWorld().spawnParticle(Particle.END_ROD, item.getLocation().clone().add(0, .5, 0), 40, .1, .1, .1, .5);
-                item.getWorld().spawnParticle(Particle.SPELL_WITCH, item.getLocation().clone().add(0, .5, 0), 20, .1, .1, .1, .6);
-
-                // Sound
-                item.getWorld().playSound(item.getLocation(), Sound.ENTITY_ILLUSIONER_PREPARE_BLINDNESS, SoundCategory.BLOCKS, 1, 1);
-
-                // Reset item
-                item.setGravity(true);
-                item.setCanPlayerPickup(true);
-                item.setCanMobPickup(true);
-
-                // Cancel task
-                if (craftTask != null) {
-                    currentTick = 0;
-                    craftTask.cancel();
-                }
-            }
-
-            currentTick++;
-
-        }, 0, 1);
-
-        return true;
+    private void spawnRandomSpell(Random r, Location location) {
+        // Cast spells in random directions
+        if (currentTick % 4 == 0) {
+            String spellName = POTENTIAL_SPELLS[r.nextInt(POTENTIAL_SPELLS.length)];
+            ISpell spell = SpellManager.getSpell(spellName);
+            if (spell != null) spell.clone().castSpell(null, null, GeometryUtil.getPointOnSphere(1), location);
+        }
     }
 
-    // ----- JSON INTEGRATION -----
+    private MagickAnvilRecipe findRecipe() {
+        Map<String, ICobaltRecipe> recipes = RecipeManager.getRecipesOfType("magick_anvil");
+
+        for (String s : recipes.keySet()) {
+            ICobaltRecipe recipe = recipes.get(s);
+            if (recipe instanceof MagickAnvilRecipe magickAnvilRecipe) {
+
+                List<String> recipeItemNames = new ArrayList<>();
+
+                for (ItemStack stack : magickAnvilRecipe.getInput()) {
+                    recipeItemNames.add(CustomItemManager.getItemName(stack));
+                }
+
+                Collections.sort(recipeItemNames);
+
+                if (recipeItemNames.equals(heldItemNames)) return magickAnvilRecipe;
+            }
+        }
+
+        return null;
+    }
+
+    //endregion
+
+    //region ITEM MANAGEMENT
+
+    private void toggleItemEffects(Item item, boolean isActive) {
+        if (isActive) item.teleport(location.toCenterLocation().add(0, 1, 0));
+        if (isActive) item.setVelocity(new Vector());
+        item.setCanPlayerPickup(!isActive);
+        item.setCanMobPickup(!isActive);
+        item.setGlowing(isActive);
+        item.setGravity(!isActive);
+    }
+
+    private void clearInput() {
+        for (Item item : heldItems) Bukkit.getScheduler().runTask(CobaltMagick.getInstance(), item::remove);
+        heldItems.clear();
+        heldItemNames.clear();
+    }
+
+    private void spawnItems(ItemStack[] items, Location location) {
+        World world = location.getWorld();
+
+        Bukkit.getScheduler().runTask(CobaltMagick.getInstance(), () -> {
+            // Spawn items
+            for (ItemStack itemStack : items) {
+                world.spawn(location, Item.class, item -> {
+                    item.setItemStack(itemStack);
+                    item.setGlowing(true);
+                    item.getPersistentDataContainer().set(IGNORE_ITEM_KEY, PersistentDataType.BYTE, (byte)1);
+                });
+            }
+
+            // Item Spawn effects
+            world.spawnParticle(Particle.END_ROD, location, 40, .1, .1, .1, .5);
+            world.spawnParticle(Particle.SPELL_WITCH, location, 20, .1, .1, .1, .6);
+            world.playSound(location, Sound.ENTITY_ILLUSIONER_PREPARE_BLINDNESS, SoundCategory.BLOCKS, 1, 1);
+
+            canPickupItems = true;
+        });
+    }
+
+    //endregion
+
+    //region JSON INTEGRATION
 
     @Override
     public JsonObject toJson() {
@@ -195,7 +275,9 @@ public class MagickAnvil implements IStorageObject, Runnable {
         this.location = JsonUtil.toLocation(jsonObject.getAsJsonObject("location"));
     }
 
-    // ----- COMMAND INTEGRATION -----
+    //endregion
+
+    //region COMMAND INTEGRATION
 
     @Override
     public void fromCommandArguments(Object[] objects) {
@@ -208,7 +290,9 @@ public class MagickAnvil implements IStorageObject, Runnable {
         };
     }
 
-    // ----- GETTERS / SETTERS -----
+    //endregion
+
+    //region GETTERS/SETTERS
 
     @Override
     public void setValue(String s, Object o) {
@@ -247,14 +331,23 @@ public class MagickAnvil implements IStorageObject, Runnable {
         this.location = location;
     }
 
-    // ----- CLONE CONSTRUCTOR & METHOD -----
+    //endregion
+
+    //region CLONE CONSTRUCTOR & METHOD
 
     public MagickAnvil(MagickAnvil target) {
+        this.canPickupItems = target.canPickupItems;
+
         this.uuid = target.uuid;
         this.location = target.location;
 
         if (target.craftTask != null) this.craftTask = target.craftTask;
         this.currentTick = target.currentTick;
+        this.craftTick = target.craftTick;
+
+        heldItems = target.heldItems;
+        heldItemNames = target.heldItemNames;
+
         if (target.particleTask != null) this.particleTask = target.particleTask;
     }
 
@@ -262,4 +355,6 @@ public class MagickAnvil implements IStorageObject, Runnable {
     public MagickAnvil clone() {
         return new MagickAnvil(this);
     }
+
+    //endregion
 }

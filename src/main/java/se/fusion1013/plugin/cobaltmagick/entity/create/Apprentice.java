@@ -12,11 +12,8 @@ import se.fusion1013.plugin.cobaltcore.entity.CustomEntity;
 import se.fusion1013.plugin.cobaltcore.entity.CustomEntityManager;
 import se.fusion1013.plugin.cobaltcore.entity.ICustomEntity;
 import se.fusion1013.plugin.cobaltcore.entity.modules.EntityEquipmentModule;
-import se.fusion1013.plugin.cobaltcore.item.CustomItem;
 import se.fusion1013.plugin.cobaltcore.item.CustomItemManager;
-import se.fusion1013.plugin.cobaltcore.util.ItemUtil;
 import se.fusion1013.plugin.cobaltmagick.entity.modules.ability.CasterAbility;
-import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
 import se.fusion1013.plugin.cobaltmagick.spells.SpellManager;
 
 public class Apprentice {
@@ -43,7 +40,7 @@ public class Apprentice {
         boot.setItemMeta(armorMeta);
 
         ICustomEntity apprentice = new CustomEntity.CustomEntityBuilder("apprentice", EntityType.ZOMBIE)
-                .addAbilityModule(new CasterAbility(3, 10, SpellManager.SPARK_BOLT))
+                .addAbilityModule(new CasterAbility(3, 10, "spark_bolt"))
                 .addExecuteOnSpawnModule(new EntityEquipmentModule(EquipmentSlot.HAND, wand, 0))
                 .addExecuteOnSpawnModule(new EntityEquipmentModule(EquipmentSlot.HEAD, head, 0))
                 .addExecuteOnSpawnModule(new EntityEquipmentModule(EquipmentSlot.CHEST, chest, 0))

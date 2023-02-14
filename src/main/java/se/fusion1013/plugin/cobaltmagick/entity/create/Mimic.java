@@ -1,6 +1,5 @@
 package se.fusion1013.plugin.cobaltmagick.entity.create;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -20,12 +19,9 @@ import se.fusion1013.plugin.cobaltcore.entity.ICustomEntity;
 import se.fusion1013.plugin.cobaltcore.entity.modules.*;
 import se.fusion1013.plugin.cobaltcore.entity.modules.ability.ChargeAbility;
 import se.fusion1013.plugin.cobaltcore.item.CustomItemManager;
-import se.fusion1013.plugin.cobaltcore.item.loot.CustomLootTable;
 import se.fusion1013.plugin.cobaltcore.item.loot.LootEntry;
 import se.fusion1013.plugin.cobaltcore.item.loot.LootPool;
 import se.fusion1013.plugin.cobaltmagick.entity.modules.ability.Enderport;
-import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
-import se.fusion1013.plugin.cobaltmagick.item.create.CreateKeyItems;
 
 public class Mimic {
 

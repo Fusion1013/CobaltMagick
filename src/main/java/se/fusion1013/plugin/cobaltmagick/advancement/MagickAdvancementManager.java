@@ -7,7 +7,6 @@ import eu.endercentral.crazy_advancements.advancement.AdvancementDisplay;
 import eu.endercentral.crazy_advancements.advancement.AdvancementFlag;
 import eu.endercentral.crazy_advancements.advancement.AdvancementVisibility;
 import eu.endercentral.crazy_advancements.manager.AdvancementManager;
-import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -19,9 +18,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import se.fusion1013.plugin.cobaltcore.CobaltCore;
 import se.fusion1013.plugin.cobaltcore.advancement.CobaltAdvancementManager;
+import se.fusion1013.plugin.cobaltcore.item.CustomItemManager;
 import se.fusion1013.plugin.cobaltcore.manager.Manager;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
-import se.fusion1013.plugin.cobaltmagick.entity.create.TeleportMage;
 import se.fusion1013.plugin.cobaltmagick.event.SpellCastEvent;
 import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
 import se.fusion1013.plugin.cobaltmagick.spells.ISpell;
@@ -183,7 +182,7 @@ public class MagickAdvancementManager extends Manager implements Listener {
         cauldronAlbedoTitle.setFont("minecraft:fin_small");
         TextComponent cauldronAlbedoDescription = new TextComponent("prima materia, cleansed from impurities");
         cauldronAlbedoDescription.setFont("minecraft:fin_small");
-        AdvancementDisplay cauldronAlbedoDisplay = createDisplay(ItemManager.OUR_MATTER.getItemStack(), cauldronAlbedoTitle, cauldronAlbedoDescription, AdvancementDisplay.AdvancementFrame.TASK, AdvancementVisibility.HIDDEN);
+        AdvancementDisplay cauldronAlbedoDisplay = createDisplay(CustomItemManager.getCustomItemStack("our_matter"), cauldronAlbedoTitle, cauldronAlbedoDescription, AdvancementDisplay.AdvancementFrame.TASK, AdvancementVisibility.HIDDEN);
         cauldronAlbedoDisplay.setPositionOrigin(rootAdvancement);
         cauldronAlbedoDisplay.setX(2);
         cauldronAlbedoDisplay.setY(-2);
@@ -196,7 +195,7 @@ public class MagickAdvancementManager extends Manager implements Listener {
         cauldronCitrinitasTitle.setFont("minecraft:fin_small");
         TextComponent cauldronCitrinitasDescription = new TextComponent("dawn of solar light");
         cauldronCitrinitasDescription.setFont("minecraft:fin_small");
-        AdvancementDisplay cauldronCitrinitasDisplay = createDisplay(ItemManager.SUNSEED.getItemStack(), cauldronCitrinitasTitle, cauldronCitrinitasDescription, AdvancementDisplay.AdvancementFrame.TASK, AdvancementVisibility.HIDDEN);
+        AdvancementDisplay cauldronCitrinitasDisplay = createDisplay(CustomItemManager.getCustomItemStack("sunseed"), cauldronCitrinitasTitle, cauldronCitrinitasDescription, AdvancementDisplay.AdvancementFrame.TASK, AdvancementVisibility.HIDDEN);
         cauldronCitrinitasDisplay.setPositionOrigin(rootAdvancement);
         cauldronCitrinitasDisplay.setX(3);
         cauldronCitrinitasDisplay.setY(-2);
@@ -239,7 +238,11 @@ public class MagickAdvancementManager extends Manager implements Listener {
         AdvancementVisibility visibility = AdvancementVisibility.HIDDEN;
 
         // Create advancement window display
-        ItemStack rootIcon = SpellManager.SPARK_BOLT.getSpellItem();
+        ItemStack rootIcon = new ItemStack(Material.CLOCK);
+        ItemMeta rootIconMeta = rootIcon.getItemMeta();
+        rootIconMeta.setCustomModelData(100000);
+        rootIcon.setItemMeta(rootIconMeta);
+
         JSONMessage rootTitle = new JSONMessage(new TextComponent("Spells"));
         JSONMessage rootDescription = new JSONMessage(new TextComponent("Cast your first spell"));
         AdvancementDisplay.AdvancementFrame rootFrame = AdvancementDisplay.AdvancementFrame.CHALLENGE;
@@ -411,8 +414,8 @@ public class MagickAdvancementManager extends Manager implements Listener {
     @Override
     public void reload() {
         CobaltMagick.getInstance().getServer().getPluginManager().registerEvents(this, CobaltMagick.getInstance());
-        CobaltCore.getInstance().getManager(CobaltCore.getInstance(), CobaltAdvancementManager.class).addAdvancementManager(createSpellAdvancements());
-        CobaltCore.getInstance().getManager(CobaltCore.getInstance(), CobaltAdvancementManager.class).addAdvancementManager(createProgressionAdvancements());
+        CobaltCore.getInstance().getManager(CobaltCore.getInstance(), CobaltAdvancementManager.class).addAdvancementManager("cobalt_magick.spells", createSpellAdvancements());
+        CobaltCore.getInstance().getManager(CobaltCore.getInstance(), CobaltAdvancementManager.class).addAdvancementManager("cobalt_magick.progression", createProgressionAdvancements());
     }
 
     @Override
