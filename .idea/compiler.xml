@@ -9,8 +9,5 @@
         <module name="CobaltMagick" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="CobaltMagick" target="17" />
-    </bytecodeTargetLevel>
   </component>
 </project>

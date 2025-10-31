@@ -23,7 +23,6 @@ public class MagickCommand {
         new CommandAPICommand("magick")
                 .withSubcommand(EditCommand.register())
                 .withSubcommand(StructureCommand.register())
-                // .withSubcommand(AdvancementCommand.register())
                 .withSubcommand(createVersionCommand())
                 .withSubcommand(createColorizeCommand())
                 .withSubcommand(createUpdateCommand())

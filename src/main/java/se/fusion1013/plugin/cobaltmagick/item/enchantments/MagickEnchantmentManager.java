@@ -1,12 +1,10 @@
 package se.fusion1013.plugin.cobaltmagick.item.enchantments;
 
-import com.destroystokyo.paper.event.entity.EntityJumpEvent;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.block.Block;
-import org.bukkit.enchantments.Enchantment;
+import org.bukkit.block.ShulkerBox;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
@@ -14,33 +12,23 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryEvent;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.*;
+import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.Vector;
 import se.fusion1013.plugin.cobaltcore.CobaltCore;
-import se.fusion1013.plugin.cobaltcore.item.CustomItemManager;
-import se.fusion1013.plugin.cobaltcore.item.enchantment.CobaltEnchantment;
 import se.fusion1013.plugin.cobaltcore.item.enchantment.EnchantmentManager;
-import se.fusion1013.plugin.cobaltcore.item.enchantment.EnchantmentWrapper;
 import se.fusion1013.plugin.cobaltcore.manager.Manager;
 import se.fusion1013.plugin.cobaltmagick.CobaltMagick;
 import se.fusion1013.plugin.cobaltmagick.event.SpellCastEvent;
-import se.fusion1013.plugin.cobaltmagick.item.ItemManager;
 
-import java.sql.PreparedStatement;
 import java.util.*;
 
 public class MagickEnchantmentManager extends Manager implements Listener, Runnable {
@@ -103,6 +91,15 @@ public class MagickEnchantmentManager extends Manager implements Listener, Runna
     @EventHandler
     public void playerItemHeldEvent(PlayerItemHeldEvent event) {
         executeSlipperinessCurse(event.getPlayer(), event.getNewSlot());
+    }
+
+    @EventHandler
+    public void blockPlacedEvent(BlockPlaceEvent event) {
+
+        Bukkit.getScheduler().runTaskLater(CobaltMagick.getInstance(), () -> {
+            if (!event.getPlayer().isOnline()) return;
+            executeReplenish(event.getPlayer(), event.getBlockPlaced(), event.getHand());
+        }, 1);
     }
 
     // ----- ENCHANTMENT HANDLING -----
@@ -319,6 +316,59 @@ public class MagickEnchantmentManager extends Manager implements Listener, Runna
         }
 
         previousWeakeningLevel.put(player, weakeningLevel);
+    }
+
+    private static void executeReplenish(Player player, Block block, EquipmentSlot slot) {
+        boolean shouldReplenish = false;
+        if (player.getGameMode() == GameMode.CREATIVE) return;
+
+        PlayerInventory inventory = player.getInventory();
+        Material type = block.getType();
+
+        if (slot == EquipmentSlot.OFF_HAND) return;
+
+        for (int i = 0; i < inventory.getSize(); i++) {
+            if (inventory.getItem(i) != null) {
+                ItemStack stack = inventory.getItem(i);
+                if (stack == null) continue;
+                if (MagickEnchantment.REPLENISH.getLevel(stack) <= 0) continue;
+
+                ItemMeta stackMeta = stack.getItemMeta();
+
+                if (stackMeta instanceof BlockStateMeta blockStateMeta) {
+                    if (blockStateMeta.getBlockState() instanceof ShulkerBox shulkerBox) {
+                        shouldReplenish = replenishFromBox(shulkerBox, type);
+
+                        if (shouldReplenish) {
+                            blockStateMeta.setBlockState(shulkerBox);
+                            stack.setItemMeta(blockStateMeta);
+                            inventory.setItem(i, stack);
+
+                            if (slot == EquipmentSlot.HAND) inventory.addItem(new ItemStack(type));
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private static boolean replenishFromBox(ShulkerBox shulkerBox, Material itemType) {
+        Inventory inventory = shulkerBox.getInventory();
+
+        for (int i = 0; i < inventory.getSize(); i++) {
+            if (inventory.getItem(i) != null) {
+                ItemStack stack = inventory.getItem(i);
+                if (stack == null) continue;
+
+                if (stack.getType() == itemType && stack.getAmount() > 0) {
+                    stack.setAmount(stack.getAmount() - 1);
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     @EventHandler

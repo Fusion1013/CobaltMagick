@@ -48,7 +48,7 @@ public class CauldronManager extends Manager implements Listener {
         if (CustomItemManager.getCustomItem("our_matter").compareTo(event.getPlayer().getInventory().getItemInMainHand())) executeAlbedo(event.getPlayer());
 
         // Trigger cauldron stage 3 (Citrinitas)
-        if (false) executeCitrinitas(event.getPlayer());
+        if (CustomItemManager.getCustomItem("hollow_ingot").compareTo(event.getPlayer().getInventory().getItemInMainHand())) executeCitrinitas(event.getPlayer());
 
         // Trigger cauldron stage 4 (Rubedo)
         if (false) executeRubedo(event.getPlayer());

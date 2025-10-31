@@ -22,6 +22,8 @@ public enum MagickEnchantment implements ICobaltEnchantment {
     EVASION("evasion", "Evasion", "When the holder or wearer takes damage, they have a chance to dodge. Dodging the attack negates all damage it would do", 5),
     REGENERATION("regeneration", "Regeneration", "The holder or wearer regenerates 1 health every 4 seconds. Every level of regeneration decreases the time interval by 1/3 second", 3),
 
+    REPLENISH("replenish", "Replenish", "Replenishes blocks from Shulker Boxes in the users inventory", 1, EnchantmentTarget.SHULKER_BOX),
+
     // -- Curses
     CURSE_OF_NEUTRALIZED_SPELLS("curse_of_neutralized_spells", "Curse of Neutralized Spells", "Spells cast by the wearer or holder have no effect", 1, true),
     CURSE_OF_WEAKENING("curse_of_weakening", "Curse of Weakening", "Halves your health for each level", 1, true),
