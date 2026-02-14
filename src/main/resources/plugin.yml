@@ -1,14 +1,11 @@
 name: CobaltMagick
 version: ${project.version}
-main: se.fusion1013.plugin.cobaltmagick.CobaltMagick
+main: se.fusion1013.cobaltmagick.CobaltMagick
 website: "https://github.com/Fusion1013/CobaltMagick"
-api-version: 1.18
+api-version: 1.21.11
 authors:
   - Fusion1013
 description: The Cobalt Magick Plugin
 depend:
   - CommandAPI
   - CobaltCore
-softdepend:
-  - WorldGuard
-  - CrazyAdvancementsAPI
