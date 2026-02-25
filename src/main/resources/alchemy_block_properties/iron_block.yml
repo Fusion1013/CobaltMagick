@@ -1,0 +1,8 @@
+internal_name: iron_block
+materials:
+  - iron_block
+variance: 5
+potency: -1
+duration: 5
+wild: -1
+decay: 5

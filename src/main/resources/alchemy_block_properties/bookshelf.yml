@@ -1,0 +1,9 @@
+internal_name: bookshelf
+materials:
+  - bookshelf
+  - chiseled_bookshelf
+variance: 10
+potency: 5
+duration: 5
+wild: 5
+decay: 10

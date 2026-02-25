@@ -26,7 +26,7 @@ public class SpellManager extends Manager<CobaltMagick> {
     }
 
     public static void loadSpellFiles(CobaltPlugin plugin, boolean overwrite) {
-        FileUtil.loadFilesInto(plugin, "spells/", new IProviderStorage() {
+        FileUtil.loadFilesInto(plugin, "spells/", new IProviderStorage<INameProvider>() {
             @Override
             public void put(String key, INameProvider provider) {
                 register(provider);

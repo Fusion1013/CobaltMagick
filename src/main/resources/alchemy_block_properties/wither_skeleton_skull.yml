@@ -1,0 +1,8 @@
+internal_name: wither_skeleton_skull
+materials:
+  - wither_skeleton_skull
+variance: 2
+potency: -2
+duration: -2
+wild: 5
+decay: -3
