@@ -1,0 +1,6 @@
+internal_name: invisibility_weak
+potion: invisibility
+items:
+  - gold_ingot
+glyph: alchemy.gold
+elemental_affinity: air

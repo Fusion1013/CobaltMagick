@@ -18,6 +18,7 @@ import se.fusion1013.cobaltCore.util.IFileConstructor;
 import se.fusion1013.cobaltCore.util.INameProvider;
 import se.fusion1013.cobaltmagick.CobaltMagick;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
@@ -93,6 +94,10 @@ public class ElementalVeinManager extends Manager<CobaltMagick> {
                     true
             );
         }
+    }
+
+    public static Collection<IElementalVein> getElementalVeins() {
+        return ELEMENTAL_VEINS.values();
     }
 
     public static IElementalVein getElementalVein(String id) {

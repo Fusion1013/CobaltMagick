@@ -14,6 +14,8 @@ import se.fusion1013.cobaltCore.util.IFileConstructor;
 import se.fusion1013.cobaltCore.util.INameProvider;
 import se.fusion1013.cobaltCore.util.IProviderStorage;
 import se.fusion1013.cobaltmagick.CobaltMagick;
+import se.fusion1013.cobaltmagick.alchemy.properties.AlchemyBlockProperties;
+import se.fusion1013.cobaltmagick.alchemy.properties.AlchemyBlockPropertyLoader;
 
 import java.util.Arrays;
 import java.util.HashMap;

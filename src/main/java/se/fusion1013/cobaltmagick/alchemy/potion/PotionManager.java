@@ -1,73 +1,65 @@
 package se.fusion1013.cobaltmagick.alchemy.potion;
 
+import com.google.gson.JsonObject;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.event.EventHandler;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.potion.PotionEffectType;
+import se.fusion1013.cobaltCore.CobaltCore;
+import se.fusion1013.cobaltCore.CobaltPlugin;
+import se.fusion1013.cobaltCore.commands.system.CommandManager;
 import se.fusion1013.cobaltCore.manager.Manager;
+import se.fusion1013.cobaltCore.manager.registry.CobaltRegistry;
+import se.fusion1013.cobaltCore.manager.registry.RegistryProviderStorage;
+import se.fusion1013.cobaltCore.particle.effects.glyph.GlyphData;
+import se.fusion1013.cobaltCore.util.FileUtil;
+import se.fusion1013.cobaltCore.util.IFileConstructor;
+import se.fusion1013.cobaltCore.util.INameProvider;
 import se.fusion1013.cobaltmagick.CobaltMagick;
-import se.fusion1013.cobaltmagick.alchemy.cauldron.CauldronState;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class PotionManager extends Manager<CobaltMagick> implements Listener {
 
-    private static final Map<String, IPotionRecipe> RECIPES = new HashMap<>();
-
-    private static final IPotionRecipe TEST_RECIPE = register(new PotionRecipe(
-            "test_recipe", PotionEffectType.REGENERATION, new String[]{"sugar", "rabbit_foot", "glass_bottle"}, "alchemy.sun", List.of()
-    ));
+    private static final CobaltRegistry<IPotionRecipe> POTION_RECIPES = new CobaltRegistry<>();
 
     public PotionManager(CobaltMagick plugin) {
         super(plugin);
     }
 
-    private static IPotionRecipe register(IPotionRecipe recipe) {
-        RECIPES.put(recipe.getInternalName(), recipe);
-        return recipe;
-    }
-
-    @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.getHand() == EquipmentSlot.OFF_HAND) return;
-        if (!event.getPlayer().isSneaking()) return;
-
-        Block block = event.getClickedBlock();
-        if (block == null) return;
-        Material blockMaterial = block.getType();
-        if (blockMaterial != Material.CAULDRON) return;
-
-        for (IPotionRecipe recipe : RECIPES.values()) {
-            if (recipe.validateGlyph(block.getLocation())) {
-                CauldronState state = new CauldronState();
-                recipe.addGlyphToCauldronState(block.getLocation(), state);
-
-                event.getPlayer().sendMessage("Variance: " + state.getVariance());
-                event.getPlayer().sendMessage("Potency: " + state.getPotency());
-                event.getPlayer().sendMessage("Duration: " + state.getDuration());
-                event.getPlayer().sendMessage("Wild: " + state.getWild());
-                event.getPlayer().sendMessage("Decay: " + state.getDecay());
+    public static void loadPotionRecipes(CobaltPlugin plugin, boolean overwrite) {
+        FileUtil.loadFilesInto(plugin, "potion_recipes/", new RegistryProviderStorage<>(POTION_RECIPES), new IFileConstructor() {
+            @Override
+            public INameProvider createFrom(YamlConfiguration yaml) {
+                return PotionRecipe.create(yaml);
             }
+
+            @Override
+            public INameProvider createFrom(JsonObject json) {
+                return null;
+            }
+        }, overwrite);
+    }
+
+    public static void reloadPotionRecipes() {
+        for (CobaltPlugin plugin : CobaltCore.getRegisteredCobaltPlugins()) {
+            loadPotionRecipes(plugin, true);
         }
     }
 
-    public IPotionRecipe getRecipeMatchingGlyph(Location cauldronLocation) {
-        for (IPotionRecipe recipe : RECIPES.values()) {
-            if (recipe.validateGlyph(cauldronLocation)) return recipe;
-        }
-        return null;
+    public IPotionRecipe[] getRecipesMatchingGlyph(GlyphData glyph) {
+        return POTION_RECIPES.values()
+                .stream()
+                .filter(r -> r.getGlyph().equalsIgnoreCase(glyph.category() + "." + glyph.name()))
+                .toArray(IPotionRecipe[]::new);
+    }
+
+    public IPotionRecipe[] getRecipes() {
+        return POTION_RECIPES.values().toArray(new IPotionRecipe[0]);
     }
 
     @Override
     public void reload() {
         Bukkit.getPluginManager().registerEvents(this, CobaltMagick.getInstance());
+        reloadPotionRecipes();
+        CommandManager.registerReloadMethod("potion_recipes", PotionManager::reloadPotionRecipes, POTION_RECIPES::getNames);
     }
 
     @Override

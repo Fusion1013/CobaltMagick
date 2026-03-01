@@ -1,0 +1,8 @@
+internal_name: glowing_weak
+potion: glowing
+items:
+  - lead_ingot
+  - sugar
+  - rabbit_foot
+glyph: alchemy.lead
+elemental_affinity: aether

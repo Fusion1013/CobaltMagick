@@ -1,16 +1,39 @@
 package se.fusion1013.cobaltmagick.alchemy.cauldron;
 
+import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
-import se.fusion1013.cobaltmagick.alchemy.potion.IPotionRecipe;
+import org.bukkit.util.Vector;
+import se.fusion1013.cobaltCore.particle.effects.glyph.GlyphData;
+
+import java.util.Set;
 
 public interface ICauldronInstance {
 
-    IPotionRecipe potionRecipe();
+    boolean hasValidGlyph();
 
-    void incrementProgress();
+    GlyphData getGlyph();
 
-    boolean isRecipeDone();
+    boolean isEmpty();
 
-    ItemStack getCurrentRequiredItem();
+    void insertItem(ItemStack item);
 
+    ItemStack[] getHeldItems();
+
+    int clearHeldItems();
+
+    ICauldronRecipe getValidRecipe();
+
+    Set<Vector> getGlyphVectors();
+
+    void decay(Location location, int decayTotal);
+
+    Location getLocation();
+
+    void tick();
+
+    int getTicks();
+
+    int getLowestItemCount();
+
+    double getVeinDistance(String vein);
 }

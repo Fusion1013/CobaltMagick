@@ -1,0 +1,8 @@
+internal_name: absorption_weak
+potion: absorption
+items:
+  - gold_ingot
+  - sugar
+  - rabbit_foot
+glyph: alchemy.sun
+elemental_affinity: aether

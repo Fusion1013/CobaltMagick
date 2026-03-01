@@ -1,133 +1,137 @@
 package se.fusion1013.cobaltmagick.alchemy.potion;
 
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
+import org.bukkit.advancement.Advancement;
+import org.bukkit.advancement.AdvancementProgress;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.Vector;
-import se.fusion1013.cobaltCore.particle.effects.glyph.GlyphData;
-import se.fusion1013.cobaltCore.particle.effects.glyph.GlyphManager;
+import se.fusion1013.cobaltCore.item.CustomItemManager;
+import se.fusion1013.cobaltCore.variable.ConditionVariable;
+import se.fusion1013.cobaltCore.variable.PotionTypeVariable;
+import se.fusion1013.cobaltCore.variable.StringVariable;
 import se.fusion1013.cobaltmagick.CobaltMagick;
-import se.fusion1013.cobaltmagick.alchemy.AlchemyBlockProperties;
-import se.fusion1013.cobaltmagick.alchemy.AlchemyManager;
 import se.fusion1013.cobaltmagick.alchemy.cauldron.CauldronState;
+import se.fusion1013.cobaltmagick.alchemy.cauldron.effect.CauldronEffectUtil;
+import se.fusion1013.cobaltmagick.alchemy.elemental_veins.IElementalAffinity;
 
-import java.util.*;
-import java.util.function.Function;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class PotionRecipe implements IPotionRecipe {
+public class PotionRecipe implements IPotionRecipe, IElementalAffinity {
 
-    private static final Random random = new Random();
-    private static final Material[] REPLACE_MATERIAL = new Material[]{
-            Material.INFESTED_COBBLESTONE, Material.INFESTED_STONE, Material.INFESTED_CHISELED_STONE_BRICKS, Material.INFESTED_CRACKED_STONE_BRICKS, Material.INFESTED_STONE_BRICKS
-    };
+    private final StringVariable internalName = new StringVariable("internal_name");
+    private final PotionTypeVariable effectType = new PotionTypeVariable("potion");
+    private final StringVariable inputItems = new StringVariable("items");
+    private final StringVariable glyph = new StringVariable("glyph");
+    private final StringVariable elementalAffinities = new StringVariable("elemental_affinity");
+    private final ConditionVariable conditions = new ConditionVariable("conditions");
 
-    private final String internalName;
-    private final PotionEffectType effectType;
-    private final String[] inputItems;
-    private final String glyph;
-    private final List<Function<Location, Boolean>> conditions;
-
-    private final Map<Vector, Boolean> glyphOffsets = new HashMap<>();
-    private final List<Vector> glyphVectors = new ArrayList<>();
-
-    public PotionRecipe(String internalName, PotionEffectType effectType, String[] inputItems, String glyph, List<Function<Location, Boolean>> conditions) {
-        this.internalName = internalName;
-        this.effectType = effectType;
-        this.inputItems = inputItems;
-        this.glyph = glyph;
-        this.conditions = conditions;
-
-        createGlyphOffsets();
+    public static IPotionRecipe create(ConfigurationSection yaml) {
+        PotionRecipe recipe = new PotionRecipe();
+        recipe.load(yaml);
+        return recipe;
     }
 
-    private void createGlyphOffsets() {
-        for (int x = -7; x <= 7; x++) {
-            for (int z = -7; z <= 7; z++) {
-                glyphOffsets.put(new Vector(x, -1, z), false);
-            }
-        }
-
-        GlyphData glyphData = GlyphManager.getGlyphFromName(glyph);
-        if (glyphData == null) return;
-
-        for (Vector vector : glyphData.positions()) {
-            Vector newVector = new Vector(vector.getX(), -1, vector.getY());
-            glyphOffsets.put(newVector, true);
-            glyphVectors.add(newVector);
-        }
+    private void load(ConfigurationSection yaml) {
+        internalName.load(yaml);
+        effectType.load(yaml);
+        inputItems.load(yaml);
+        glyph.load(yaml);
+        elementalAffinities.load(yaml);
     }
 
     @Override
-    public void addGlyphToCauldronState(Location cauldronLocation, CauldronState state) {
-        for (Vector vector : glyphVectors) {
-            Location blockLocation = cauldronLocation.clone().add(vector);
-            Material actualMaterial = blockLocation.getBlock().getType();
-            AlchemyBlockProperties properties = AlchemyManager.getProperties(actualMaterial);
-            if (properties == null) continue;
-            state.update(properties);
-        }
+    public String getGlyph() {
+        return glyph.getValue();
     }
 
-    public boolean validateGlyph(Location cauldronLocation) {
-        // The glyph should be placed one block down from the cauldron
-        // It should be able to be rotated in any direction
+    @Override
+    public String[] getElementalAffinities() {
+        return elementalAffinities.getValueList().toArray(new String[0]);
+    }
 
-        World world = cauldronLocation.getWorld();
-        GlyphData data = GlyphManager.getGlyphFromName(glyph);
-        for (Vector vector : data.positions()) {
-            // world.spawnParticle(Particle.END_ROD, cauldronLocation.clone().add(new Vector(vector.getX(), 0, vector.getY())).toCenterLocation(), 10, .1, .1, .1, 0);
-        }
+    public boolean validateConditions(Location cauldronLocation) {
+        Map<String, Object> context = new HashMap<>();
+        context.put("default_location", cauldronLocation);
+        return conditions.getValueList().stream().allMatch(c -> c.evaluate(context));
+    }
 
-        for (Map.Entry<Vector, Boolean> entrySet : glyphOffsets.entrySet()) {
-            Location blockLocation = cauldronLocation.clone().add(entrySet.getKey());
-            Material actualMaterial = blockLocation.getBlock().getType();
+    @Override
+    public boolean validateItems(List<ItemStack> items) {
+        if (items.size() != this.inputItems.getValueList().size()) return false;
 
-            AlchemyBlockProperties properties = AlchemyManager.getProperties(actualMaterial);
-            if (properties == null && entrySet.getValue()) return false;
+        for (int i = 0; i < items.size(); i++) {
+            ItemStack inputItem = items.get(i);
+            String required = this.inputItems.getValueList().get(i);
+
+            ItemStack requiredItem = CustomItemManager.getItemStack(required);
+
+            if (!CustomItemManager.compare(inputItem, requiredItem)) return false;
         }
         return true;
     }
 
-    public boolean validateConditions(Location cauldronLocation) {
-        return conditions.stream().map(c -> c.apply(cauldronLocation)).anyMatch(c -> c == false);
+    @Override
+    public void execute(Location location, CauldronState state, int count) {
+        ItemStack item = getPotionItem(this, state, location);
+        item.setAmount(count);
+
+        CauldronEffectUtil.animateCauldron(location, item, CobaltMagick.getInstance());
+
+        grantAdvancement(location);
+    }
+
+    private void grantAdvancement(Location location) {
+        Advancement root = Bukkit.getAdvancement(new NamespacedKey("fusion1013", "potions/root"));
+        Advancement advancement = Bukkit.getAdvancement(new NamespacedKey("fusion1013", "potions/" + internalName.getValue()));
+
+        grantAdvancement(location, root);
+        grantAdvancement(location, advancement);
+    }
+
+    private static void grantAdvancement(Location location, Advancement advancement) {
+        if (advancement == null) return;
+
+        Collection<Player> players = location.getNearbyPlayers(16);
+        players.forEach(p -> {
+            AdvancementProgress progress = p.getAdvancementProgress(advancement);
+
+            for (String criteria : progress.getRemainingCriteria()) {
+                progress.awardCriteria(criteria);
+            }
+        });
+    }
+
+    private ItemStack getPotionItem(IPotionRecipe recipe, CauldronState state, Location location) {
+        PotionCreator potionCreator = new PotionCreator(recipe.getPotionEffectType())
+                .variance(state.getVariance())
+                .potency(state.getPotency())
+                .duration(state.getDuration())
+                .wild(state.getWild())
+                .decay(state.getDecay())
+                .elementalAffinity(elementalAffinities.getValueList());
+        return potionCreator.getItem(location);
     }
 
     @Override
     public String getInternalName() {
-        return internalName;
-    }
-
-    @Override
-    public String getFirstInputItem() {
-        return inputItems[0];
-    }
-
-    @Override
-    public String[] getInputItemOrder() {
-        return inputItems;
+        return internalName.getValue();
     }
 
     @Override
     public PotionEffectType getPotionEffectType() {
-        return effectType;
+        return effectType.getValue();
     }
 
     @Override
-    public void decay(Location cauldronLocation, int decay) {
-        World world = cauldronLocation.getWorld();
-        int iterations = Math.min(decay, glyphVectors.size());
-
-        List<Vector> shuffledPositions = new ArrayList<>(glyphVectors);
-        Collections.shuffle(shuffledPositions);
-
-        for (int i = 0; i < iterations; i++) {
-            Vector vector = shuffledPositions.get(i);
-            Location blockLocation = cauldronLocation.clone().add(vector);
-
-            Bukkit.getScheduler().runTaskLater(CobaltMagick.getInstance(), () -> {
-                world.setBlockData(blockLocation, REPLACE_MATERIAL[random.nextInt(REPLACE_MATERIAL.length)].createBlockData());
-                world.spawnParticle(Particle.SMOKE, blockLocation.toCenterLocation().add(new Vector(0, .6, 0)), 10, .3, .1, .3, 0);
-                world.playSound(blockLocation, Sound.BLOCK_LAVA_EXTINGUISH, .3f, 1);
-            }, random.nextInt(20));
-        }
+    public IElementalAffinity getElementalAffinity() {
+        return this;
     }
+
 }

@@ -1,4 +1,4 @@
-package se.fusion1013.cobaltmagick.alchemy;
+package se.fusion1013.cobaltmagick.alchemy.properties;
 
 import com.google.gson.JsonObject;
 import org.bukkit.configuration.file.YamlConfiguration;

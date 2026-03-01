@@ -1,8 +1,9 @@
 package se.fusion1013.cobaltmagick.alchemy.cauldron;
 
-import se.fusion1013.cobaltmagick.alchemy.AlchemyBlockProperties;
+import se.fusion1013.cobaltmagick.alchemy.IAlchemyState;
+import se.fusion1013.cobaltmagick.alchemy.properties.AlchemyBlockProperties;
 
-public class CauldronState {
+public class CauldronState implements IAlchemyState {
 
     private int variance;
     private int potency;
@@ -26,19 +27,49 @@ public class CauldronState {
         return variance;
     }
 
+    @Override
+    public void setVariance(int variance) {
+        this.variance = variance;
+    }
+
     public int getPotency() {
         return potency;
+    }
+
+    @Override
+    public void setPotency(int potency) {
+        this.potency = potency;
     }
 
     public int getDuration() {
         return duration;
     }
 
+    @Override
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
     public int getWild() {
         return wild;
     }
 
+    @Override
+    public void setWild(int wild) {
+        this.wild = wild;
+    }
+
     public int getDecay() {
         return decay;
+    }
+
+    @Override
+    public void setDecay(int decay) {
+        this.decay = decay;
+    }
+
+    @Override
+    public String toString() {
+        return "Variance: " + variance + ". Potency: " + potency + ". Duration: " + duration + ". Wild: " + wild + ". Decay: " + decay;
     }
 }

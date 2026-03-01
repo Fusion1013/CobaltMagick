@@ -1,0 +1,8 @@
+internal_name: health_boost_weak
+potion: health_boost
+items:
+  - iron_ingot
+  - sugar
+  - rabbit_foot
+glyph: alchemy.iron
+elemental_affinity: aether

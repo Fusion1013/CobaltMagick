@@ -1,0 +1,8 @@
+internal_name: night_vision_weak
+potion: night_vision
+items:
+  - silver_ingot
+  - sugar
+  - rabbit_foot
+glyph: alchemy.silver
+elemental_affinity: aether

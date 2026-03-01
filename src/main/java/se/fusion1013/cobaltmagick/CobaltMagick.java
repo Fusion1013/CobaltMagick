@@ -5,6 +5,7 @@ import se.fusion1013.cobaltCore.CobaltCore;
 import se.fusion1013.cobaltCore.CobaltPlugin;
 import se.fusion1013.cobaltmagick.alchemy.AlchemyManager;
 import se.fusion1013.cobaltmagick.alchemy.cauldron.CauldronManager;
+import se.fusion1013.cobaltmagick.alchemy.cauldron.effect.CauldronEffectManager;
 import se.fusion1013.cobaltmagick.alchemy.elemental_veins.ElementalVeinManager;
 import se.fusion1013.cobaltmagick.alchemy.potion.PotionManager;
 import se.fusion1013.cobaltmagick.commands.AlchemyCommand;
@@ -84,6 +85,7 @@ public final class CobaltMagick extends JavaPlugin implements CobaltPlugin {
         CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), PotionManager.class);
         CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), AlchemyManager.class);
         CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), CauldronManager.class);
+        CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), CauldronEffectManager.class);
         CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), ElementalVeinManager.class);
     }
 

@@ -1,0 +1,8 @@
+internal_name: levitation_weak
+potion: levitation
+items:
+  - mercury_ingot
+  - feather
+  - phantom_membrane
+glyph: alchemy.mercury
+elemental_affinity: air
