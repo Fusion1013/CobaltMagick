@@ -1,0 +1,12 @@
+internal_name: bad_omen_weak
+potion: bad_omen
+items:
+  - gold_ingot
+  - bedrock
+glyph: alchemy.mercury
+elemental_affinity: fire
+conditions:
+  - condition: time
+    time: day
+  - condition: light
+    sky: 0

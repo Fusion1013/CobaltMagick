@@ -1,6 +1,0 @@
-internal_name: luck_weak
-potion: luck
-items:
-  - copper_ingot
-glyph: alchemy.copper
-elemental_affinity: aether

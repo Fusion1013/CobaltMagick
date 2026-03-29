@@ -1,0 +1,17 @@
+internal_name: water_breathing_weak
+potion: water_breathing
+metal: mercury_ingot
+binding: binding_light
+items:
+  - turtle_scute
+glyph: alchemy.mercury
+elemental_affinity: water
+conditions:
+  - condition: time
+    time: day
+  - condition: light
+    sky: 15
+  - condition: height
+    height:
+      min: 64
+      max: 400

@@ -1,0 +1,10 @@
+internal_name: blue_candle
+materials:
+  - blue_candle
+variance: -2
+potency: 1
+duration: 10
+wild: 0
+decay: 2
+failure: 8
+type: external

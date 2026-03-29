@@ -1,0 +1,11 @@
+internal_name: health_boost_strong
+potion: health_boost
+items:
+  - alchemical_iron_ingot
+  - bedrock
+glyph: alchemy.iron
+elemental_affinity: aether
+conditions:
+  - condition: time
+    time: twilight
+count_multiplier: 4

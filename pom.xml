@@ -6,7 +6,7 @@
 
     <groupId>se.fusion1013.plugin</groupId>
     <artifactId>CobaltMagick</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <packaging>jar</packaging>
 
     <name>CobaltMagick</name>
@@ -108,6 +108,11 @@
             <id>central</id>
             <url>https://repo.maven.apache.org/maven2/</url>
         </repository>
+
+        <repository>
+            <id>fren_gor</id>
+            <url>https://nexus.frengor.com/repository/public/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -170,9 +175,8 @@
         <dependency>
             <groupId>se.fusion1013</groupId>
             <artifactId>cobaltcore</artifactId>
-            <version>1.3.0</version>
+            <version>1.6.0</version>
             <scope>provided</scope>
         </dependency>
-
     </dependencies>
 </project>

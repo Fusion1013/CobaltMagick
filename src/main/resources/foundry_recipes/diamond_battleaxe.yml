@@ -1,0 +1,22 @@
+internal_name: diamond_battleaxe
+display_name: Diamond Battleaxe
+mold: mold_axe
+pattern:
+  - "---------"
+  - "---------"
+  - "--d-f-d--"
+  - "---------"
+  - "---------"
+  - "--d---d--"
+  - "----w----"
+  - "---------"
+  - "---------"
+items:
+  w: oak_log
+  d: diamond_block
+  f: forge_dust
+pedestals:
+  w: normal
+  d: normal
+  f: recharge
+result: diamond_battleaxe

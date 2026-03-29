@@ -1,0 +1,11 @@
+internal_name: invisibility_strong
+potion: invisibility
+items:
+  - alchemical_gold_ingot
+  - bedrock
+glyph: alchemy.sun
+elemental_affinity: air
+conditions:
+  - condition: time
+    time: night
+count_multiplier: 4

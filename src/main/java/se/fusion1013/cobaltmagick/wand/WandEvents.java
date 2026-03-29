@@ -71,6 +71,8 @@ public class WandEvents implements Listener {
         ItemStack itemStack = event.getItemDrop().getItemStack();
         if (itemStack.getType() == Material.AIR) return;
 
+        if (true) return;
+
         openWandInventory(itemStack, player);
         event.setCancelled(true);
     }

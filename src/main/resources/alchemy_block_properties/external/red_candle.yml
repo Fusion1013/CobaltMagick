@@ -1,0 +1,10 @@
+internal_name: red_candle
+materials:
+  - red_candle
+variance: 6
+potency: 8
+duration: -2
+wild: 2
+decay: 4
+failure: 12
+type: external

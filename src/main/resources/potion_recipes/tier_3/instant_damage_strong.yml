@@ -1,0 +1,13 @@
+internal_name: instant_damage_strong
+potion: instant_damage
+items:
+  - alchemical_iron_ingot
+  - bedrock
+glyph: alchemy.iron
+elemental_affinity: fire
+conditions:
+  - condition: time
+    time: day
+  - condition: light
+    sky: 0
+count_multiplier: 4

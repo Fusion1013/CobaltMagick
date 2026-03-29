@@ -1,0 +1,10 @@
+internal_name: yellow_candle
+materials:
+  - yellow_candle
+variance: 4
+potency: 4
+duration: 4
+wild: 4
+decay: 4
+failure: 10
+type: external

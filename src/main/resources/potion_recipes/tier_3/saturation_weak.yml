@@ -1,0 +1,10 @@
+internal_name: saturation_weak
+potion: saturation
+items:
+  - gold_ingot
+  - bedrock
+glyph: alchemy.sun
+elemental_affinity: water
+conditions:
+  - condition: time
+    time: day

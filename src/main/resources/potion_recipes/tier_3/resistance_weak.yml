@@ -1,0 +1,15 @@
+internal_name: resistance_weak
+potion: resistance
+items:
+  - iron_ingot
+  - obsidian
+  - diamond
+  - dark_binding
+glyph: alchemy.iron
+elemental_affinity: earth
+conditions:
+  - condition: time
+    time: night
+  - condition: light
+    target_location: above_cauldron
+    sky: 15

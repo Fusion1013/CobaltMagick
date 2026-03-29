@@ -1,0 +1,13 @@
+internal_name: fire_resistance_strong
+potion: fire_resistance
+items:
+  - alchemical_tin_ingot
+  - bedrock
+glyph: alchemy.tin
+elemental_affinity: fire
+conditions:
+  - condition: time
+    time: day
+  - condition: light
+    sky: 15
+count_multiplier: 4

@@ -1,0 +1,12 @@
+internal_name: fire_resistance_weak
+potion: fire_resistance
+items:
+  - tin_ingot
+  - bedrock
+glyph: alchemy.tin
+elemental_affinity: fire
+conditions:
+  - condition: time
+    time: day
+  - condition: light
+    sky: 15

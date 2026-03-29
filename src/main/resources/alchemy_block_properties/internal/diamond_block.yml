@@ -1,0 +1,9 @@
+internal_name: diamond_block
+materials:
+  - diamond_block
+variance: -1
+potency: 5
+duration: 3
+wild: -2
+decay: 2
+type: internal

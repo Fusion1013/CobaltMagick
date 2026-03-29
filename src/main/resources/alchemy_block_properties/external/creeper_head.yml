@@ -1,0 +1,10 @@
+internal_name: creeper_head
+materials:
+  - creeper_head
+variance: 15
+potency: 8
+duration: -3
+wild: 6
+decay: 10
+failure: 30
+type: external

@@ -1,0 +1,10 @@
+internal_name: green_candle
+materials:
+  - green_candle
+variance: -4
+potency: 2
+duration: 6
+wild: 1
+decay: -2
+failure: 6
+type: external

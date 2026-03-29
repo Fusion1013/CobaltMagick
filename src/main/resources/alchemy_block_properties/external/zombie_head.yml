@@ -1,0 +1,10 @@
+internal_name: zombie_head
+materials:
+  - zombie_head
+variance: 8
+potency: 3
+duration: 5
+wild: 2
+decay: 6
+failure: 14
+type: external

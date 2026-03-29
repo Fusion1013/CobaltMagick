@@ -10,17 +10,19 @@ public class CauldronState implements IAlchemyState {
     private int duration;
     private int wild;
     private int decay;
+    private int failure;
 
-    public void update(int variance, int potency, int duration, int wild, int decay) {
+    public void update(int variance, int potency, int duration, int wild, int decay, int failure) {
         this.variance += variance;
         this.potency += potency;
         this.duration += duration;
         this.wild += wild;
         this.decay += decay;
+        this.failure += failure;
     }
 
     public void update(AlchemyBlockProperties properties) {
-        update(properties.getVariance(), properties.getPotency(), properties.getDuration(), properties.getWild(), properties.getDecay());
+        update(properties.getVariance(), properties.getPotency(), properties.getDuration(), properties.getWild(), properties.getDecay(), properties.getFailure());
     }
 
     public int getVariance() {
@@ -69,7 +71,17 @@ public class CauldronState implements IAlchemyState {
     }
 
     @Override
+    public int getFailure() {
+        return failure;
+    }
+
+    @Override
+    public void setFailure(int failure) {
+        this.failure = failure;
+    }
+
+    @Override
     public String toString() {
-        return "Variance: " + variance + ". Potency: " + potency + ". Duration: " + duration + ". Wild: " + wild + ". Decay: " + decay;
+        return "Variance: " + variance + ". Potency: " + potency + ". Duration: " + duration + ". Wild: " + wild + ". Decay: " + decay + ". Failure: " + failure;
     }
 }

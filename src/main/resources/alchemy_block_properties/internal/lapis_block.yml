@@ -1,0 +1,9 @@
+internal_name: lapis_block
+materials:
+  - lapis_block
+variance: 2
+potency: 2
+duration: 3
+wild: 3
+decay: 0
+type: internal

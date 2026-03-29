@@ -1,0 +1,17 @@
+internal_name: hero_of_the_village_weak
+potion: hero_of_the_village
+metal: silver_ingot
+binding: binding_light
+items:
+  - emerald
+glyph: alchemy.silver
+elemental_affinity: earth
+conditions:
+  - condition: time
+    time: night
+  - condition: light
+    sky: 15
+  - condition: height
+    height:
+      min: 64
+      max: 400

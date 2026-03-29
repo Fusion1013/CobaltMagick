@@ -23,7 +23,7 @@ public class ElementalVeinCondition extends AbstractCondition {
     }
 
     @Override
-    public boolean evaluate(Map<String, Object> map) {
+    protected boolean evaluateCondition(Map<String, Object> map) {
         IElementalVein vein = ElementalVeinManager.getElementalVein(veinName.getValue());
         if (vein == null) return false;
 
@@ -37,5 +37,10 @@ public class ElementalVeinCondition extends AbstractCondition {
     @Override
     public String getInternalName() {
         return "elemental_vein";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Requires elemental vein " + veinName.getValue() + " within " + distance.getValue() + " blocks";
     }
 }

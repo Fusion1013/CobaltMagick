@@ -1,0 +1,12 @@
+internal_name: absorption_weak
+potion: absorption
+metal: gold_ingot
+binding: binding_twilight
+items:
+  - sugar
+  - rabbit_foot
+glyph: alchemy.sun
+elemental_affinity: aether
+conditions:
+  - condition: time
+    time: twilight

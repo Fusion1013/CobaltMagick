@@ -1,0 +1,12 @@
+internal_name: slowness_weak
+potion: slowness
+items:
+  - lead_ingot
+  - bedrock
+glyph: alchemy.lead
+elemental_affinity: earth
+conditions:
+  - condition: time
+    time: night
+  - condition: light
+    sky: 0

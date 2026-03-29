@@ -1,0 +1,10 @@
+internal_name: wither_skeleton_skull
+materials:
+  - wither_skeleton_skull
+variance: 12
+potency: 6
+duration: 3
+wild: 4
+decay: 8
+failure: 20
+type: external

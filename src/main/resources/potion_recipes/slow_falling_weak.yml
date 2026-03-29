@@ -1,8 +1,0 @@
-internal_name: slow_falling_weak
-potion: slow_falling
-items:
-  - lead_ingot
-  - phantom_membrane
-  - feather
-glyph: alchemy.lead
-elemental_affinity: air

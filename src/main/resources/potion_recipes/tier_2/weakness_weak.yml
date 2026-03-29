@@ -1,0 +1,12 @@
+internal_name: weakness_weak
+potion: weakness
+items:
+  - iron_ingot
+  - bedrock
+glyph: alchemy.iron
+elemental_affinity: water
+conditions:
+  - condition: time
+    time: day
+  - condition: light
+    sky: 0

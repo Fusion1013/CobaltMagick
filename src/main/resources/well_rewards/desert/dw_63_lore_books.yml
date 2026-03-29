@@ -1,0 +1,31 @@
+internal_name: dw_63_lore_books
+coins: 63
+actions:
+  - action: summon
+    target_location: reward_location
+    type: item
+    summon:
+      - desert_well_1
+      - desert_well_2
+      - desert_well_3
+      - unreadable_5
+      - desert_well_4
+      - emerald_table_hermes
+  - action: particle
+    target_location: reward_location
+    center_location: true
+    type: end_rod
+    count: 5
+    x: 0.3
+    y: 0.3
+    z: 0.3
+    speed: 0
+  - action: sound
+    target_location: reward_location
+    sound: block.trial_spawner.eject_item
+    volume:
+      min: 0.8
+      max: 1.2
+    pitch:
+      min: 0.9
+      max: 1.1

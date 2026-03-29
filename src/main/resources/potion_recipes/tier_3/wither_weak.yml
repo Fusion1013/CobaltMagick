@@ -1,0 +1,10 @@
+internal_name: wither_weak
+potion: wither
+items:
+  - mercury_ingot
+  - bedrock
+glyph: alchemy.mercury
+elemental_affinity: earth
+conditions:
+  - condition: time
+    time: night

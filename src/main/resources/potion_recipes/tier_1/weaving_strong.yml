@@ -1,0 +1,18 @@
+internal_name: weaving_strong
+potion: weaving
+metal: alchemical_copper_ingot
+binding: binding_light
+items:
+  - string
+glyph: alchemy.copper
+elemental_affinity: fire
+conditions:
+  - condition: time
+    time: day
+  - condition: light
+    sky: 15
+  - condition: height
+    height:
+      min: 64
+      max: 400
+count_multiplier: 4

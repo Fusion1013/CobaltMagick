@@ -1,0 +1,9 @@
+internal_name: amethyst_block
+materials:
+  - amethyst_block
+variance: 2
+potency: 3
+duration: 2
+wild: 5
+decay: 1
+type: internal

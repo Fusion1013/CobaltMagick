@@ -1,0 +1,13 @@
+internal_name: nausea_strong
+potion: nausea
+items:
+  - alchemical_tin_ingot
+  - bedrock
+glyph: alchemy.tin
+elemental_affinity: water
+conditions:
+  - condition: time
+    time: day
+  - condition: light
+    sky: 0
+count_multiplier: 4

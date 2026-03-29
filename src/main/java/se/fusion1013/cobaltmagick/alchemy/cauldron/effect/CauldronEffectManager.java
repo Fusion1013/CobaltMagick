@@ -57,7 +57,7 @@ public class CauldronEffectManager extends Manager<CobaltMagick> {
 
         CauldronEffectUtil.playCraftingSounds(location);
 
-        Set<Vector> vectors = instance.getGlyphVectors();
+        Set<Vector> vectors = instance.getGlyphVectors(location);
         if (vectors == null) return;
 
         for (Vector vector : vectors) {

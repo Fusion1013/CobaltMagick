@@ -1,0 +1,13 @@
+internal_name: speed_weak
+potion: speed
+items:
+  - silver_ingot
+  - sugar
+  - rabbit_foot
+glyph: alchemy.silver
+elemental_affinity: air
+conditions:
+  - condition: time
+    time: night
+  - condition: light
+    sky: 15

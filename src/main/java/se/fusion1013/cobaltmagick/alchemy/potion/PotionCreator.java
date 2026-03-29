@@ -27,6 +27,7 @@ public class PotionCreator {
     private int wild = 0;
     private int decay = 0;
     private List<String> elementalAffinities = new ArrayList<>();
+    private int amount;
 
     public PotionCreator(PotionEffectType effectType) {
         this.effectType = effectType;
@@ -35,7 +36,7 @@ public class PotionCreator {
     public ItemStack getItem(Location location) {
         ItemStack potionItem = new ItemStack(Material.POTION);
 
-        int affinity = getElementalAffinityLevel(location);
+        int affinity = getElementalAffinityLevel(location, elementalAffinities);
 
         int duration = (int) ((160 + Math.max(this.duration, 1) * 40) * Math.pow(1.5, affinity)); // TODO ???
 
@@ -46,7 +47,7 @@ public class PotionCreator {
         int extraPotionsCount = (this.variance / 50) - affinity * 2;
         for (int i = 0; i < extraPotionsCount; i++) {
             PotionEffectType type = PotionUtil.getRandomInCategory(resultCategory == PotionEffectTypeCategory.HARMFUL ? PotionEffectTypeCategory.BENEFICIAL : PotionEffectTypeCategory.HARMFUL);
-            potionMeta.addCustomEffect(new PotionEffect(type, (int) (duration * 1.2f), 0), false);
+            potionMeta.addCustomEffect(new PotionEffect(type, (int) (duration * 0.2f), 0), false);
         }
 
         // WILD
@@ -70,11 +71,12 @@ public class PotionCreator {
         potionItem.setItemMeta(potionMeta);
 
         potionItem.setData(DataComponentTypes.MAX_STACK_SIZE, 8);
+        potionItem.setAmount(amount);
 
         return potionItem;
     }
 
-    private int getElementalAffinityLevel(Location location) {
+    public static int getElementalAffinityLevel(Location location, List<String> elementalAffinities) {
         int affinity = 0;
 
         for (String veinName : elementalAffinities) {
@@ -115,6 +117,11 @@ public class PotionCreator {
 
     public PotionCreator elementalAffinity(List<String> affinities) {
         this.elementalAffinities = affinities;
+        return this;
+    }
+
+    public PotionCreator amount(int amount) {
+        this.amount = amount;
         return this;
     }
 }

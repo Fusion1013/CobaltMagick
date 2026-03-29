@@ -1,0 +1,13 @@
+internal_name: hunger_strong
+potion: hunger
+items:
+  - alchemical_silver_ingot
+  - bedrock
+glyph: alchemy.silver
+elemental_affinity: fire
+conditions:
+  - condition: time
+    time: day
+  - condition: light
+    sky: 0
+count_multiplier: 4

@@ -1,0 +1,11 @@
+internal_name: instant_health_strong
+potion: instant_health
+items:
+  - alchemical_mercury_ingot
+  - bedrock
+glyph: alchemy.mercury
+elemental_affinity: aether
+conditions:
+  - condition: time
+    time: twilight
+count_multiplier: 4

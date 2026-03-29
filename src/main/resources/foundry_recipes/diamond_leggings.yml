@@ -1,0 +1,24 @@
+internal_name: diamond_leggings
+display_name: Diamond Leggings
+mold: mold_leggings
+pattern:
+  - "---------"
+  - "----d----"
+  - "---------"
+  - "----d----"
+  - "-d-l-l-d-"
+  - "----d----"
+  - "---------"
+  - "----f----"
+  - "---------"
+items:
+  w: oak_log
+  d: diamond_block
+  f: forge_dust
+  l: leather
+pedestals:
+  w: normal
+  d: normal
+  f: recharge
+  l: normal
+result: diamond_leggings

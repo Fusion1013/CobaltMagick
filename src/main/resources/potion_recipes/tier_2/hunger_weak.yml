@@ -1,0 +1,12 @@
+internal_name: hunger_weak
+potion: hunger
+items:
+  - silver_ingot
+  - bedrock
+glyph: alchemy.silver
+elemental_affinity: fire
+conditions:
+  - condition: time
+    time: day
+  - condition: light
+    sky: 0

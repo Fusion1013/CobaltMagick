@@ -1,0 +1,13 @@
+internal_name: levitation_strong
+potion: levitation
+items:
+  - alchemical_mercury_ingot
+  - bedrock
+glyph: alchemy.mercury
+elemental_affinity: air
+conditions:
+  - condition: time
+    time: night
+  - condition: light
+    sky: 0
+count_multiplier: 4

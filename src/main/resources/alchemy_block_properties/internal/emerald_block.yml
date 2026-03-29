@@ -1,0 +1,9 @@
+internal_name: emerald_block
+materials:
+  - emerald_block
+variance: -2
+potency: 3
+duration: 5
+wild: 0
+decay: 0
+type: internal

@@ -1,0 +1,11 @@
+internal_name: regeneration_strong
+potion: regeneration
+items:
+  - alchemical_tin_ingot
+  - bedrock
+glyph: alchemy.tin
+elemental_affinity: aether
+conditions:
+  - condition: time
+    time: twilight
+count_multiplier: 4

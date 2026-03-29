@@ -1,8 +1,0 @@
-internal_name: regeneration_weak
-potion: regeneration
-items:
-  - tin_ingot
-  - sugar
-  - rabbit_foot
-glyph: alchemy.tin
-elemental_affinity: aether

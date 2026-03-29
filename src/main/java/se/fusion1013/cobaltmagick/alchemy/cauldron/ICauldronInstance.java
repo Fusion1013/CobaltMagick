@@ -23,7 +23,7 @@ public interface ICauldronInstance {
 
     ICauldronRecipe getValidRecipe();
 
-    Set<Vector> getGlyphVectors();
+    Set<Vector> getGlyphVectors(Location location);
 
     void decay(Location location, int decayTotal);
 

@@ -1,0 +1,24 @@
+internal_name: diamond_chestplate
+display_name: Diamond Chestplate
+mold: mold_chestplate
+pattern:
+  - "---------"
+  - "---------"
+  - "--d---d--"
+  - "----d----"
+  - "---l-l---"
+  - "----d----"
+  - "--d---d--"
+  - "----f----"
+  - "---------"
+items:
+  w: oak_log
+  d: diamond_block
+  f: forge_dust
+  l: leather
+pedestals:
+  w: normal
+  d: normal
+  f: recharge
+  l: normal
+result: diamond_chestplate

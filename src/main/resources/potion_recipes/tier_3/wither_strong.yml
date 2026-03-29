@@ -1,0 +1,11 @@
+internal_name: wither_strong
+potion: wither
+items:
+  - alchemical_mercury_ingot
+  - bedrock
+glyph: alchemy.mercury
+elemental_affinity: earth
+conditions:
+  - condition: time
+    time: night
+count_multiplier: 4

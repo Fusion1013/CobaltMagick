@@ -1,0 +1,11 @@
+internal_name: saturation_strong
+potion: saturation
+items:
+  - alchemical_gold_ingot
+  - bedrock
+glyph: alchemy.sun
+elemental_affinity: water
+conditions:
+  - condition: time
+    time: day
+count_multiplier: 4

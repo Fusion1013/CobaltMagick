@@ -1,21 +1,12 @@
 package se.fusion1013.cobaltmagick.alchemy.elemental_veins;
 
-import com.google.gson.JsonObject;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import se.fusion1013.cobaltCore.CobaltCore;
-import se.fusion1013.cobaltCore.CobaltPlugin;
-import se.fusion1013.cobaltCore.commands.system.CommandManager;
 import se.fusion1013.cobaltCore.manager.Manager;
-import se.fusion1013.cobaltCore.manager.registry.CobaltRegistry;
-import se.fusion1013.cobaltCore.manager.registry.RegistryProviderStorage;
-import se.fusion1013.cobaltCore.util.FileUtil;
-import se.fusion1013.cobaltCore.util.IFileConstructor;
-import se.fusion1013.cobaltCore.util.INameProvider;
+import se.fusion1013.cobaltCore.manager.registry.FileLoadedRegistry;
 import se.fusion1013.cobaltmagick.CobaltMagick;
 
 import java.util.Collection;
@@ -25,27 +16,14 @@ import java.util.Random;
 public class ElementalVeinManager extends Manager<CobaltMagick> {
 
     private static final Random random = new Random();
-    private static final CobaltRegistry<IElementalVein> ELEMENTAL_VEINS = new CobaltRegistry<>();
-
-    public static void loadElementalVeins(CobaltPlugin plugin, boolean overwrite) {
-        FileUtil.loadFilesInto(plugin, "elemental_veins/", new RegistryProviderStorage<>(ELEMENTAL_VEINS), new IFileConstructor() {
-            @Override
-            public INameProvider createFrom(YamlConfiguration yaml) {
-                return ElementalVeinLoader.loadElementalVein(yaml);
+    private static final FileLoadedRegistry<IElementalVein> ELEMENTAL_VEINS = new FileLoadedRegistry<>(
+            CobaltMagick.getInstance(),
+            "elemental_veins",
+            ElementalVein::new,
+            ElementalVein::new,
+            (p, e) -> {
             }
-
-            @Override
-            public INameProvider createFrom(JsonObject json) {
-                return ElementalVeinLoader.loadElementalVein(json);
-            }
-        }, overwrite);
-    }
-
-    public static void reloadElementalVeins() {
-        for (CobaltPlugin plugin : CobaltCore.getRegisteredCobaltPlugins()) {
-            loadElementalVeins(plugin, true);
-        }
-    }
+    );
 
     public ElementalVeinManager(CobaltMagick plugin) {
         super(plugin);
@@ -53,10 +31,8 @@ public class ElementalVeinManager extends Manager<CobaltMagick> {
 
     @Override
     public void reload() {
-        Bukkit.getScheduler().runTaskTimer(CobaltMagick.getInstance(), this::displayElementalVeins, 0, 1);
-
-        reloadElementalVeins();
-        CommandManager.registerReloadMethod("elemental_veins", ElementalVeinManager::reloadElementalVeins, ELEMENTAL_VEINS::getNames);
+//        Bukkit.getScheduler().runTaskTimer(CobaltMagick.getInstance(), this::displayElementalVeins, 0, 1);
+        ELEMENTAL_VEINS.reload();
     }
 
     @Override

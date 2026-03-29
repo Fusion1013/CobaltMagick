@@ -22,4 +22,8 @@ public interface IAlchemyState {
 
     void setDecay(int decay);
 
+    int getFailure();
+
+    void setFailure(int failure);
+
 }

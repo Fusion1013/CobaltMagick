@@ -1,8 +1,0 @@
-internal_name: jump_boost_weak
-potion: jump_boost
-items:
-  - tin_ingot
-  - rabbit_foot
-  - sugar
-glyph: alchemy.tin
-elemental_affinity: air

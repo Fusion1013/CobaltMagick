@@ -1,0 +1,11 @@
+internal_name: glowing_weak
+potion: glowing
+metal: lead_ingot
+binding: binding_twilight
+items:
+  - glowstone_dust
+glyph: alchemy.lead
+elemental_affinity: aether
+conditions:
+  - condition: time
+    time: twilight

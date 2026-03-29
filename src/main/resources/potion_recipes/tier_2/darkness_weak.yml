@@ -1,0 +1,12 @@
+internal_name: darkness_weak
+potion: bad_omen
+items:
+  - copper_ingot
+  - bedrock
+glyph: alchemy.copper
+elemental_affinity: water
+conditions:
+  - condition: time
+    time: day
+  - condition: light
+    sky: 0

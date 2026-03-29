@@ -1,0 +1,11 @@
+internal_name: instant_health_weak
+potion: instant_health
+items:
+  - mercury_ingot
+  - sugar
+  - rabbit_foot
+glyph: alchemy.mercury
+elemental_affinity: aether
+conditions:
+  - condition: time
+    time: twilight

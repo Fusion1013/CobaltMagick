@@ -1,0 +1,13 @@
+internal_name: blindness_weak
+potion: blindness
+items:
+  - iron_ingot
+  - fermented_spider_eye
+  - ender_pearl
+glyph: alchemy.iron
+elemental_affinity: air
+conditions:
+  - condition: time
+    time: night
+  - condition: light
+    sky: 0

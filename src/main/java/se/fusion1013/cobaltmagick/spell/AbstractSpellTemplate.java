@@ -1,5 +1,7 @@
 package se.fusion1013.cobaltmagick.spell;
 
+import com.google.gson.JsonObject;
+import org.apache.commons.lang3.NotImplementedException;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -47,6 +49,10 @@ public abstract class AbstractSpellTemplate implements ISpellTemplate {
         SpellTemplate spell = new SpellTemplate(internalName);
         spell.loadInternalData(yaml);
         return spell;
+    }
+
+    public static ISpellTemplate load(JsonObject json) {
+        throw new NotImplementedException();
     }
 
     @Override

@@ -1,0 +1,10 @@
+internal_name: white_candle
+materials:
+  - white_candle
+variance: -8
+potency: 2
+duration: 2
+wild: -6
+decay: -3
+failure: 4
+type: external

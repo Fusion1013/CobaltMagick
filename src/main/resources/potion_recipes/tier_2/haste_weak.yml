@@ -1,0 +1,12 @@
+internal_name: haste_weak
+potion: haste
+items:
+  - gold_ingot
+  - bedrock
+glyph: alchemy.sun
+elemental_affinity: earth
+conditions:
+  - condition: time
+    time: night
+  - condition: light
+    sky: 15

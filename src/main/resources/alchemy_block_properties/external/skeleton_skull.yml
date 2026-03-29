@@ -1,0 +1,10 @@
+internal_name: skeleton_skull
+materials:
+  - skeleton_skull
+variance: 6
+potency: 4
+duration: 2
+wild: 2
+decay: 5
+failure: 12
+type: external

@@ -1,0 +1,6 @@
+internal_name: dw_51_open_door
+coins: 51
+actions:
+  - action: set_block
+    target_location: door_location
+    block: redstone_block

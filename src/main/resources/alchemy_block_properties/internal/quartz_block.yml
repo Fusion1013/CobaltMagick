@@ -1,0 +1,15 @@
+internal_name: quartz_block
+materials:
+  - quartz_block
+  - chiseled_quartz_block
+  - quartz_bricks
+  - quartz_pillar
+  - smooth_quartz
+  - quartz_slab
+  - smooth_quartz_slab
+variance: -4
+potency: 2
+duration: 2
+wild: -3
+decay: -2
+type: internal

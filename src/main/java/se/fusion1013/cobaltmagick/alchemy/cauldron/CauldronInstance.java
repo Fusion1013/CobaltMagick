@@ -88,6 +88,7 @@ public final class CauldronInstance implements ICauldronInstance {
         if (glyph == null) return null;
 
         ICauldronRecipe[] recipes = CauldronManager.getRecipesMatchingGlyph(glyph);
+
         for (ICauldronRecipe recipe : recipes) {
             boolean isValid = recipe.validateConditions(location) && recipe.validateItems(heldItems);
             if (isValid) return recipe;
@@ -97,15 +98,15 @@ public final class CauldronInstance implements ICauldronInstance {
     }
 
     @Override
-    public Set<Vector> getGlyphVectors() {
+    public Set<Vector> getGlyphVectors(Location location) {
         GlyphData glyphData = getGlyph();
         if (glyphData == null) return new HashSet<>();
-        return GlyphValidatorUtil.getGlyphOffsets(glyphData.category() + "." + glyphData.name());
+        return GlyphValidatorUtil.getValidGlyphOffsets(location, glyphData.category() + "." + glyphData.name());
     }
 
     @Override
     public void decay(Location location, int decayTotal) {
-        GlyphUtil.decay(location, getGlyphVectors(), decayTotal);
+        GlyphUtil.decay(location, getGlyphVectors(location), decayTotal);
     }
 
     @Override

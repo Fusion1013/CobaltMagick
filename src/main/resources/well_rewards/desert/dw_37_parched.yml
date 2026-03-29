@@ -1,0 +1,33 @@
+internal_name: dw_37_parched
+coins: 37
+actions:
+  - action: location
+    target_location: center_top_location
+    type: random_area
+    count: 14
+    radius: 4
+    actions:
+      - action: delay
+        delay:
+          min: 0
+          max: 30
+        actions:
+          - action: summon
+            type: entity
+            summon: parched
+          - action: particle
+            center_location: true
+            type: end_rod
+            count: 5
+            x: 0.3
+            y: 0.3
+            z: 0.3
+            speed: 0
+          - action: sound
+            sound: block.trial_spawner.spawn_mob
+            volume:
+              min: 0.8
+              max: 1.2
+            pitch:
+              min: 0.9
+              max: 1.1

@@ -1,0 +1,12 @@
+internal_name: glowing_strong
+potion: glowing
+metal: alchemical_lead_ingot
+binding: binding_twilight
+items:
+  - glowstone_dust
+glyph: alchemy.lead
+elemental_affinity: aether
+conditions:
+  - condition: time
+    time: twilight
+count_multiplier: 4

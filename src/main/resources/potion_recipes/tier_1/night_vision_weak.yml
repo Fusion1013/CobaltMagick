@@ -1,0 +1,11 @@
+internal_name: night_vision_weak
+potion: night_vision
+metal: silver_ingot
+binding: binding_twilight
+items:
+  - ender_pearl
+glyph: alchemy.silver
+elemental_affinity: aether
+conditions:
+  - condition: time
+    time: twilight

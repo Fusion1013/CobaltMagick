@@ -1,0 +1,10 @@
+internal_name: strength_weak
+potion: strength
+items:
+  - gold_ingot
+  - bedrock
+glyph: alchemy.sun
+elemental_affinity: fire
+conditions:
+  - condition: time
+    time: day

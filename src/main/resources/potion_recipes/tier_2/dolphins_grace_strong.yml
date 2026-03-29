@@ -1,0 +1,13 @@
+internal_name: dolphins_grace_strong
+potion: dolphins_grace
+items:
+  - alchemical_silver_ingot
+  - bedrock
+glyph: alchemy.silver
+elemental_affinity: water
+conditions:
+  - condition: time
+    time: day
+  - condition: light
+    sky: 15
+count_multiplier: 4

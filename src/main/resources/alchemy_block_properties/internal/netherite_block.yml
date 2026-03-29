@@ -1,0 +1,9 @@
+internal_name: netherite_block
+materials:
+  - netherite_block
+variance: 1
+potency: 6
+duration: 3
+wild: 1
+decay: 1
+type: internal

@@ -1,0 +1,14 @@
+internal_name: bad_omen_strong
+potion: bad_omen
+metal: alchemical_gold_ingot
+binding: binding_dark
+items:
+  - bedrock
+glyph: alchemy.mercury
+elemental_affinity: fire
+conditions:
+  - condition: time
+    time: day
+  - condition: light
+    sky: 0
+count_multiplier: 4

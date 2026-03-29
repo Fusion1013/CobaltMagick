@@ -1,0 +1,24 @@
+internal_name: diamond_helmet
+display_name: Diamond Helmet
+mold: mold_helmet
+pattern:
+  - "---------"
+  - "----f----"
+  - "---------"
+  - "--d---d--"
+  - "---l-l---"
+  - "--d---d--"
+  - "---------"
+  - "----d----"
+  - "---------"
+items:
+  w: oak_log
+  d: diamond_block
+  f: forge_dust
+  l: leather
+pedestals:
+  w: normal
+  d: normal
+  f: recharge
+  l: normal
+result: diamond_helmet

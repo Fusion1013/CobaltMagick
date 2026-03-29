@@ -1,0 +1,17 @@
+internal_name: infested_weak
+potion: infested
+metal: copper_ingot
+binding: binding_dark
+items:
+  - stone
+glyph: alchemy.copper
+elemental_affinity: earth
+conditions:
+  - condition: time
+    time: night
+  - condition: light
+    sky: 0
+  - condition: height
+    height:
+      min: -64
+      max: 0

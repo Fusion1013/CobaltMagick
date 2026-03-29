@@ -13,6 +13,7 @@ public class MagickItemPropertyManager extends Manager<CobaltMagick> {
     @Override
     public void reload() {
         ItemPropertyManager.register("item_wand", ItemWandProperty::new);
+        ItemPropertyManager.register("foundry_template", ItemFoundryTemplateProperty::new);
     }
 
     @Override

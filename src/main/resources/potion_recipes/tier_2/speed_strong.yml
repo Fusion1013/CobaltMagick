@@ -1,0 +1,13 @@
+internal_name: speed_strong
+potion: speed
+items:
+  - alchemical_silver_ingot
+  - bedrock
+glyph: alchemy.silver
+elemental_affinity: air
+conditions:
+  - condition: time
+    time: night
+  - condition: light
+    sky: 15
+count_multiplier: 4

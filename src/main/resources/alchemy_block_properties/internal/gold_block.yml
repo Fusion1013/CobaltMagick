@@ -1,0 +1,9 @@
+internal_name: gold_block
+materials:
+  - gold_block
+variance: 3
+potency: 5
+duration: 1
+wild: 3
+decay: 2
+type: internal

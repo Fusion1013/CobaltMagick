@@ -1,0 +1,22 @@
+internal_name: diamond_spear
+display_name: Diamond Spear
+mold: mold_spear
+pattern:
+  - "---------"
+  - "----d----"
+  - "---------"
+  - "--d-d-d--"
+  - "---------"
+  - "----w----"
+  - "----w----"
+  - "----f----"
+  - "---------"
+items:
+  w: oak_log
+  d: diamond_block
+  f: forge_dust
+pedestals:
+  w: normal
+  d: normal
+  f: recharge
+result: diamond_spear

@@ -1,0 +1,13 @@
+internal_name: haste_strong
+potion: haste
+items:
+  - alchemical_gold_ingot
+  - bedrock
+glyph: alchemy.sun
+elemental_affinity: earth
+conditions:
+  - condition: time
+    time: night
+  - condition: light
+    sky: 15
+count_multiplier: 4

@@ -1,0 +1,22 @@
+internal_name: diamond_sword
+display_name: Diamond Sword
+mold: mold_blade
+pattern:
+  - "---------"
+  - "----w----"
+  - "--d---d--"
+  - "---------"
+  - "---------"
+  - "---------"
+  - "--d---d--"
+  - "----f----"
+  - "---------"
+items:
+  w: oak_log
+  d: diamond_block
+  f: forge_dust
+pedestals:
+  w: normal
+  d: normal
+  f: recharge
+result: diamond_sword

@@ -1,0 +1,9 @@
+internal_name: coal_block
+materials:
+  - coal_block
+variance: 5
+potency: 2
+duration: 0
+wild: 4
+decay: 1
+type: internal

@@ -1,0 +1,13 @@
+internal_name: levitation_weak
+potion: levitation
+items:
+  - mercury_ingot
+  - feather
+  - phantom_membrane
+glyph: alchemy.mercury
+elemental_affinity: air
+conditions:
+  - condition: time
+    time: night
+  - condition: light
+    sky: 0

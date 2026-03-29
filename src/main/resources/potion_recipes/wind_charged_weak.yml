@@ -1,8 +1,0 @@
-internal_name: wind_charged_weak
-potion: wind_charged
-items:
-  - copper_ingot
-  - wind_charge
-  - snowball
-glyph: alchemy.copper
-elemental_affinity: air

@@ -1,0 +1,12 @@
+internal_name: instant_damage_weak
+potion: instant_damage
+items:
+  - iron_ingot
+  - bedrock
+glyph: alchemy.iron
+elemental_affinity: fire
+conditions:
+  - condition: time
+    time: day
+  - condition: light
+    sky: 0

@@ -1,8 +1,0 @@
-internal_name: absorption_strong
-potion: absorption
-items:
-  - alchemical_gold_ingot
-  - sugar
-  - rabbit_foot
-glyph: alchemy.sun
-elemental_affinity: aether

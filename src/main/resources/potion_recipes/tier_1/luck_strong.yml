@@ -1,0 +1,12 @@
+internal_name: luck_strong
+potion: luck
+metal: alchemical_copper_ingot
+binding: binding_twilight
+items:
+  - emerald
+glyph: alchemy.copper
+elemental_affinity: aether
+conditions:
+  - condition: time
+    time: twilight
+count_multiplier: 4

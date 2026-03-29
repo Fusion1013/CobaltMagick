@@ -1,0 +1,9 @@
+internal_name: ancient_debris
+materials:
+  - ancient_debris
+variance: -3
+potency: 4
+duration: 2
+wild: -2
+decay: -2
+type: internal

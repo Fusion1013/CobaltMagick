@@ -1,0 +1,24 @@
+internal_name: copper_block
+materials:
+  - copper_block
+  - exposed_copper
+  - weathered_copper
+  - oxidized_copper
+  - waxed_copper_block
+  - waxed_exposed_copper
+  - waxed_weathered_copper
+  - waxed_oxidized_copper
+  - cut_copper
+  - exposed_cut_copper
+  - weathered_cut_copper
+  - oxidized_cut_copper
+  - waxed_cut_copper
+  - waxed_exposed_cut_copper
+  - waxed_weathered_cut_copper
+  - waxed_oxidized_cut_copper
+variance: 0
+potency: 1
+duration: 1
+wild: 0
+decay: 0
+type: internal

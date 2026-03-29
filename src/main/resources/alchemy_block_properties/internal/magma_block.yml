@@ -1,0 +1,9 @@
+internal_name: magma_block
+materials:
+  - magma_block
+variance: 3
+potency: 4
+duration: 1
+wild: 2
+decay: 4
+type: internal

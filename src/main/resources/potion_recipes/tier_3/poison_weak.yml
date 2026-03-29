@@ -1,0 +1,12 @@
+internal_name: poison_weak
+potion: poison
+items:
+  - lead_ingot
+  - bedrock
+glyph: alchemy.lead
+elemental_affinity: fire
+conditions:
+  - condition: time
+    time: day
+  - condition: light
+    sky: 15

@@ -1,0 +1,13 @@
+internal_name: absorption_strong
+potion: absorption
+metal: alchemical_gold_ingot
+binding: binding_twilight
+items:
+  - sugar
+  - rabbit_foot
+glyph: alchemy.sun
+elemental_affinity: aether
+conditions:
+  - condition: time
+    time: twilight
+count_multiplier: 4

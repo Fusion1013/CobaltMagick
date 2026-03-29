@@ -1,0 +1,13 @@
+internal_name: slowness_strong
+potion: slowness
+items:
+  - alchemical_lead_ingot
+  - bedrock
+glyph: alchemy.lead
+elemental_affinity: earth
+conditions:
+  - condition: time
+    time: night
+  - condition: light
+    sky: 0
+count_multiplier: 4

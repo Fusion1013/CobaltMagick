@@ -8,12 +8,14 @@ import se.fusion1013.cobaltmagick.alchemy.cauldron.CauldronManager;
 import se.fusion1013.cobaltmagick.alchemy.cauldron.effect.CauldronEffectManager;
 import se.fusion1013.cobaltmagick.alchemy.elemental_veins.ElementalVeinManager;
 import se.fusion1013.cobaltmagick.alchemy.potion.PotionManager;
-import se.fusion1013.cobaltmagick.commands.AlchemyCommand;
-import se.fusion1013.cobaltmagick.commands.DoorCommand;
-import se.fusion1013.cobaltmagick.commands.SpellCommand;
+import se.fusion1013.cobaltmagick.commands.*;
 import se.fusion1013.cobaltmagick.components.actions.MagickActionManager;
 import se.fusion1013.cobaltmagick.components.conditions.MagickConditionManager;
+import se.fusion1013.cobaltmagick.foundry.FoundryManager;
 import se.fusion1013.cobaltmagick.item.properties.MagickItemPropertyManager;
+import se.fusion1013.cobaltmagick.pedestal.PedestalManager;
+import se.fusion1013.cobaltmagick.special.misc.ArrowRainManager;
+import se.fusion1013.cobaltmagick.special.well.WellManager;
 import se.fusion1013.cobaltmagick.spell.SpellManager;
 import se.fusion1013.cobaltmagick.wand.WandManager;
 
@@ -68,6 +70,10 @@ public final class CobaltMagick extends JavaPlugin implements CobaltPlugin {
         SpellCommand.register();
         DoorCommand.register();
         AlchemyCommand.register();
+        WellCommand.register();
+        PedestalCommand.register();
+        FoundryCommand.register();
+        ArrowRainCommand.register();
     }
 
     // ----- MANAGERS -----
@@ -87,6 +93,10 @@ public final class CobaltMagick extends JavaPlugin implements CobaltPlugin {
         CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), CauldronManager.class);
         CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), CauldronEffectManager.class);
         CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), ElementalVeinManager.class);
+        CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), WellManager.class);
+        CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), FoundryManager.class);
+        CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), PedestalManager.class);
+        CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), ArrowRainManager.class);
     }
 
     // ----- LISTENERS -----

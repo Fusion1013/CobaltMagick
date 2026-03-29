@@ -1,0 +1,10 @@
+internal_name: black_candle
+materials:
+  - black_candle
+variance: 10
+potency: 3
+duration: 0
+wild: 6
+decay: 2
+failure: 10
+type: external

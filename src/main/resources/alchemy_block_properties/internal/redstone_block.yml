@@ -1,0 +1,9 @@
+internal_name: redstone_block
+materials:
+  - redstone_block
+variance: 2
+potency: 1
+duration: 5
+wild: 0
+decay: 1
+type: internal

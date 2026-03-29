@@ -1,0 +1,17 @@
+internal_name: oozing_weak
+potion: oozing
+metal: lead_ingot
+binding: binding_light
+items:
+  - slime_ball
+glyph: alchemy.lead
+elemental_affinity: fire
+conditions:
+  - condition: time
+    time: day
+  - condition: light
+    sky: 15
+  - condition: height
+    height:
+      min: 64
+      max: 400

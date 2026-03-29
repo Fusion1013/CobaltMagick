@@ -1,0 +1,12 @@
+internal_name: dolphins_grace_weak
+potion: dolphins_grace
+items:
+  - silver_ingot
+  - bedrock
+glyph: alchemy.silver
+elemental_affinity: water
+conditions:
+  - condition: time
+    time: day
+  - condition: light
+    sky: 15

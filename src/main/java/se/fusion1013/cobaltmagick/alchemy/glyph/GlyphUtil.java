@@ -24,7 +24,6 @@ public class GlyphUtil {
             if (properties == null) continue;
             state.update(properties);
         }
-        CobaltMagick.getInstance().getLogger().info(state.toString());
     }
 
     public static void decay(Location cauldronLocation, Set<Vector> glyphVectors, int decay) {

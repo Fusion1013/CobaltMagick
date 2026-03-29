@@ -1,0 +1,13 @@
+internal_name: slow_falling_strong
+potion: slow_falling
+items:
+  - alchemical_lead_ingot
+  - bedrock
+glyph: alchemy.lead
+elemental_affinity: air
+conditions:
+  - condition: time
+    time: night
+  - condition: light
+    sky: 15
+count_multiplier: 4

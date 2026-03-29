@@ -1,0 +1,24 @@
+internal_name: diamond_boots
+display_name: Diamond Boots
+mold: mold_boots
+pattern:
+  - "---------"
+  - "----f----"
+  - "---------"
+  - "---d-d---"
+  - "---------"
+  - "---d-d---"
+  - "---------"
+  - "----l----"
+  - "---------"
+items:
+  w: oak_log
+  d: diamond_block
+  f: forge_dust
+  l: leather
+pedestals:
+  w: normal
+  d: normal
+  f: recharge
+  l: normal
+result: diamond_boots
