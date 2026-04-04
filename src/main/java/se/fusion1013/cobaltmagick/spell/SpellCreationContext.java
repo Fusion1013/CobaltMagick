@@ -11,10 +11,11 @@ import se.fusion1013.cobaltCore.util.HexUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import static se.fusion1013.cobaltmagick.spell.SpellManager.SPELL_KEY;
+import static se.fusion1013.cobaltmagick.spell.SpellManager.SPELL_ID_KEY;
 
 public class SpellCreationContext {
 
+    private final String internalName;
     public ItemStack itemStack;
     public ItemMeta itemMeta;
     public PersistentDataContainer persistent;
@@ -22,7 +23,8 @@ public class SpellCreationContext {
     public final NamespacedKey itemKey;
     public final NamespacedKey spellKey;
 
-    public SpellCreationContext(NamespacedKey itemKey, NamespacedKey spellKey) {
+    public SpellCreationContext(String internalName, NamespacedKey itemKey, NamespacedKey spellKey) {
+        this.internalName = internalName;
         itemStack = new ItemStack(Material.CLOCK);
         itemMeta = itemStack.getItemMeta();
         persistent = itemMeta.getPersistentDataContainer();
@@ -33,7 +35,7 @@ public class SpellCreationContext {
     public ItemStack finalizeItem() {
         persistent.set(itemKey, PersistentDataType.INTEGER, 1);
         persistent.set(spellKey, PersistentDataType.INTEGER, 1);
-        persistent.set(SPELL_KEY, PersistentDataType.INTEGER, 1);
+        persistent.set(SPELL_ID_KEY, PersistentDataType.STRING, internalName);
 
         itemStack.setItemMeta(itemMeta);
 

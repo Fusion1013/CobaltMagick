@@ -29,19 +29,42 @@ public class WandEvents implements Listener {
             return;
 
         ItemStack is = player.getInventory().getItemInMainHand();
-        if (is.getType() == Material.AIR || event.getAction() == Action.PHYSICAL) {
+        if (is.getType() == Material.AIR || event.getAction() == Action.PHYSICAL) return;
+
+        WandState wandState = WandState.getWand(is);
+        if (wandState == null) return;
+        if (uuidList.contains(player.getUniqueId())) {
+            CobaltMagick.getInstance().getLogger().info("!!");
+            uuidList.remove(player.getUniqueId());
         }
 
-        // TODO
-//        Wand wand = Wand.getWand(is);
-//        if (wand == null) return;
-//        if (uuidList.contains(player.getUniqueId())) {
-//            CobaltMagick.getInstance().getLogger().info("!!");
-//            uuidList.remove(player.getUniqueId());
-//            return;
-//        }
+        castSpells(wandState, player, event.getAction());
+    }
+
+    private void castSpells(WandState wandState, Player p, Action action) {
+
+        if (wandState.isOnRecharge() || wandState.isOnCastDelay()) {
+            p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 1, 1); // TODO: Replace with something else (Soundmanager ???)
+            return;
+        }
+
+        if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
+            wandState.castSpells(p);
+            return;
+        }
+
+        wandState.castSpells(p);
+
+//        new BukkitRunnable() {
+//            int timer = 4;
 //
-//        castSpells(wand, player, event.getAction());
+//            @Override
+//            public void run() {
+//                timer--;
+//                wandState.castSpells(p);
+//                if (timer == 0) cancel();
+//            }
+//        }.runTaskTimer(CobaltMagick.getInstance(), 0, 1);
     }
 
     @EventHandler
@@ -71,7 +94,7 @@ public class WandEvents implements Listener {
         ItemStack itemStack = event.getItemDrop().getItemStack();
         if (itemStack.getType() == Material.AIR) return;
 
-        if (true) return;
+        if (WandState.getWand(itemStack) == null) return;
 
         openWandInventory(itemStack, player);
         event.setCancelled(true);

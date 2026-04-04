@@ -8,7 +8,9 @@ There are currently over 50 spells and more are in development.
 
 ## Using Magick
 
-Spellcasting in Magick is done with the wand item. By placing spells inside the wand inventory, you can create powerful spell combinations. For example, the spell Spark Bolt doesn't do much on its own, but when paired with a Freeze Charge it creates a cold aura on hit that freezes enemies.
+Spellcasting in Magick is done with the wandState item. By placing spells inside the wandState inventory, you can create
+powerful spell combinations. For example, the spell Spark Bolt doesn't do much on its own, but when paired with a Freeze
+Charge it creates a cold aura on hit that freezes enemies.
 
 ![SpellcastExample1](https://user-images.githubusercontent.com/35802522/146466563-9c1af587-013a-4620-bd24-5e4c289f2737.gif)
 
@@ -21,6 +23,7 @@ Detailed description of the spellcasting system coming soon...
 Coming soon...
 
 ## Credits
+
 - Lead Developer: Fusion1013
 - Contributing Artists:
-  - Wilux
+    - Wilux

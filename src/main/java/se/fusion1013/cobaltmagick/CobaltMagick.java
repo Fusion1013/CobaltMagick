@@ -74,6 +74,7 @@ public final class CobaltMagick extends JavaPlugin implements CobaltPlugin {
         PedestalCommand.register();
         FoundryCommand.register();
         ArrowRainCommand.register();
+        WandCommand.register();
     }
 
     // ----- MANAGERS -----

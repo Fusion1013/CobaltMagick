@@ -1,3 +1,5 @@
 {
-  "prefix.magick": "&7[<g:#75f4ff:#0047AB>Magick&7] "
+  "prefix.magick": "&7[<g:#75f4ff:#0047AB>Magick&7] ",
+  "commands.magick.wand.info.header": "&7Wand Statistics",
+  "commands.magick.wand.info.item": "&7 - %title%: &z%value%"
 }
