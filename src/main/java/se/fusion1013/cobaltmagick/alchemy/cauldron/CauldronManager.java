@@ -59,7 +59,7 @@ public class CauldronManager extends Manager<CobaltMagick> implements Listener {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        if (!event.getPlayer().isOp() && !CONFIG.getBoolean("enable_alchemy")) return;
+//        if (!event.getPlayer().isOp() && !CONFIG.getBoolean("enable_alchemy")) return;
 
         Block block = event.getBlock();
         if (block.getType() != Material.WATER_CAULDRON) return;
@@ -71,7 +71,7 @@ public class CauldronManager extends Manager<CobaltMagick> implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (!event.getPlayer().isOp() && !CONFIG.getBoolean("enable_alchemy")) return;
+//        if (!event.getPlayer().isOp() && !CONFIG.getBoolean("enable_alchemy")) return;
 
         if (event.getHand() == EquipmentSlot.OFF_HAND) return;
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;

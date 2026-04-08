@@ -1,19 +1,19 @@
-package se.fusion1013.cobaltmagick.special.misc;
+package se.fusion1013.cobaltmagick.special.enchantments.arrow_rain;
 
-import org.bukkit.*;
+import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Particle;
+import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Arrow;
+import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Projectile;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import se.fusion1013.cobaltCore.manager.Manager;
 import se.fusion1013.cobaltCore.shape.ShapeUtils;
 import se.fusion1013.cobaltmagick.CobaltMagick;
 
@@ -21,22 +21,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public class ArrowRainManager extends Manager<CobaltMagick> implements Listener {
+public class ArrowRainUtil {
 
     private static final Random random = new Random();
     private static final NamespacedKey ARROW_RAIN_ENTITY_TAG = new NamespacedKey(CobaltMagick.getInstance(), "arrow_rain");
-    private static final NamespacedKey ARROW_RAIN_FLAME_ENTITY_TAG = new NamespacedKey(CobaltMagick.getInstance(), "arrow_rain_flame");
 
-    public ArrowRainManager(CobaltMagick plugin) {
-        super(plugin);
-    }
+    // ##%%##%%## ON ENTITY SHOOT BOW ##%%##%%## //
 
-    @EventHandler
-    public void playerShootEvent(EntityShootBowEvent event) {
+    public static void onEntityShootBow(EntityShootBowEvent event) {
         Map<Enchantment, Integer> enchantments = event.getBow().getEnchantments();
         boolean hasEnchantment = false;
-        int flameLevel = event.getBow().getEnchantmentLevel(Enchantment.FLAME);
+
         int level = 0;
+
         for (Enchantment enchantment : enchantments.keySet()) {
             if (enchantment.getKey().getKey().equalsIgnoreCase("arrow_rain")) {
                 hasEnchantment = true;
@@ -46,26 +43,30 @@ public class ArrowRainManager extends Manager<CobaltMagick> implements Listener 
         if (!hasEnchantment) return;
 
         Entity projectile = event.getProjectile();
-        if (projectile instanceof Arrow arrow) {
+        if (projectile instanceof Projectile arrow) {
             PersistentDataContainer persistentDataContainer = arrow.getPersistentDataContainer();
             persistentDataContainer.set(ARROW_RAIN_ENTITY_TAG, PersistentDataType.INTEGER, level);
-            if (flameLevel > 0) persistentDataContainer.set(ARROW_RAIN_FLAME_ENTITY_TAG, PersistentDataType.INTEGER, 1);
         }
     }
 
-    @EventHandler
-    public void onProjectileHitBlock(ProjectileHitEvent event) {
+    // ##%%##%%## PROJECTILE HIT BLOCK ##%%##%%## //
+
+    public static void onProjectileHitBlock(ProjectileHitEvent event) {
         Projectile projectile = event.getEntity();
         PersistentDataContainer persistentDataContainer = projectile.getPersistentDataContainer();
         if (!persistentDataContainer.has(ARROW_RAIN_ENTITY_TAG)) return;
 
-        int level = persistentDataContainer.get(ARROW_RAIN_ENTITY_TAG, PersistentDataType.INTEGER);
+        int level = persistentDataContainer.getOrDefault(ARROW_RAIN_ENTITY_TAG, PersistentDataType.INTEGER, 0);
+        if (level == 0) return;
 
-        start(projectile.getLocation(), 3 + level, level, 60, 8 + level * 2, persistentDataContainer.has(ARROW_RAIN_FLAME_ENTITY_TAG));
+        start(projectile, projectile.getLocation(), 3 + level, level, 60, 8 + level * 2);
         projectile.remove();
     }
 
-    public static void start(Location location, double radius, int arrowsPerTick, int durationInTicks, double height, boolean flame) {
+    public static void start(Projectile parentProjectile, Location location, double radius, int arrowsPerTick, int durationInTicks, double height) {
+
+        parentProjectile.getPersistentDataContainer().remove(ARROW_RAIN_ENTITY_TAG);
+
         int waitTime = durationInTicks / 3;
         Location arrowLocation = location.clone().add(0, height, 0);
         World world = arrowLocation.getWorld();
@@ -91,9 +92,13 @@ public class ArrowRainManager extends Manager<CobaltMagick> implements Listener 
 
                     for (int i = 0; i < arrowsPerTick; i++) {
                         Location arrow = arrowLocation.clone().add(randomPointInCircle(0, 0, radius));
-                        world.spawn(arrow, Arrow.class, a -> {
-                            if (flame) a.setFireTicks(20 * 60);
-                        });
+
+                        Entity copy = parentProjectile.copy(arrow);
+                        copy.setVelocity(new Vector(0, -1, 0));
+
+                        if (copy instanceof AbstractArrow copiedProjectile) {
+                            copiedProjectile.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
+                        }
                         world.spawnParticle(Particle.CRIT, arrow, 4, .1, .1, .1, 0.1);
                     }
                 }
@@ -131,13 +136,4 @@ public class ArrowRainManager extends Manager<CobaltMagick> implements Listener 
         }
     }
 
-    @Override
-    public void reload() {
-        Bukkit.getPluginManager().registerEvents(this, CobaltMagick.getInstance());
-    }
-
-    @Override
-    public void disable() {
-
-    }
 }

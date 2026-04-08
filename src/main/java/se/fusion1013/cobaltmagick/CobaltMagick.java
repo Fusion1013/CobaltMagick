@@ -1,5 +1,6 @@
 package se.fusion1013.cobaltmagick;
 
+import fr.skytasul.glowingentities.GlowingEntities;
 import org.bukkit.plugin.java.JavaPlugin;
 import se.fusion1013.cobaltCore.CobaltCore;
 import se.fusion1013.cobaltCore.CobaltPlugin;
@@ -14,7 +15,7 @@ import se.fusion1013.cobaltmagick.components.conditions.MagickConditionManager;
 import se.fusion1013.cobaltmagick.foundry.FoundryManager;
 import se.fusion1013.cobaltmagick.item.properties.MagickItemPropertyManager;
 import se.fusion1013.cobaltmagick.pedestal.PedestalManager;
-import se.fusion1013.cobaltmagick.special.misc.ArrowRainManager;
+import se.fusion1013.cobaltmagick.special.enchantments.MiscEnchantmentManager;
 import se.fusion1013.cobaltmagick.special.well.WellManager;
 import se.fusion1013.cobaltmagick.spell.SpellManager;
 import se.fusion1013.cobaltmagick.wand.WandManager;
@@ -22,6 +23,7 @@ import se.fusion1013.cobaltmagick.wand.WandManager;
 public final class CobaltMagick extends JavaPlugin implements CobaltPlugin {
 
     private static CobaltMagick INSTANCE;
+    private static GlowingEntities GLOWING_ENTITIES;
 
     public CobaltMagick() {
         INSTANCE = this;
@@ -44,15 +46,21 @@ public final class CobaltMagick extends JavaPlugin implements CobaltPlugin {
     @Override
     public void onEnable() {
         CobaltCore.getInstance().registerCobaltPlugin(this);
+        GLOWING_ENTITIES = new GlowingEntities(this);
     }
 
     @Override
     public void onDisable() {
         CobaltCore.getInstance().disableCobaltPlugin(this);
+        GLOWING_ENTITIES.disable();
     }
 
     public static CobaltMagick getInstance() {
         return INSTANCE;
+    }
+
+    public static GlowingEntities getGlowingEntities() {
+        return GLOWING_ENTITIES;
     }
 
     @Override
@@ -97,7 +105,7 @@ public final class CobaltMagick extends JavaPlugin implements CobaltPlugin {
         CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), WellManager.class);
         CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), FoundryManager.class);
         CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), PedestalManager.class);
-        CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), ArrowRainManager.class);
+        CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), MiscEnchantmentManager.class);
     }
 
     // ----- LISTENERS -----

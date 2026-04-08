@@ -1,16 +1,17 @@
 package se.fusion1013.cobaltmagick.commands;
 
 import dev.jorel.commandapi.CommandAPICommand;
-import dev.jorel.commandapi.arguments.BooleanArgument;
 import dev.jorel.commandapi.arguments.DoubleArgument;
 import dev.jorel.commandapi.arguments.IntegerArgument;
 import dev.jorel.commandapi.arguments.LocationArgument;
 import dev.jorel.commandapi.executors.CommandArguments;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Projectile;
 import se.fusion1013.cobaltCore.util.CommandUtil;
 import se.fusion1013.cobaltmagick.CobaltMagick;
-import se.fusion1013.cobaltmagick.special.misc.ArrowRainManager;
+import se.fusion1013.cobaltmagick.special.enchantments.arrow_rain.ArrowRainUtil;
 
 public class ArrowRainCommand {
 
@@ -22,7 +23,6 @@ public class ArrowRainCommand {
                 .withArguments(new IntegerArgument("arrowsPerTick"))
                 .withArguments(new IntegerArgument("durationInTicks"))
                 .withArguments(new DoubleArgument("height"))
-                .withArguments(new BooleanArgument("flame"))
                 .executes(ArrowRainCommand::arrowRain)
                 .register();
     }
@@ -33,8 +33,8 @@ public class ArrowRainCommand {
         int arrowsPerTick = (int) args.get("arrowsPerTick");
         int durationInTicks = (int) args.get("durationInTicks");
         double height = (double) args.get("height");
-        boolean flame = (boolean) args.get("flame");
-        ArrowRainManager.start(location, radius, arrowsPerTick, durationInTicks, height, flame);
+        Projectile projectile = location.getWorld().spawn(location, Arrow.class);
+        ArrowRainUtil.start(projectile, location, radius, arrowsPerTick, durationInTicks, height);
     }
 
 }
