@@ -15,6 +15,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 import se.fusion1013.cobaltCore.components.conditions.NearbyBlockCondition;
+import se.fusion1013.cobaltCore.logger.RuleLogger;
 import se.fusion1013.cobaltCore.manager.Manager;
 import se.fusion1013.cobaltCore.particle.effects.glyph.GlyphData;
 import se.fusion1013.cobaltmagick.CobaltMagick;
@@ -134,52 +135,61 @@ public class CauldronManager extends Manager<CobaltMagick> implements Listener {
     }
 
     private boolean finalizeCauldronRecipe(Location location, ICauldronInstance instance, PlayerInteractEvent event) {
+        RuleLogger ruleLogger = RuleLogger.create("Finalize Cauldron Recipe");
+
         ICauldronRecipe recipe = instance.getValidRecipe();
+        if (recipe == null) return false;
         CobaltMagick.getInstance().getLogger().info("Player " + event.getPlayer().getName() + " finished potion recipe " + recipe.getInternalName());
 
-        CauldronState state = createCauldronState(location, instance, recipe);
+        CauldronState state = createCauldronState(location, instance, recipe, ruleLogger);
         if (state == null) return false;
 
 
         if (state.getFailure() != 0 && random.nextInt(0, 100) < Math.min(98, state.getFailure())) {
+            ruleLogger.logMessage("Failure triggered");
             location.getWorld().createExplosion(location, 8, true);
         } else {
-            recipe.execute(location, state, instance.getLowestItemCount());
+            ruleLogger.evaluate("Execute", () -> recipe.execute(location, state, instance.getLowestItemCount(), ruleLogger));
         }
 
         decayBlocks(location, instance, state, recipe.getElementalAffinity());
 
         CAULDRON_INSTANCES.remove(location);
 
+        ruleLogger.print(CobaltMagick.getInstance());
         return true;
     }
 
-    public static CauldronState createCauldronState(Location location) {
+    public static CauldronState createCauldronState(Location location, RuleLogger ruleLogger) {
         ICauldronInstance instance = CAULDRON_INSTANCES.get(location);
         if (instance == null) return null;
-        return createCauldronState(location, instance, instance.getValidRecipe());
+        return createCauldronState(location, instance, instance.getValidRecipe(), ruleLogger);
     }
 
-    private static CauldronState createCauldronState(Location location, ICauldronInstance instance, ICauldronRecipe recipe) {
+    private static CauldronState createCauldronState(Location location, ICauldronInstance instance, ICauldronRecipe recipe, RuleLogger ruleLogger) {
         if (recipe == null) return null;
         CauldronState state = new CauldronState();
 
-        GlyphUtil.addGlyphToCauldronState(location, instance.getGlyphVectors(location), state);
-        addNearbyBlocksToState(location, state);
+        ruleLogger.evaluate("Add Glyph To Cauldron State", () ->
+                GlyphUtil.addGlyphToCauldronState(location, instance.getGlyphVectors(location), state)
+        );
+        if (recipe.allowExternalBlocks()) {
+            ruleLogger.evaluate("Add Nearby Blocks To State", () -> addNearbyBlocksToState(location, state, ruleLogger));
+        }
 
         CobaltMagick.getInstance().getLogger().info(state.toString());
 
         return state;
     }
 
-    private static void addNearbyBlocksToState(Location location, CauldronState state) {
+    private static void addNearbyBlocksToState(Location location, CauldronState state, RuleLogger ruleLogger) {
         for (AlchemyBlockProperties property : AlchemyManager.getProperties()) {
             if (property.isInternal()) continue;
-            addNearbyBlocksToState(location, state, property);
+            addNearbyBlocksToState(location, state, property, ruleLogger);
         }
     }
 
-    private static void addNearbyBlocksToState(Location location, CauldronState state, AlchemyBlockProperties property) {
+    private static void addNearbyBlocksToState(Location location, CauldronState state, AlchemyBlockProperties property, RuleLogger ruleLogger) {
         for (Material material : property.getMaterials()) {
             int count = NearbyBlockCondition.findNearbyBlocks(location, location.getWorld(), new Vector(8, 8, 8), material);
             for (int i = 0; i < count; i++) {

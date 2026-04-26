@@ -1,4 +1,4 @@
-package se.fusion1013.cobaltmagick.special.enchantments.arrow_rain;
+package se.fusion1013.cobaltmagick.enchantments.arrow_rain;
 
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;

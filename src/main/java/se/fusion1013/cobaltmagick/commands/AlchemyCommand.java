@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import se.fusion1013.cobaltCore.components.conditions.ICondition;
 import se.fusion1013.cobaltCore.item.CustomItemManager;
+import se.fusion1013.cobaltCore.logger.RuleLogger;
 import se.fusion1013.cobaltCore.util.CommandUtil;
 import se.fusion1013.cobaltmagick.CobaltMagick;
 import se.fusion1013.cobaltmagick.alchemy.AlchemyManager;
@@ -68,11 +69,13 @@ public class AlchemyCommand {
                 .withPermission(CommandUtil.getPermissionString(CobaltMagick.getInstance(), "alchemy.debug.cauldron"))
                 .withArguments(new LocationArgument("block", LocationType.BLOCK_POSITION))
                 .executesPlayer((sender, args) -> {
+                    RuleLogger ruleLogger = RuleLogger.create("Debug Cauldron Command");
                     Location location = (Location) args.get("block");
-                    CauldronState state = CauldronManager.createCauldronState(location);
+                    CauldronState state = CauldronManager.createCauldronState(location, ruleLogger);
                     if (state == null) return;
 
                     sender.sendMessage(state.toString());
+                    ruleLogger.print(CobaltMagick.getInstance());
                 });
     }
 

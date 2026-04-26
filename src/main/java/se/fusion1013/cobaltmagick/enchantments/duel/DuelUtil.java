@@ -1,4 +1,4 @@
-package se.fusion1013.cobaltmagick.special.enchantments.duel;
+package se.fusion1013.cobaltmagick.enchantments.duel;
 
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;

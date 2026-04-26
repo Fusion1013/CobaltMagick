@@ -11,7 +11,7 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Projectile;
 import se.fusion1013.cobaltCore.util.CommandUtil;
 import se.fusion1013.cobaltmagick.CobaltMagick;
-import se.fusion1013.cobaltmagick.special.enchantments.arrow_rain.ArrowRainUtil;
+import se.fusion1013.cobaltmagick.enchantments.arrow_rain.ArrowRainUtil;
 
 public class ArrowRainCommand {
 

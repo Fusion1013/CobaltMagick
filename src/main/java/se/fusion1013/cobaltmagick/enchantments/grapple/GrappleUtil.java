@@ -1,4 +1,4 @@
-package se.fusion1013.cobaltmagick.special.enchantments.grapple;
+package se.fusion1013.cobaltmagick.enchantments.grapple;
 
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;
@@ -14,7 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import se.fusion1013.cobaltmagick.CobaltMagick;
-import se.fusion1013.cobaltmagick.special.enchantments.pull.PullUtil;
+import se.fusion1013.cobaltmagick.enchantments.pull.PullUtil;
 
 import java.util.Random;
 

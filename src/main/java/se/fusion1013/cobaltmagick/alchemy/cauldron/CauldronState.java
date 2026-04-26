@@ -22,7 +22,13 @@ public class CauldronState implements IAlchemyState {
     }
 
     public void update(AlchemyBlockProperties properties) {
-        update(properties.getVariance(), properties.getPotency(), properties.getDuration(), properties.getWild(), properties.getDecay(), properties.getFailure());
+        update(properties.getVariance(),
+                properties.getPotency(),
+                properties.getDuration(),
+                properties.getWild(),
+                properties.getDecay(),
+                properties.getFailure()
+        );
     }
 
     public int getVariance() {

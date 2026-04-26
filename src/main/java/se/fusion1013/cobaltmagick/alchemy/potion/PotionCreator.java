@@ -10,6 +10,8 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionEffectTypeCategory;
+import se.fusion1013.cobaltCore.logger.RuleLogger;
+import se.fusion1013.cobaltCore.logger.SetValue;
 import se.fusion1013.cobaltCore.util.PotionUtil;
 import se.fusion1013.cobaltmagick.alchemy.elemental_veins.ElementalVeinManager;
 import se.fusion1013.cobaltmagick.alchemy.elemental_veins.IElementalVein;
@@ -17,10 +19,14 @@ import se.fusion1013.cobaltmagick.alchemy.elemental_veins.ParametricSpline2D;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class PotionCreator {
 
+    private static final Random random = new Random();
     private final PotionEffectType effectType;
+    private final RuleLogger ruleLogger;
+
     private int variance = 0;
     private int potency = 0;
     private int duration = 0;
@@ -29,37 +35,58 @@ public class PotionCreator {
     private List<String> elementalAffinities = new ArrayList<>();
     private int amount;
 
-    public PotionCreator(PotionEffectType effectType) {
+    private final SetValue<Integer> affinity;
+    private final SetValue<Integer> resultingDuration;
+    private final SetValue<Integer> varianceExtraPotionsCount;
+    private final SetValue<Integer> wildPotionsCount;
+    private final SetValue<Integer> resultingAmplifier;
+
+    public PotionCreator(PotionEffectType effectType, RuleLogger ruleLogger) {
         this.effectType = effectType;
+        this.ruleLogger = ruleLogger;
+
+        this.affinity = new SetValue<>("affinity", ruleLogger);
+        this.resultingDuration = new SetValue<>("resultingDuration", ruleLogger);
+        this.varianceExtraPotionsCount = new SetValue<>("varianceExtraPotionsCount", ruleLogger);
+        this.wildPotionsCount = new SetValue<>("wildPotionsCount", ruleLogger);
+        this.resultingAmplifier = new SetValue<>("resultingAmplifier", ruleLogger);
     }
 
     public ItemStack getItem(Location location) {
+        ruleLogger.logMessage("Creating Potion Item");
+
         ItemStack potionItem = new ItemStack(Material.POTION);
 
-        int affinity = getElementalAffinityLevel(location, elementalAffinities);
+        affinity.setValue(getElementalAffinityLevel(location, elementalAffinities));
 
-        int duration = (int) ((160 + Math.max(this.duration, 1) * 40) * Math.pow(1.5, affinity)); // TODO ???
+        resultingDuration.setValue((int) ((160 + Math.max(this.duration, 1) * 40) * Math.pow(1.5, affinity.getValue()))); // TODO ???
+        if (affinity.getValue() <= 0 && resultingDuration.getValue() > 40) {
+            resultingDuration.setValue(random.nextInt((int) (resultingDuration.getValue() * 0.3), resultingDuration.getValue()));
+        }
 
         PotionEffectTypeCategory resultCategory = effectType.getCategory();
         PotionMeta potionMeta = (PotionMeta) potionItem.getItemMeta();
 
         // VARIANCE
-        int extraPotionsCount = (this.variance / 50) - affinity * 2;
-        for (int i = 0; i < extraPotionsCount; i++) {
+        varianceExtraPotionsCount.setValue((this.variance / 50) - affinity.getValue() * 2);
+        for (int i = 0; i < varianceExtraPotionsCount.getValue(); i++) {
             PotionEffectType type = PotionUtil.getRandomInCategory(resultCategory == PotionEffectTypeCategory.HARMFUL ? PotionEffectTypeCategory.BENEFICIAL : PotionEffectTypeCategory.HARMFUL);
-            potionMeta.addCustomEffect(new PotionEffect(type, (int) (duration * 0.2f), 0), false);
+            potionMeta.addCustomEffect(new PotionEffect(type, (int) (resultingDuration.getValue() * 0.2f), 0), false);
+            ruleLogger.logMessage("Added Variance Potion Effect: " + type.key().key());
         }
 
         // WILD
-        int wildPotionsCount = Math.max(0, this.wild) / 50;
-        for (int i = 0; i < wildPotionsCount; i++) {
+        wildPotionsCount.setValue(Math.max(0, this.wild) / 50);
+        for (int i = 0; i < wildPotionsCount.getValue(); i++) {
             PotionEffectType type = PotionUtil.getRandomInCategory(resultCategory == PotionEffectTypeCategory.HARMFUL ? PotionEffectTypeCategory.HARMFUL : PotionEffectTypeCategory.BENEFICIAL);
-            potionMeta.addCustomEffect(new PotionEffect(type, (int) (duration * 0.2f), 0), false);
+            potionMeta.addCustomEffect(new PotionEffect(type, (int) (resultingDuration.getValue() * 0.2f), 0), false);
+            ruleLogger.logMessage("Added Wild Potion Effect: " + type.key().key());
         }
 
-        int amplifier = Math.max(0, this.potency) / 100;
+        resultingAmplifier.setValue(Math.max(0, this.potency) / 100);
 
-        potionMeta.addCustomEffect(new PotionEffect(effectType, duration, amplifier), false);
+        potionMeta.addCustomEffect(new PotionEffect(effectType, resultingDuration.getValue(), resultingAmplifier.getValue()), false);
+        ruleLogger.logMessage("Added Potion Effect: " + effectType.key().key());
 
         potionMeta.customName(
                 Component.text("Potion of ")

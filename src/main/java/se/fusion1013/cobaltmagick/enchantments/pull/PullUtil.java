@@ -1,4 +1,4 @@
-package se.fusion1013.cobaltmagick.special.enchantments.pull;
+package se.fusion1013.cobaltmagick.enchantments.pull;
 
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;

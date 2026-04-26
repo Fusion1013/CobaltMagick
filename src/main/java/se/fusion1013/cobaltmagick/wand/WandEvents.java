@@ -42,29 +42,12 @@ public class WandEvents implements Listener {
     }
 
     private void castSpells(WandState wandState, Player p, Action action) {
-
         if (wandState.isOnRecharge() || wandState.isOnCastDelay()) {
             p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 1, 1); // TODO: Replace with something else (Soundmanager ???)
             return;
         }
 
-        if (action == Action.LEFT_CLICK_AIR || action == Action.LEFT_CLICK_BLOCK) {
-            wandState.castSpells(p);
-            return;
-        }
-
         wandState.castSpells(p);
-
-//        new BukkitRunnable() {
-//            int timer = 4;
-//
-//            @Override
-//            public void run() {
-//                timer--;
-//                wandState.castSpells(p);
-//                if (timer == 0) cancel();
-//            }
-//        }.runTaskTimer(CobaltMagick.getInstance(), 0, 1);
     }
 
     @EventHandler

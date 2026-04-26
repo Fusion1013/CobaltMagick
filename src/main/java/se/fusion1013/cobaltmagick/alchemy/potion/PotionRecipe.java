@@ -2,16 +2,17 @@ package se.fusion1013.cobaltmagick.alchemy.potion;
 
 import com.google.gson.JsonObject;
 import io.papermc.paper.persistence.PersistentDataContainerView;
-import org.apache.commons.lang3.NotImplementedException;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 import se.fusion1013.cobaltCore.CobaltCore;
 import se.fusion1013.cobaltCore.components.conditions.ICondition;
 import se.fusion1013.cobaltCore.item.CustomItemManager;
+import se.fusion1013.cobaltCore.logger.RuleLogger;
 import se.fusion1013.cobaltCore.particle.effects.glyph.GlyphData;
 import se.fusion1013.cobaltCore.particle.effects.glyph.GlyphManager;
 import se.fusion1013.cobaltCore.variable.ConditionVariable;
@@ -20,6 +21,7 @@ import se.fusion1013.cobaltCore.variable.PotionTypeVariable;
 import se.fusion1013.cobaltCore.variable.StringVariable;
 import se.fusion1013.cobaltmagick.CobaltMagick;
 import se.fusion1013.cobaltmagick.alchemy.AlchemyManager;
+import se.fusion1013.cobaltmagick.alchemy.cauldron.AbstractCauldronRecipe;
 import se.fusion1013.cobaltmagick.alchemy.cauldron.CauldronState;
 import se.fusion1013.cobaltmagick.alchemy.cauldron.effect.CauldronEffectUtil;
 import se.fusion1013.cobaltmagick.alchemy.elemental_veins.IElementalAffinity;
@@ -28,38 +30,31 @@ import se.fusion1013.cobaltmagick.util.AdvancementUtil;
 
 import java.util.*;
 
-public class PotionRecipe implements IPotionRecipe, IElementalAffinity {
+public class PotionRecipe extends AbstractCauldronRecipe implements IPotionRecipe, IElementalAffinity {
 
-    private static final Random random = new Random();
-
-    private final StringVariable internalName = new StringVariable("internal_name");
     private final PotionTypeVariable effectType = new PotionTypeVariable("potion");
     private final StringVariable metalItem = new StringVariable("metal");
     private final StringVariable bindingItem = new StringVariable("binding");
     private final StringVariable requiredItems = new StringVariable("items");
     private final StringVariable glyph = new StringVariable("glyph");
-    private final StringVariable elementalAffinities = new StringVariable("elemental_affinity");
     private final ConditionVariable conditions = new ConditionVariable("conditions");
     private final IntVariable amountMultiplier = new IntVariable("count_multiplier", 1);
 
-    public static IPotionRecipe create(ConfigurationSection yaml) {
-        PotionRecipe recipe = new PotionRecipe();
-        recipe.load(yaml);
-        return recipe;
+    public PotionRecipe(YamlConfiguration yaml) {
+        super(yaml);
+        load(yaml);
     }
 
-    public static IPotionRecipe create(JsonObject json) {
-        throw new NotImplementedException();
+    public PotionRecipe(JsonObject json) {
+        super(json);
     }
 
     private void load(ConfigurationSection yaml) {
-        internalName.load(yaml);
         effectType.load(yaml);
         metalItem.load(yaml);
         bindingItem.load(yaml);
         requiredItems.load(yaml);
         glyph.load(yaml);
-        elementalAffinities.load(yaml);
         conditions.load(yaml);
         amountMultiplier.load(yaml);
     }
@@ -67,11 +62,6 @@ public class PotionRecipe implements IPotionRecipe, IElementalAffinity {
     @Override
     public String getGlyph() {
         return glyph.getValue();
-    }
-
-    @Override
-    public String[] getElementalAffinities() {
-        return elementalAffinities.getValueList().toArray(new String[0]);
     }
 
     public boolean validateConditions(Location cauldronLocation) {
@@ -137,13 +127,18 @@ public class PotionRecipe implements IPotionRecipe, IElementalAffinity {
     }
 
     @Override
-    public void execute(Location location, CauldronState state, int count) {
-        ItemStack item = getPotionItem(this, state, location);
+    public void execute(Location location, CauldronState state, int count, RuleLogger ruleLogger) {
+        ItemStack item = ruleLogger.evaluate("Get Potion Item", () -> getPotionItem(this, state, location, ruleLogger));
         item.setAmount(count);
 
         CauldronEffectUtil.animateCauldron(location, item, CobaltMagick.getInstance());
 
         grantAdvancement(location);
+    }
+
+    @Override
+    public boolean allowExternalBlocks() {
+        return false;
     }
 
     private void grantAdvancement(Location location) {
@@ -159,8 +154,8 @@ public class PotionRecipe implements IPotionRecipe, IElementalAffinity {
     }
 
 
-    private ItemStack getPotionItem(IPotionRecipe recipe, CauldronState state, Location location) {
-        PotionCreator potionCreator = new PotionCreator(recipe.getPotionEffectType())
+    private ItemStack getPotionItem(IPotionRecipe recipe, CauldronState state, Location location, RuleLogger ruleLogger) {
+        PotionCreator potionCreator = new PotionCreator(recipe.getPotionEffectType(), ruleLogger)
                 .variance(state.getVariance())
                 .potency(state.getPotency())
                 .duration(state.getDuration())
@@ -168,12 +163,7 @@ public class PotionRecipe implements IPotionRecipe, IElementalAffinity {
                 .decay(state.getDecay())
                 .elementalAffinity(elementalAffinities.getValueList())
                 .amount(amountMultiplier.getValue());
-        return potionCreator.getItem(location);
-    }
-
-    @Override
-    public String getInternalName() {
-        return internalName.getValue();
+        return ruleLogger.evaluate("Get Item", () -> potionCreator.getItem(location));
     }
 
     @Override
@@ -222,11 +212,6 @@ public class PotionRecipe implements IPotionRecipe, IElementalAffinity {
     @Override
     public ICondition[] getConditions() {
         return conditions.getValueList().toArray(new ICondition[0]);
-    }
-
-    @Override
-    public IElementalAffinity getElementalAffinity() {
-        return this;
     }
 
 }

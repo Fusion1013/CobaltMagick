@@ -12,8 +12,8 @@ public class PotionManager extends Manager<CobaltMagick> implements Listener {
     private static final FileLoadedRegistry<IPotionRecipe> POTION_RECIPES = new FileLoadedRegistry<>(
             CobaltMagick.getInstance(),
             "potion_recipes",
-            PotionRecipe::create,
-            PotionRecipe::create,
+            PotionRecipe::new,
+            PotionRecipe::new,
             (p, r) -> {
             }
     );

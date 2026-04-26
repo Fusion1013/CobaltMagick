@@ -1,4 +1,4 @@
-package se.fusion1013.cobaltmagick.special.enchantments.cold_aura;
+package se.fusion1013.cobaltmagick.enchantments.cold_aura;
 
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;

@@ -1,4 +1,4 @@
-package se.fusion1013.cobaltmagick.special.enchantments.cold_aura;
+package se.fusion1013.cobaltmagick.enchantments.cold_aura;
 
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;

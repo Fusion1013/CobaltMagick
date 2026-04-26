@@ -1,4 +1,4 @@
-package se.fusion1013.cobaltmagick.special.enchantments.cold_snap;
+package se.fusion1013.cobaltmagick.enchantments.cold_snap;
 
 import io.papermc.paper.registry.RegistryAccess;
 import io.papermc.paper.registry.RegistryKey;

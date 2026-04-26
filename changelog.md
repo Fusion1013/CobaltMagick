@@ -1,3 +1,7 @@
+**CobaltMagick Version 0.0.4**
+
+- **UPDATE:** CobaltMagick is no longer a hidden plugin
+
 **CobaltMagick Version 0.0.1**
 
 - **FEATURE:** Introduced the Alchemy Potion System. Currently locked for non-operators

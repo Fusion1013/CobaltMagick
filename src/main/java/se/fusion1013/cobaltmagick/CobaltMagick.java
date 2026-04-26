@@ -9,13 +9,15 @@ import se.fusion1013.cobaltmagick.alchemy.cauldron.CauldronManager;
 import se.fusion1013.cobaltmagick.alchemy.cauldron.effect.CauldronEffectManager;
 import se.fusion1013.cobaltmagick.alchemy.elemental_veins.ElementalVeinManager;
 import se.fusion1013.cobaltmagick.alchemy.potion.PotionManager;
+import se.fusion1013.cobaltmagick.alchemy.transmutation.TransmutationManager;
 import se.fusion1013.cobaltmagick.commands.*;
 import se.fusion1013.cobaltmagick.components.actions.MagickActionManager;
 import se.fusion1013.cobaltmagick.components.conditions.MagickConditionManager;
+import se.fusion1013.cobaltmagick.enchantments.EnchantmentManager;
 import se.fusion1013.cobaltmagick.foundry.FoundryManager;
 import se.fusion1013.cobaltmagick.item.properties.MagickItemPropertyManager;
 import se.fusion1013.cobaltmagick.pedestal.PedestalManager;
-import se.fusion1013.cobaltmagick.special.enchantments.MiscEnchantmentManager;
+import se.fusion1013.cobaltmagick.special.chess.ChessManager;
 import se.fusion1013.cobaltmagick.special.well.WellManager;
 import se.fusion1013.cobaltmagick.spell.SpellManager;
 import se.fusion1013.cobaltmagick.wand.WandManager;
@@ -63,11 +65,6 @@ public final class CobaltMagick extends JavaPlugin implements CobaltPlugin {
         return GLOWING_ENTITIES;
     }
 
-    @Override
-    public boolean isHidden() {
-        return true;
-    }
-
     // ----- COMMANDS -----
 
     /**
@@ -83,6 +80,8 @@ public final class CobaltMagick extends JavaPlugin implements CobaltPlugin {
         FoundryCommand.register();
         ArrowRainCommand.register();
         WandCommand.register();
+        CycleCommand.register();
+        ChessCommand.register();
     }
 
     // ----- MANAGERS -----
@@ -105,7 +104,9 @@ public final class CobaltMagick extends JavaPlugin implements CobaltPlugin {
         CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), WellManager.class);
         CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), FoundryManager.class);
         CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), PedestalManager.class);
-        CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), MiscEnchantmentManager.class);
+        CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), EnchantmentManager.class);
+        CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), TransmutationManager.class);
+        CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), ChessManager.class);
     }
 
     // ----- LISTENERS -----
