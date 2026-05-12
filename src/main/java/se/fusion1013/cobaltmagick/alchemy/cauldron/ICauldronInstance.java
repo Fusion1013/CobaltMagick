@@ -21,7 +21,7 @@ public interface ICauldronInstance {
 
     int clearHeldItems();
 
-    ICauldronRecipe getValidRecipe();
+    ICauldronRecipe getValidRecipe(ItemStack finalItem);
 
     Set<Vector> getGlyphVectors(Location location);
 

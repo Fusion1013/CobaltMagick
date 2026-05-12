@@ -24,6 +24,11 @@ public class TransmutationRecipe extends AbstractCauldronRecipe implements ITran
     }
 
     @Override
+    public boolean validateFinalItem(ItemStack itemStack) {
+        return false;
+    }
+
+    @Override
     public String getGlyph() {
         return "";
     }

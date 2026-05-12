@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
+import se.fusion1013.cobaltCore.CobaltCore;
 import se.fusion1013.cobaltCore.components.conditions.NearbyBlockCondition;
 import se.fusion1013.cobaltCore.logger.RuleLogger;
 import se.fusion1013.cobaltCore.manager.Manager;
@@ -25,6 +26,7 @@ import se.fusion1013.cobaltmagick.alchemy.glyph.GlyphUtil;
 import se.fusion1013.cobaltmagick.alchemy.potion.PotionCreator;
 import se.fusion1013.cobaltmagick.alchemy.potion.PotionManager;
 import se.fusion1013.cobaltmagick.alchemy.properties.AlchemyBlockProperties;
+import se.fusion1013.cobaltmagick.alchemy.ritual.RitualManager;
 
 import java.util.*;
 
@@ -60,8 +62,6 @@ public class CauldronManager extends Manager<CobaltMagick> implements Listener {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-//        if (!event.getPlayer().isOp() && !CONFIG.getBoolean("enable_alchemy")) return;
-
         Block block = event.getBlock();
         if (block.getType() != Material.WATER_CAULDRON) return;
 
@@ -72,8 +72,6 @@ public class CauldronManager extends Manager<CobaltMagick> implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-//        if (!event.getPlayer().isOp() && !CONFIG.getBoolean("enable_alchemy")) return;
-
         if (event.getHand() == EquipmentSlot.OFF_HAND) return;
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 
@@ -119,7 +117,14 @@ public class CauldronManager extends Manager<CobaltMagick> implements Listener {
         world.spawnParticle(Particle.POOF, location.toCenterLocation(), 5, .2, .2, .2, 0);
 
         if (stackToInsert.getType() == Material.GLASS_BOTTLE) {
-            boolean success = finalizeCauldronRecipe(location, cauldronInstance, event);
+            boolean success = finalizeCauldronRecipe(location, cauldronInstance, event, stackToInsert);
+            clearCauldron(location, cauldronInstance, success);
+            return;
+        }
+
+        boolean alchemyFinalizer = stackToInsert.getPersistentDataContainer().has(new NamespacedKey(CobaltCore.getInstance(), "alchemy_finalizer"));
+        if (alchemyFinalizer) {
+            boolean success = finalizeCauldronRecipe(location, cauldronInstance, event, stackToInsert);
             clearCauldron(location, cauldronInstance, success);
             return;
         }
@@ -134,11 +139,12 @@ public class CauldronManager extends Manager<CobaltMagick> implements Listener {
         return newCauldronInstance;
     }
 
-    private boolean finalizeCauldronRecipe(Location location, ICauldronInstance instance, PlayerInteractEvent event) {
+    private boolean finalizeCauldronRecipe(Location location, ICauldronInstance instance, PlayerInteractEvent event, ItemStack finalItem) {
         RuleLogger ruleLogger = RuleLogger.create("Finalize Cauldron Recipe");
 
-        ICauldronRecipe recipe = instance.getValidRecipe();
+        ICauldronRecipe recipe = instance.getValidRecipe(finalItem);
         if (recipe == null) return false;
+
         CobaltMagick.getInstance().getLogger().info("Player " + event.getPlayer().getName() + " finished potion recipe " + recipe.getInternalName());
 
         CauldronState state = createCauldronState(location, instance, recipe, ruleLogger);
@@ -160,10 +166,10 @@ public class CauldronManager extends Manager<CobaltMagick> implements Listener {
         return true;
     }
 
-    public static CauldronState createCauldronState(Location location, RuleLogger ruleLogger) {
+    public static CauldronState createCauldronState(Location location, RuleLogger ruleLogger, ItemStack finalItem) {
         ICauldronInstance instance = CAULDRON_INSTANCES.get(location);
         if (instance == null) return null;
-        return createCauldronState(location, instance, instance.getValidRecipe(), ruleLogger);
+        return createCauldronState(location, instance, instance.getValidRecipe(finalItem), ruleLogger);
     }
 
     private static CauldronState createCauldronState(Location location, ICauldronInstance instance, ICauldronRecipe recipe, RuleLogger ruleLogger) {
@@ -228,6 +234,7 @@ public class CauldronManager extends Manager<CobaltMagick> implements Listener {
     public static List<ICauldronRecipe> getCauldronRecipes() {
         List<ICauldronRecipe> recipes = new ArrayList<>();
         recipes.addAll(Arrays.stream(PotionManager.getInstance().getRecipes()).toList());
+        recipes.addAll(Arrays.stream(RitualManager.getInstance().getRecipes()).toList());
         return recipes;
     }
 

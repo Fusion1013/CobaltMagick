@@ -1,0 +1,9 @@
+internal_name: weather
+glyph: alchemy.sun
+elemental_affinity: air
+items:
+  - lapis_lazuli
+actions:
+  - action: weather
+    rain: 36000
+    thunder: 12000

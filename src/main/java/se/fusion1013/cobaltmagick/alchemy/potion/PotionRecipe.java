@@ -6,6 +6,7 @@ import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -47,6 +48,11 @@ public class PotionRecipe extends AbstractCauldronRecipe implements IPotionRecip
 
     public PotionRecipe(JsonObject json) {
         super(json);
+    }
+
+    @Override
+    public boolean validateFinalItem(ItemStack itemStack) {
+        return itemStack.getType() == Material.GLASS_BOTTLE;
     }
 
     private void load(ConfigurationSection yaml) {
@@ -130,8 +136,21 @@ public class PotionRecipe extends AbstractCauldronRecipe implements IPotionRecip
     public void execute(Location location, CauldronState state, int count, RuleLogger ruleLogger) {
         ItemStack item = ruleLogger.evaluate("Get Potion Item", () -> getPotionItem(this, state, location, ruleLogger));
         item.setAmount(count);
+        World world = location.getWorld();
 
-        CauldronEffectUtil.animateCauldron(location, item, CobaltMagick.getInstance());
+        CauldronEffectUtil.animateCauldron(location, (center) -> {
+            // Final burst effect
+            world.spawnParticle(Particle.FLASH, center.clone().add(0, 2.5, 0), 1, Color.WHITE);
+            world.spawnParticle(Particle.END_ROD, center.clone().add(0, 2.5, 0), 10, .1, .1, .1, 0);
+            world.playSound(center, Sound.ENTITY_EVOKER_CAST_SPELL, 1f, 1.2f);
+
+            Item dropped = world.spawn(center.clone().add(0, 2, 0), Item.class, spawnedItem -> {
+                spawnedItem.setItemStack(item.clone());
+                spawnedItem.setGravity(false);
+                spawnedItem.setGlowing(true);
+                spawnedItem.setVelocity(new Vector());
+            });
+        }, CobaltMagick.getInstance());
 
         grantAdvancement(location);
     }

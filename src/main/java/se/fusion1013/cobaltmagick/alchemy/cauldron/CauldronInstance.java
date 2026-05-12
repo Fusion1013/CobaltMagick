@@ -83,14 +83,14 @@ public final class CauldronInstance implements ICauldronInstance {
     }
 
     @Override
-    public ICauldronRecipe getValidRecipe() {
+    public ICauldronRecipe getValidRecipe(ItemStack finalItem) {
         GlyphData glyph = getGlyph();
         if (glyph == null) return null;
 
         ICauldronRecipe[] recipes = CauldronManager.getRecipesMatchingGlyph(glyph);
 
         for (ICauldronRecipe recipe : recipes) {
-            boolean isValid = recipe.validateConditions(location) && recipe.validateItems(heldItems);
+            boolean isValid = recipe.validateConditions(location) && recipe.validateItems(heldItems) && recipe.validateFinalItem(finalItem);
             if (isValid) return recipe;
         }
 

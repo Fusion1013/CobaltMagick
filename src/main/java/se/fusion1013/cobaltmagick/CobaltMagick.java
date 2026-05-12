@@ -9,6 +9,7 @@ import se.fusion1013.cobaltmagick.alchemy.cauldron.CauldronManager;
 import se.fusion1013.cobaltmagick.alchemy.cauldron.effect.CauldronEffectManager;
 import se.fusion1013.cobaltmagick.alchemy.elemental_veins.ElementalVeinManager;
 import se.fusion1013.cobaltmagick.alchemy.potion.PotionManager;
+import se.fusion1013.cobaltmagick.alchemy.ritual.RitualManager;
 import se.fusion1013.cobaltmagick.alchemy.transmutation.TransmutationManager;
 import se.fusion1013.cobaltmagick.commands.*;
 import se.fusion1013.cobaltmagick.components.actions.MagickActionManager;
@@ -107,6 +108,7 @@ public final class CobaltMagick extends JavaPlugin implements CobaltPlugin {
         CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), EnchantmentManager.class);
         CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), TransmutationManager.class);
         CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), ChessManager.class);
+        CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), RitualManager.class);
     }
 
     // ----- LISTENERS -----

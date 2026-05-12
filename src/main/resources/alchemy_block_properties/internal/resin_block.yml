@@ -1,0 +1,11 @@
+internal_name: resin_block
+materials:
+  - chiseled_resin_bricks
+  - resin_bricks
+variance: 0
+potency: 0
+duration: 0
+wild: 0
+decay: 0
+failure: 25
+type: internal

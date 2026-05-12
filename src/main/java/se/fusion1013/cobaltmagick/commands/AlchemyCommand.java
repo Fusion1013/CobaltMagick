@@ -71,7 +71,7 @@ public class AlchemyCommand {
                 .executesPlayer((sender, args) -> {
                     RuleLogger ruleLogger = RuleLogger.create("Debug Cauldron Command");
                     Location location = (Location) args.get("block");
-                    CauldronState state = CauldronManager.createCauldronState(location, ruleLogger);
+                    CauldronState state = CauldronManager.createCauldronState(location, ruleLogger, new ItemStack(Material.GLASS_BOTTLE));
                     if (state == null) return;
 
                     sender.sendMessage(state.toString());

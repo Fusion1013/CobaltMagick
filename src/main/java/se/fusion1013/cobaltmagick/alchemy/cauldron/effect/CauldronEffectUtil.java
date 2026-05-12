@@ -3,18 +3,17 @@ package se.fusion1013.cobaltmagick.alchemy.cauldron.effect;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.entity.Item;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import se.fusion1013.cobaltCore.shape.ShapeUtils;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class CauldronEffectUtil {
 
-    public static void animateCauldron(Location location, ItemStack itemStack, Plugin plugin) {
+    public static void animateCauldron(Location location, Consumer<Location> onDone, Plugin plugin) {
         Block block = location.getBlock();
 
         if (block.getType() != Material.CAULDRON
@@ -40,18 +39,7 @@ public class CauldronEffectUtil {
 
                 if (ticks >= maxTicks) {
 
-                    // Final burst effect
-                    world.spawnParticle(Particle.FLASH, center.clone().add(0, 2.5, 0), 1, Color.WHITE);
-                    world.spawnParticle(Particle.END_ROD, center.clone().add(0, 2.5, 0), 10, .1, .1, .1, 0);
-                    world.playSound(center, Sound.ENTITY_EVOKER_CAST_SPELL, 1f, 1.2f);
-
-                    // Spawn the item
-                    Item dropped = world.spawn(center.clone().add(0, 2, 0), Item.class, item -> {
-                        item.setItemStack(itemStack.clone());
-                        item.setGravity(false);
-                        item.setGlowing(true);
-                        item.setVelocity(new Vector());
-                    });
+                    onDone.accept(center.clone().add(0, 2, 0));
 
                     cancel();
                     return;

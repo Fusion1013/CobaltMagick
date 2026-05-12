@@ -3,6 +3,7 @@ package se.fusion1013.cobaltmagick.alchemy.cauldron;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.NotImplementedException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 import se.fusion1013.cobaltCore.variable.BooleanVariable;
 import se.fusion1013.cobaltCore.variable.StringVariable;
 import se.fusion1013.cobaltmagick.alchemy.elemental_veins.IElementalAffinity;
@@ -46,4 +47,6 @@ public abstract class AbstractCauldronRecipe implements ICauldronRecipe, IElemen
     public IElementalAffinity getElementalAffinity() {
         return this;
     }
+
+    public abstract boolean validateFinalItem(ItemStack itemStack);
 }

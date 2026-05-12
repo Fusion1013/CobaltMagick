@@ -24,4 +24,6 @@ public interface ICauldronRecipe extends IRegistryItem {
 
     boolean allowExternalBlocks();
 
+    boolean validateFinalItem(ItemStack finalItem);
+
 }
