@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -14,6 +15,7 @@ import se.fusion1013.cobaltmagick.enchantments.cleanse.CleanseUtil;
 import se.fusion1013.cobaltmagick.enchantments.cold_aura.ColdAuraUtil;
 import se.fusion1013.cobaltmagick.enchantments.cold_snap.ColdSnapUtil;
 import se.fusion1013.cobaltmagick.enchantments.duel.DuelUtil;
+import se.fusion1013.cobaltmagick.enchantments.extract_elements.ExtractElementsUtil;
 import se.fusion1013.cobaltmagick.enchantments.frostbite.FrostbiteUtil;
 import se.fusion1013.cobaltmagick.enchantments.grapple.GrappleUtil;
 import se.fusion1013.cobaltmagick.enchantments.pull.PullUtil;
@@ -47,6 +49,11 @@ public class EnchantmentManager extends Manager<CobaltMagick> implements Listene
         DuelUtil.onPlayerInteract(event);
     }
 
+    @EventHandler
+    public void onEntityDeath(EntityDeathEvent event) {
+        ExtractElementsUtil.onEntityDeath(event);
+    }
+
     public EnchantmentManager(CobaltMagick plugin) {
         super(plugin);
     }
@@ -59,6 +66,9 @@ public class EnchantmentManager extends Manager<CobaltMagick> implements Listene
             DuelUtil.tick();
             CleanseUtil.tick();
         }, 0, 1);
+        Bukkit.getScheduler().runTaskTimer(CobaltMagick.getInstance(), () -> {
+            ExtractElementsUtil.tick();
+        }, 0, 20);
     }
 
     @Override

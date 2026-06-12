@@ -16,6 +16,7 @@ public class ElementalVein implements IElementalVein {
     private final ParticleVariable particle = new ParticleVariable("particle", Particle.END_ROD);
     private final IntVariable particleCount = new IntVariable("particle_count", 1);
     private final DoubleVariable particleOffset = new DoubleVariable("particle_offset", 0);
+    private final StringVariable essenceItem = new StringVariable("essence_item");
 
     private final ParametricSpline2D spline;
     private final List<ParametricSpline2D.Point2D> points;
@@ -27,6 +28,7 @@ public class ElementalVein implements IElementalVein {
         particle.load(yaml);
         particleCount.load(yaml);
         particleOffset.load(yaml);
+        essenceItem.load(yaml);
 
         spline = new ParametricSpline2D(ParametricSpline2D.getPoints(positions.getValue()));
         points = spline.sampleEquidistant(splinePoints.getValue());
@@ -42,6 +44,11 @@ public class ElementalVein implements IElementalVein {
 
         spline = new ParametricSpline2D(ParametricSpline2D.getPoints(positions.getValue()));
         points = spline.sampleEquidistant(splinePoints.getValue());
+    }
+
+    @Override
+    public String getEssenceItemName() {
+        return essenceItem.getValue();
     }
 
     @Override

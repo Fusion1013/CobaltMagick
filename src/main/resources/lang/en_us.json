@@ -1,5 +1,7 @@
 {
   "prefix.magick": "&7[<g:#75f4ff:#0047AB>Magick&7] ",
   "commands.magick.wand.info.header": "&7Wand Statistics",
-  "commands.magick.wand.info.item": "&7 - %title%: &z%value%"
+  "commands.magick.wand.info.item": "&7 - %title%: &z%value%",
+  "commands.alchemy.transmutation.list.header": "&zTransmutations:",
+  "commands.alchemy.transmutation.list.item": "&7 - &z%catalyst%&7: &z%input% &7-> &z%output% &7[&z%cost%&7]"
 }

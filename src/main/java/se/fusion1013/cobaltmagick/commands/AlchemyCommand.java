@@ -19,6 +19,7 @@ import se.fusion1013.cobaltmagick.alchemy.cauldron.CauldronState;
 import se.fusion1013.cobaltmagick.alchemy.potion.IPotionRecipe;
 import se.fusion1013.cobaltmagick.alchemy.potion.PotionManager;
 import se.fusion1013.cobaltmagick.alchemy.properties.AlchemyBlockProperties;
+import se.fusion1013.cobaltmagick.alchemy.transmutation.command.TransmutationCommand;
 
 import java.util.List;
 
@@ -34,6 +35,7 @@ public class AlchemyCommand {
                 .withSubcommand(createPotionCommand())
                 .withSubcommand(createDebugCommand())
                 .withSubcommand(createTemplateCommand())
+                .withSubcommand(TransmutationCommand.register())
                 .register();
     }
 

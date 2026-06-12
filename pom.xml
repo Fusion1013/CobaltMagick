@@ -6,7 +6,7 @@
 
     <groupId>se.fusion1013.plugin</groupId>
     <artifactId>CobaltMagick</artifactId>
-    <version>0.0.3</version>
+    <version>0.0.4</version>
     <packaging>jar</packaging>
 
     <name>CobaltMagick</name>
@@ -205,6 +205,22 @@
             <groupId>se.fusion1013</groupId>
             <artifactId>cobaltcore</artifactId>
             <version>1.6.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Source: https://mvnrepository.com/artifact/com.j256.ormlite/ormlite-core -->
+        <dependency>
+            <groupId>com.j256.ormlite</groupId>
+            <artifactId>ormlite-core</artifactId>
+            <version>6.1</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Source: https://mvnrepository.com/artifact/com.j256.ormlite/ormlite-jdbc -->
+        <dependency>
+            <groupId>com.j256.ormlite</groupId>
+            <artifactId>ormlite-jdbc</artifactId>
+            <version>6.1</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

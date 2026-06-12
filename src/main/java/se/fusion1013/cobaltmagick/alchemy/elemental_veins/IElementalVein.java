@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface IElementalVein extends IRegistryItem {
 
+    String getEssenceItemName();
+
     List<Vector> getPositions();
 
     ParametricSpline2D.Result getClosestPoint(double x, double y);
