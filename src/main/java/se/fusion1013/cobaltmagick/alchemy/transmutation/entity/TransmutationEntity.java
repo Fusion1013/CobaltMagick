@@ -2,6 +2,7 @@ package se.fusion1013.cobaltmagick.alchemy.transmutation.entity;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import se.fusion1013.cobaltmagick.alchemy.Element;
 
 @DatabaseTable(tableName = "transmutation")
 public class TransmutationEntity {
@@ -15,8 +16,8 @@ public class TransmutationEntity {
     @DatabaseField(columnName = "output_item")
     private String outputItem;
 
-    @DatabaseField(columnName = "catalyst")
-    private String catalyst;
+    @DatabaseField(columnName = "element")
+    private Element element;
 
     @DatabaseField(columnName = "cost")
     private int cost;
@@ -44,12 +45,12 @@ public class TransmutationEntity {
         this.outputItem = outputItem;
     }
 
-    public String getCatalyst() {
-        return catalyst;
+    public Element getElement() {
+        return element;
     }
 
-    public void setCatalyst(String catalyst) {
-        this.catalyst = catalyst;
+    public void setElement(Element element) {
+        this.element = element;
     }
 
     public int getCost() {

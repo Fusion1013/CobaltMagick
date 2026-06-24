@@ -28,7 +28,7 @@ public class TransmutationListCommand {
 
         for (Transmutation transmutation : transmutations) {
             LocaleManager.getInstance().sendMessage("", player, "commands.alchemy.transmutation.list.item", StringPlaceholders.builder()
-                    .addPlaceholder("catalyst", transmutation.getCatalyst())
+                    .addPlaceholder("catalyst", transmutation.getElement().toString())
                     .addPlaceholder("input", transmutation.getInputItem())
                     .addPlaceholder("output", transmutation.getOutputItem())
                     .addPlaceholder("cost", transmutation.getCost())

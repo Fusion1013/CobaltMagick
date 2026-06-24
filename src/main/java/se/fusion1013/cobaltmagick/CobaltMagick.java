@@ -18,6 +18,7 @@ import se.fusion1013.cobaltmagick.database.MagickDataManager;
 import se.fusion1013.cobaltmagick.enchantments.EnchantmentManager;
 import se.fusion1013.cobaltmagick.foundry.FoundryManager;
 import se.fusion1013.cobaltmagick.item.properties.MagickItemPropertyManager;
+import se.fusion1013.cobaltmagick.particle.WispManager;
 import se.fusion1013.cobaltmagick.pedestal.PedestalManager;
 import se.fusion1013.cobaltmagick.special.chess.ChessManager;
 import se.fusion1013.cobaltmagick.special.well.WellManager;
@@ -84,6 +85,7 @@ public final class CobaltMagick extends JavaPlugin implements CobaltPlugin {
         WandCommand.register();
         CycleCommand.register();
         ChessCommand.register();
+        WispCommand.register();
     }
 
     // ----- MANAGERS -----
@@ -111,6 +113,7 @@ public final class CobaltMagick extends JavaPlugin implements CobaltPlugin {
         CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), TransmutationService.class);
         CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), ChessManager.class);
         CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), RitualManager.class);
+        CobaltCore.getInstance().getManager(CobaltMagick.getInstance(), WispManager.class);
     }
 
     // ----- LISTENERS -----

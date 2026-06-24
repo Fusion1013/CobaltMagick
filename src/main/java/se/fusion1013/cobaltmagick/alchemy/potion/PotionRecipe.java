@@ -150,7 +150,7 @@ public class PotionRecipe extends AbstractCauldronRecipe implements IPotionRecip
                 spawnedItem.setGlowing(true);
                 spawnedItem.setVelocity(new Vector());
             });
-        }, CobaltMagick.getInstance());
+        }, CobaltMagick.getInstance(), true);
 
         grantAdvancement(location);
     }

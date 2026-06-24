@@ -13,18 +13,9 @@ import java.util.function.Consumer;
 
 public class CauldronEffectUtil {
 
-    public static void animateCauldron(Location location, Consumer<Location> onDone, Plugin plugin) {
-        Block block = location.getBlock();
-
-        if (block.getType() != Material.CAULDRON
-                && block.getType() != Material.WATER_CAULDRON
-                && block.getType() != Material.LAVA_CAULDRON
-                && block.getType() != Material.POWDER_SNOW_CAULDRON) {
-            return;
-        }
-
+    public static void animateCauldron(Location location, Consumer<Location> onDone, Plugin plugin, boolean normalizeToCenter) {
         World world = location.getWorld();
-        Location center = location.clone().add(0.5, 0.2, 0.5);
+        Location center = normalizeToCenter ? location.clone().add(0.5, 0.2, 0.5) : location;
 
         new BukkitRunnable() {
 

@@ -13,7 +13,7 @@ public class TransmutationMapper {
         model.setId(entity.getId());
         model.setInputItem(entity.getInputItem());
         model.setOutputItem(entity.getOutputItem());
-        model.setCatalyst(entity.getCatalyst());
+        model.setElement(entity.getElement());
         model.setCost(entity.getCost());
 
         return model;
@@ -24,7 +24,7 @@ public class TransmutationMapper {
 
         entity.setInputItem(model.getInputItem());
         entity.setOutputItem(model.getOutputItem());
-        entity.setCatalyst(model.getCatalyst());
+        entity.setElement(model.getElement());
         entity.setCost(model.getCost());
 
         return entity;

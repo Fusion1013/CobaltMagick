@@ -1,13 +1,13 @@
 package se.fusion1013.cobaltmagick.alchemy.transmutation.model;
 
-import java.util.Objects;
+import se.fusion1013.cobaltmagick.alchemy.Element;
 
 public final class Transmutation {
 
     private Long id;
     private String inputItem;
     private String outputItem;
-    private String catalyst;
+    private Element element;
     private int cost;
 
     public Transmutation() {
@@ -37,14 +37,6 @@ public final class Transmutation {
         this.outputItem = outputItem;
     }
 
-    public String getCatalyst() {
-        return catalyst;
-    }
-
-    public void setCatalyst(String catalyst) {
-        this.catalyst = catalyst;
-    }
-
     public int getCost() {
         return cost;
     }
@@ -53,30 +45,11 @@ public final class Transmutation {
         this.cost = cost;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (obj == null || obj.getClass() != this.getClass()) return false;
-        var that = (Transmutation) obj;
-        return Objects.equals(this.inputItem, that.inputItem) &&
-                Objects.equals(this.outputItem, that.outputItem) &&
-                Objects.equals(this.catalyst, that.catalyst) &&
-                this.cost == that.cost;
+    public Element getElement() {
+        return element;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(inputItem, outputItem, catalyst, cost);
+    public void setElement(Element element) {
+        this.element = element;
     }
-
-    @Override
-    public String toString() {
-        return "Transmutation[" +
-                "inputItem=" + inputItem + ", " +
-                "outputItem=" + outputItem + ", " +
-                "catalyst=" + catalyst + ", " +
-                "cost=" + cost + ']';
-    }
-
-
 }

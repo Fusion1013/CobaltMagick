@@ -90,7 +90,7 @@ public class RitualRecipe extends AbstractCauldronRecipe implements IRitualRecip
             actions.getValueList().forEach(action -> {
                 action.execute(context);
             });
-        }, CobaltMagick.getInstance());
+        }, CobaltMagick.getInstance(), true);
     }
 
     @Override

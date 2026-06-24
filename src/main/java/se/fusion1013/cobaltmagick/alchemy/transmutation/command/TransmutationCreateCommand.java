@@ -1,6 +1,7 @@
 package se.fusion1013.cobaltmagick.alchemy.transmutation.command;
 
 import dev.jorel.commandapi.CommandAPICommand;
+import dev.jorel.commandapi.arguments.IntegerArgument;
 import dev.jorel.commandapi.arguments.LocationArgument;
 import dev.jorel.commandapi.arguments.LocationType;
 import dev.jorel.commandapi.executors.CommandArguments;
@@ -17,14 +18,16 @@ public class TransmutationCreateCommand {
         return new CommandAPICommand("create")
                 .withPermission(CommandUtil.getPermissionString(CobaltMagick.getInstance(), "alchemy.transmutation.create"))
                 .withArguments(new LocationArgument("location", LocationType.BLOCK_POSITION))
+                .withArguments(new IntegerArgument("max_charge"))
                 .executes(TransmutationCreateCommand::createTransmutation);
     }
 
     private static void createTransmutation(CommandSender sender, CommandArguments args) {
         Location location = (Location) args.get("location");
+        int maxCharge = (int) args.get("max_charge");
         if (location == null) return;
 
-        Response response = TransmutationService.getInstance().createTransmutationLocation(location.toCenterLocation());
+        Response response = TransmutationService.getInstance().createTransmutationLocation(location.toCenterLocation(), maxCharge, true);
 
         if (response.ok()) {
 

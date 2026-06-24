@@ -2,10 +2,12 @@ package se.fusion1013.cobaltmagick.alchemy.transmutation.service;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.yaml.snakeyaml.util.EnumUtils;
 import se.fusion1013.cobaltCore.database.system.DataManager;
 import se.fusion1013.cobaltCore.manager.Manager;
 import se.fusion1013.cobaltmagick.CobaltMagick;
 import se.fusion1013.cobaltmagick.Response;
+import se.fusion1013.cobaltmagick.alchemy.Element;
 import se.fusion1013.cobaltmagick.alchemy.transmutation.model.Transmutation;
 import se.fusion1013.cobaltmagick.alchemy.transmutation.model.TransmutationLocation;
 import se.fusion1013.cobaltmagick.alchemy.transmutation.model.TransmutationState;
@@ -25,18 +27,18 @@ public class TransmutationService extends Manager<CobaltMagick> {
         super(plugin);
     }
 
-    public Response addTransmutation(String input, String output, String catalyst, int cost) {
+    public Response addTransmutation(String input, String output, String element, int cost) {
         Transmutation transmutation = new Transmutation();
         transmutation.setInputItem(input);
         transmutation.setOutputItem(output);
-        transmutation.setCatalyst(catalyst);
+        transmutation.setElement(EnumUtils.findEnumInsensitiveCase(Element.class, element));
         transmutation.setCost(cost);
         repository.addTransmutation(transmutation);
         return Response.ok("Added new transmutation");
     }
 
-    public Response createTransmutationLocation(Location location) {
-        TransmutationLocation transmutationLocation = new TransmutationLocation(location);
+    public Response createTransmutationLocation(Location location, int maxCharge, boolean showStatusRedstoneBlock) {
+        TransmutationLocation transmutationLocation = new TransmutationLocation(location, maxCharge, showStatusRedstoneBlock);
         TRANSMUTATIONS.add(transmutationLocation);
         return Response.ok("Created new transmutation location");
     }
